@@ -1,0 +1,25 @@
+---
+description: Server-first architecture, SSR, use cache, data-access e Server Actions
+alwaysApply: true
+---
+
+# Arquitetura Server-First (NÃO NEGOCIÁVEL)
+
+## Princípios
+
+- **Toda rota em src/app/** deve ser Server Component por padrão
+- **Client Components** só quando: browser APIs, event handlers ou hooks React 19 (useActionState, useOptimistic) forem estritamente necessários
+- **SSR** como padrão; evitar dados sensíveis ou dinâmicos em Client Components desnecessariamente
+
+## Camada de Dados
+
+- Funções de leitura de dados devem estar em **src/data-access/** (ou src/lib para API externa)
+- Usar diretiva **`"use cache"`** em todas as funções que leem dados (modelo Next.js 16)
+- Cache tags: convenção `<entidade>:<id>` (ex: `user:123`, `post:slug`)
+- Chamadas diretas de API/DB em Client Components são **PROIBIDAS**
+
+## Mutações
+
+- Mutações devem ser **Server Actions** em **src/actions/**
+- Invalidação de cache com `revalidateTag()` após mutação bem-sucedida
+- Client Components não executam mutações diretamente; chamam Server Actions

@@ -1,0 +1,37 @@
+---
+description: Funções principais export function, utils como arrow function
+globs: "**/*.ts"
+alwaysApply: false
+---
+
+# Funções e Utils
+
+## Funções Principais
+
+- Funções que são **ponto de entrada** ou **lógica core**: usar `export function nomeFuncao()`
+- Exemplo: handlers de Server Actions, funções de data-access, funções públicas de API
+
+```typescript
+export function getCachedUser(token: string) {
+  'use cache'
+  // ...
+}
+```
+
+## Utils e Helpers Globais
+
+- Funções utilitárias globais: colocar em **src/lib/utils.ts** (ou pasta utils)
+- Declarar como **arrow function** com export nomeado: `export const fn = () => {}`
+
+```typescript
+// src/lib/utils.ts
+export const cn = (...inputs: ClassValue[]) => twMerge(clsx(inputs))
+export const formatDate = (d: Date) => d.toLocaleDateString('pt-BR')
+```
+
+## Resumo
+
+| Tipo            | Padrão           | Onde            |
+|-----------------|------------------|-----------------|
+| Função principal| `export function`| actions, api, dal |
+| Utilitário global| `export const x = () =>` | lib/utils      |

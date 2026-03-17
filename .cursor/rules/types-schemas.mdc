@@ -1,0 +1,34 @@
+---
+description: Tipagem, interfaces, Zod schemas e validação
+alwaysApply: true
+---
+
+# Tipos e Schemas
+
+## Estrutura de Pastas
+
+- **src/types/** — Todas as interfaces e tipagens (ou src/lib/types/)
+- **src/lib/schemas/** — Todos os schemas Zod, nomeados como `<entidade>.schema.ts`
+
+## Regras de Tipo
+
+- TypeScript strict mode obrigatório (`"strict": true`)
+- O tipo `any` é **PROIBIDO**; usar `unknown` e narrow explícito
+- Interfaces e tipos devem ficar centralizados em `src/types/`
+
+## Validação Zod
+
+- Validar em toda fronteira externa: Server Actions, route params, search params, env vars
+- Usar `schema.safeParse()` antes de lógica de negócio
+- Server Actions devem retornar `ActionResult<T>` tipado
+- Schemas não devem ficar espalhados; sempre em `src/lib/schemas/`
+
+## Exemplo
+
+```typescript
+// src/lib/schemas/auth.schema.ts
+export const loginSchema = z.object({ cpf: z.string(), senha: z.string() })
+
+// src/types/auth.types.ts
+export interface LoginResult { user: User; token: string }
+```

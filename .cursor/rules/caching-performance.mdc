@@ -1,0 +1,24 @@
+---
+description: Cache, performance e otimizações (Next.js 16)
+alwaysApply: false
+globs: "**/data-access/**/*.ts,**/actions/**/*.ts,**/*.tsx"
+---
+
+# Cache e Performance
+
+## Cache com use cache
+
+- Funções de leitura em data-access **devem** usar diretiva `"use cache"`
+- Cache tags: `<entidade>:<id>` (ex: `user:123`, `comments:postId`)
+- Registrar via `cacheTag()` onde aplicável
+- Invalidação: `revalidateTag()` na Server Action após mutação bem-sucedida
+
+## UI Otimista
+
+- Para Likes, Comments e interações similares: usar **React 19 useOptimistic**
+- Evitar round-trip desnecessário na interação do usuário
+
+## Imagens e Fontes
+
+- Imagens: `next/image` com width/height ou fill explícitos
+- Fontes: `next/font` — não usar requisições externas de fontes

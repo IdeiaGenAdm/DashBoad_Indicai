@@ -1,0 +1,35 @@
+---
+description: Arquitetura de componentes, hooks e nomenclatura
+globs: "**/*.tsx"
+alwaysApply: false
+---
+
+# Componentes e Hooks
+
+## Estrutura de Componentes
+
+- **src/components/ui/** — Primitivos atômicos, stateless, sem lógica de negócio (Button, Input, Card)
+- **src/components/[feature]/** — Organismos de feature (ex: auth/, dashboard/) — podem ter estado local e hooks
+
+## Convenções
+
+- Componentes: `export function ComponentName()` (export nomeado, PascalCase)
+- Arquivos: **kebab-case** igual ao símbolo (ex: `comment-section.tsx` → `CommentSection`)
+- Um export principal por arquivo (tipos/helpers colocalizados permitidos)
+- **Componentizar bem**: extrair subcomponentes reutilizáveis, evitar componentes gigantes
+
+## Hooks
+
+- **src/hooks/** — Hooks customizados para funcionalidade reutilizável
+- Lógica que afeta estado ou efeitos deve estar em hooks, não em componentes
+- Nome: `useSomething` (camelCase)
+
+## Exemplo
+
+```tsx
+// components/auth/login-form.tsx
+export function LoginForm() { ... }
+
+// hooks/use-auth.ts
+export function useAuth() { ... }
+```
