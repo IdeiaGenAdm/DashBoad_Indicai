@@ -14,8 +14,6 @@ globs: "**/data-access/**/*.ts,**/actions/**/*.ts,**/*.tsx"
 - Invalidação: `revalidateTag()` na Server Action após mutação bem-sucedida
 
 ## UI Otimista
-
-- Para Likes, Comments e interações similares: usar **React 19 useOptimistic**
 - Evitar round-trip desnecessário na interação do usuário
 
 ## Imagens e Fontes
