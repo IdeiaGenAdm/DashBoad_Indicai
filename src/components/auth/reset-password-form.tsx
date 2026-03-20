@@ -75,7 +75,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
 
   if (success) {
     return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md border-2 shadow-xl shadow-black/5 dark:shadow-black/20">
         <CardHeader>
           <CardTitle>Senha redefinida</CardTitle>
           <CardDescription>
@@ -92,7 +92,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card className="w-full max-w-md border-2 shadow-xl shadow-black/5 dark:shadow-black/20">
       <CardHeader>
         <CardTitle>Redefinir senha</CardTitle>
         <CardDescription>Informe seu CPF e a nova senha</CardDescription>
@@ -100,7 +100,11 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <CardContent className="space-y-4">
-            {error && <p className="text-destructive text-sm font-medium">{error}</p>}
+            {error && (
+              <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive">
+                {error}
+              </p>
+            )}
             <FormField
               control={form.control}
               name="cpf"
@@ -147,7 +151,7 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+            <Button type="submit" className="h-11 w-full font-semibold" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? 'Salvando...' : 'Redefinir senha'}
             </Button>
           </CardFooter>

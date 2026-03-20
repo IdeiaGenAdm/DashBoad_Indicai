@@ -63,15 +63,21 @@ export function LoginForm() {
   }
 
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-        <CardDescription>Dashboard IndicAI - Entre com CPF/CNPJ e senha</CardDescription>
+    <Card className="w-full max-w-md border-2 shadow-xl shadow-black/5 dark:shadow-black/20">
+      <CardHeader className="space-y-1.5 pb-4">
+        <CardTitle className="text-2xl font-bold">Login</CardTitle>
+        <CardDescription className="text-muted-foreground">
+          Dashboard IndicAI — Entre com CPF/CNPJ e senha
+        </CardDescription>
       </CardHeader>
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          <CardContent className="space-y-4">
-            {error && <p className="text-destructive text-sm font-medium">{error}</p>}
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+          <CardContent className="space-y-5 pt-0">
+            {error && (
+              <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive">
+                {error}
+              </p>
+            )}
             <FormField
               control={form.control}
               name="cpf"
@@ -102,12 +108,15 @@ export function LoginForm() {
                 </FormItem>
               )}
             />
-            <Link href="/indicai/recuperar-senha" className="text-primary text-sm hover:underline">
+            <Link
+              href="/indicai/recuperar-senha"
+              className="text-sm font-medium text-primary underline-offset-4 transition-colors hover:text-primary/90 hover:underline"
+            >
               Esqueci minha senha
             </Link>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+            <Button type="submit" className="h-11 w-full font-semibold" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting ? 'Entrando...' : 'Entrar'}
             </Button>
           </CardFooter>

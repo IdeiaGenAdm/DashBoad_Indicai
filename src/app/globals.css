@@ -2,71 +2,77 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Paleta: preto + amarelo/âmbar - IndicAI Dashboard */
+/* Paleta: preto + amarelo - IndicAI Dashboard (cores inspiradas em shadcn/Aceternity) */
 
 :root {
-  --background: 40 20% 98%;
+  --background: 60 9% 98%;
   --foreground: 0 0% 4%;
   --card: 0 0% 100%;
   --card-foreground: 0 0% 4%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 4%;
-  --primary: 38 92% 45%;
-  --primary-foreground: 0 0% 100%;
-  --secondary: 38 25% 92%;
-  --secondary-foreground: 38 92% 25%;
-  --muted: 40 15% 93%;
-  --muted-foreground: 0 0% 40%;
-  --accent: 45 93% 92%;
-  --accent-foreground: 38 92% 25%;
+  /* Amarelo puro - hsl(52, 98%, 52%) */
+  --primary: 52 98% 52%;
+  --primary-foreground: 0 0% 0%;
+  --secondary: 220 14% 96%;
+  --secondary-foreground: 220 9% 26%;
+  --muted: 220 14% 96%;
+  --muted-foreground: 220 9% 46%;
+  --accent: 52 98% 95%;
+  --accent-foreground: 52 98% 25%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  --border: 38 15% 88%;
-  --input: 38 15% 88%;
-  --ring: 38 92% 45%;
-  --radius: 0.5rem;
+  --border: 220 13% 91%;
+  --input: 220 13% 91%;
+  --ring: 52 98% 52%;
+  --radius: 0.625rem;
+  --success: 142 76% 36%;
+  --success-foreground: 0 0% 100%;
+  --success-foreground: 0 0% 100%;
 
   /* Sidebar - Light */
   --sidebar: 0 0% 100%;
-  --sidebar-foreground: 0 0% 9%;
-  --sidebar-primary: 38 92% 45%;
-  --sidebar-primary-foreground: 0 0% 100%;
-  --sidebar-accent: 45 93% 95%;
-  --sidebar-accent-foreground: 38 92% 25%;
-  --sidebar-border: 38 15% 90%;
-  --sidebar-ring: 38 92% 45%;
+  --sidebar-foreground: 220 9% 15%;
+  --sidebar-primary: 52 98% 52%;
+  --sidebar-primary-foreground: 0 0% 0%;
+  --sidebar-accent: 52 98% 96%;
+  --sidebar-accent-foreground: 52 98% 25%;
+  --sidebar-border: 220 13% 91%;
+  --sidebar-ring: 52 98% 52%;
 }
 
 .dark {
   --background: 0 0% 4%;
-  --foreground: 40 20% 98%;
-  --card: 0 0% 9%;
-  --card-foreground: 40 20% 98%;
-  --popover: 0 0% 9%;
-  --popover-foreground: 40 20% 98%;
-  --primary: 45 93% 50%;
+  --foreground: 60 9% 98%;
+  --card: 0 0% 8%;
+  --card-foreground: 60 9% 98%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 60 9% 98%;
+  /* Amarelo vibrante no dark */
+  --primary: 52 98% 55%;
   --primary-foreground: 0 0% 0%;
-  --secondary: 0 0% 18%;
-  --secondary-foreground: 45 93% 90%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 60 9% 90%;
   --muted: 0 0% 15%;
-  --muted-foreground: 45 20% 65%;
-  --accent: 0 0% 20%;
-  --accent-foreground: 45 93% 90%;
+  --muted-foreground: 0 0% 64%;
+  --accent: 0 0% 18%;
+  --accent-foreground: 52 98% 90%;
   --destructive: 0 62% 50%;
   --destructive-foreground: 0 0% 100%;
-  --border: 0 0% 22%;
-  --input: 0 0% 22%;
-  --ring: 45 93% 50%;
+  --border: 0 0% 20%;
+  --input: 0 0% 20%;
+  --ring: 52 98% 55%;
+  --success: 142 71% 45%;
 
   /* Sidebar - Dark */
-  --sidebar: 0 0% 4%;
-  --sidebar-foreground: 40 20% 98%;
-  --sidebar-primary: 45 93% 50%;
+  --sidebar: 0 0% 5%;
+  --sidebar-foreground: 60 9% 98%;
+  --sidebar-primary: 52 98% 55%;
   --sidebar-primary-foreground: 0 0% 0%;
-  --sidebar-accent: 0 0% 18%;
-  --sidebar-accent-foreground: 45 93% 90%;
-  --sidebar-border: 0 0% 22%;
-  --sidebar-ring: 45 93% 50%;
+  --sidebar-accent: 0 0% 15%;
+  --sidebar-accent-foreground: 52 98% 90%;
+  --sidebar-border: 0 0% 20%;
+  --sidebar-ring: 52 98% 55%;
 }
 
 @theme inline {
@@ -89,6 +95,7 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-success: hsl(var(--success));
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
