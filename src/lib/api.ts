@@ -1,5 +1,20 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'
 
+/** Roles com acesso ao dashboard admin (alinhado ao backend). */
+export const ADMIN_ROLES = [
+  'master',
+  'admin',
+  'moderator',
+  'finance',
+  'content',
+  'analyst',
+] as const
+
+export function isAdminRole(role: string | undefined | null): boolean {
+  if (!role || role === 'user') return false
+  return (ADMIN_ROLES as readonly string[]).includes(role)
+}
+
 export interface LoginResponse {
   user: Record<string, unknown>
   token: string
@@ -69,5 +84,31 @@ export async function resetPassword(
     throw new Error(data.error || 'Erro ao redefinir senha')
   }
 
+  return res.json()
+}
+
+// --- API Admin (/api/admin/*) ---
+
+function adminHeaders(authToken: string): HeadersInit {
+  return {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${authToken}`,
+  }
+}
+
+export async function adminFetch<T>(
+  path: string,
+  authToken: string,
+  options?: Omit<RequestInit, 'headers'> & { headers?: HeadersInit }
+): Promise<T> {
+  const url = `${API_URL}/api/admin${path.startsWith('/') ? path : `/${path}`}`
+  const res = await fetch(url, {
+    ...options,
+    headers: { ...adminHeaders(authToken), ...options?.headers },
+  })
+  if (!res.ok) {
+    const data = await res.json().catch(() => ({}))
+    throw new Error(data.error || data.message || `Erro: ${res.status}`)
+  }
   return res.json()
 }

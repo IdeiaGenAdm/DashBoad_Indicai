@@ -4,12 +4,13 @@ import { type ReactNode, createContext, useCallback, useContext, useEffect, useS
 
 import { useRouter } from 'next/navigation'
 
-import { login as apiLogin, getMe } from '@/lib/api'
+import { login as apiLogin, getMe, isAdminRole } from '@/lib/api'
 
 const TOKEN_KEY = 'indicai_dashboard_token'
 
 interface User {
   id: string
+  role?: string
   nomeCompleto?: string
   email?: string
   [key: string]: unknown
@@ -51,6 +52,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(
     async (cpf: string, senha: string) => {
       const res = await apiLogin(cpf, senha)
+      const role = (res.user?.role as string) ?? 'user'
+      if (!isAdminRole(role)) {
+        throw new Error('Acesso restrito a administradores')
+      }
       setToken(res.token)
       setUser(res.user as User)
       router.push('/dashboard')
@@ -70,13 +75,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (storedToken) {
       getMe(storedToken)
-        .then(({ user }) => setUser(user as User))
+        .then(({ user }) => {
+          const role = (user?.role as string) ?? 'user'
+          if (!isAdminRole(role)) {
+            setToken(null)
+            setUser(null)
+            return
+          }
+          setUser(user as User)
+        })
         .catch(() => setToken(null))
         .finally(() => setIsLoading(false))
     } else {
       setIsLoading(false)
     }
-  }, [])
+  }, [setToken])
 
   return (
     <AuthContext.Provider

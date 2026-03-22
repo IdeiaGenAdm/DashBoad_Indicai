@@ -65,9 +65,9 @@ export function LoginForm() {
   return (
     <Card className="w-full max-w-md border-2 shadow-xl shadow-black/5 dark:shadow-black/20">
       <CardHeader className="space-y-1.5 pb-4">
-        <CardTitle className="text-2xl font-bold">Login</CardTitle>
+        <CardTitle className="text-2xl font-bold">Login Admin</CardTitle>
         <CardDescription className="text-muted-foreground">
-          Dashboard IndicAI — Entre com CPF/CNPJ e senha
+          Dashboard IndicAI — Acesso restrito a administradores
         </CardDescription>
       </CardHeader>
       <Form {...form}>
@@ -116,7 +116,11 @@ export function LoginForm() {
             </Link>
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="h-11 w-full font-semibold" disabled={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              className="h-11 w-full font-semibold"
+              disabled={form.formState.isSubmitting}
+            >
               {form.formState.isSubmitting ? 'Entrando...' : 'Entrar'}
             </Button>
           </CardFooter>
