@@ -24,8 +24,11 @@ export function HomeRedirect() {
   }, [isLoading, router])
 
   return (
-    <div className="flex min-h-screen items-center justify-center">
-      <p>Redirecionando...</p>
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="flex flex-col items-center gap-4">
+        <div className="size-12 animate-pulse rounded-xl bg-primary/30" />
+        <div className="h-3 w-24 animate-pulse rounded-full bg-muted" />
+      </div>
     </div>
   )
 }

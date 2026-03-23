@@ -9,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 /** Wrapper da Table shadcn com padrão visual: header amarelo, linhas alternadas neutro/amarelo, dark/light */
 const DataTable = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
   ({ className, ...props }, ref) => (
-    <div className="relative w-full overflow-auto rounded-md border">
+    <div className="relative w-full overflow-auto rounded-xl">
       <Table
         ref={ref}
         className={cn(

@@ -233,7 +233,7 @@ export function UserList({
         </div>
       </div>
 
-      <div className="overflow-hidden rounded-lg border shadow-sm">
+      <div className="overflow-hidden rounded-xl shadow-sm">
         <DataTable>
           <DataTableHeader>
             <DataTableRow>

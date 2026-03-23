@@ -6,9 +6,9 @@ export default function RecuperarSenhaPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex w-full flex-col items-center gap-8">
-          <h1 className="text-2xl font-bold">Dashboard IndicAI</h1>
-          <p>Carregando...</p>
+        <div className="flex w-full flex-col items-center gap-4">
+          <div className="h-8 w-48 animate-pulse rounded-lg bg-muted" />
+          <div className="h-4 w-32 animate-pulse rounded-md bg-muted" />
         </div>
       }
     >

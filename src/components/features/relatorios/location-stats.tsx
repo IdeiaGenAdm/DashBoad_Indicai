@@ -107,11 +107,11 @@ export function LocationStats() {
         {hasCities && (
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Utilizadores por cidade</h4>
-            <div className="space-y-2 rounded-md border">
+            <div className="space-y-1 rounded-xl">
               {cities.map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between border-b p-3 last:border-b-0"
+                  className="flex items-center justify-between rounded-lg bg-muted/40 p-3 dark:bg-muted/20"
                 >
                   <span>{displayLocation(item.cidade ?? item.regiao)}</span>
                   <span className="font-medium">{item.total ?? 0}</span>
@@ -123,11 +123,11 @@ export function LocationStats() {
         {hasRegions && (
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Demanda por região</h4>
-            <div className="space-y-2 rounded-md border">
+            <div className="space-y-1 rounded-xl">
               {regions.map((item, i) => (
                 <div
                   key={i}
-                  className="flex items-center justify-between border-b p-3 last:border-b-0"
+                  className="flex items-center justify-between rounded-lg bg-muted/40 p-3 dark:bg-muted/20"
                 >
                   <span>{displayLocation(item.regiao)}</span>
                   <span className="font-medium">{item.total ?? 0}</span>

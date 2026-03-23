@@ -83,7 +83,7 @@ export function TopRatedProfessionalsCard() {
           {items.map((item, i) => (
             <div
               key={item.id ?? i}
-              className="flex items-center justify-between rounded-md border p-3"
+              className="flex items-center justify-between rounded-lg bg-muted/40 p-3 dark:bg-muted/20"
             >
               <div className="min-w-0 flex-1">
                 <div className="truncate font-medium">

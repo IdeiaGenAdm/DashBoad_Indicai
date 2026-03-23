@@ -209,11 +209,11 @@ export function FinancialReport() {
             {report && report.length > 0 && (
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Detalhe por plano/período</h4>
-                <div className="rounded-md border">
+                <div className="space-y-1 rounded-xl">
                   {report.map((item, i) => (
                     <div
                       key={i}
-                      className="flex items-center justify-between border-b p-3 last:border-b-0"
+                      className="flex items-center justify-between rounded-lg bg-muted/40 p-3 dark:bg-muted/20"
                     >
                       <span className="font-medium capitalize">
                         {item.plano ?? item.periodo ?? 'N/A'}

@@ -13,9 +13,7 @@ import { useAuth } from '@/contexts/auth-context'
 
 export function PrivateLayoutGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter()
-  const { token, isLoading, logout, user } = useAuth()
-
-  const nome = (user?.nomeCompleto ?? user?.nome ?? '') as string
+  const { token, isLoading, logout } = useAuth()
 
   useEffect(() => {
     if (isLoading) return
@@ -24,15 +22,7 @@ export function PrivateLayoutGuard({ children }: { children: React.ReactNode }) 
     }
   }, [token, isLoading, router])
 
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <p>Carregando...</p>
-      </div>
-    )
-  }
-
-  if (!token) {
+  if (!token && !isLoading) {
     return null
   }
 
@@ -44,7 +34,24 @@ export function PrivateLayoutGuard({ children }: { children: React.ReactNode }) 
         </div>
         <ThemeToggle />
       </header>
-      <main className="flex-1 overflow-auto p-4 pb-20 md:p-6 md:pb-6 lg:p-8">{children}</main>
+      <main className="flex-1 overflow-auto p-4 pb-20 md:p-6 md:pb-6 lg:p-8">
+        {isLoading ? (
+          <div className="space-y-6">
+            <div className="h-8 w-48 animate-pulse rounded-lg bg-muted" />
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-5">
+              {Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="h-24 animate-pulse rounded-xl bg-muted" />
+              ))}
+            </div>
+            <div className="grid gap-4 lg:grid-cols-2">
+              <div className="h-64 animate-pulse rounded-xl bg-muted" />
+              <div className="h-64 animate-pulse rounded-xl bg-muted" />
+            </div>
+          </div>
+        ) : (
+          children
+        )}
+      </main>
       <QuickActions />
       <BottomNav />
     </DashboardSidebar>

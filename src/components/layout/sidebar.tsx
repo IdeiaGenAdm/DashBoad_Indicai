@@ -54,16 +54,18 @@ function SidebarNavContent({ onLogout }: { onLogout: () => void }) {
   const { isExpanded, animate } = useAceternitySidebar()
   return (
     <div className="flex h-full flex-col py-4">
-      <div className="flex min-w-0 shrink-0 items-center gap-2 px-3 pb-1">
-        <span className="shrink-0 text-xl font-bold text-primary">I</span>
+      <div className={`flex min-w-0 shrink-0 items-center gap-2.5 pb-1 ${animate && !isExpanded ? 'justify-center px-2' : 'px-3'}`}>
+        <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground shadow-sm">
+          IA
+        </div>
         <motion.span
           animate={{
             display: animate ? (isExpanded ? 'inline-block' : 'none') : 'inline-block',
             opacity: animate ? (isExpanded ? 1 : 0) : 1,
           }}
-          className="truncate text-xl font-bold text-primary"
+          className="truncate text-lg font-bold tracking-tight text-primary"
         >
-          ndicai
+          IndicAI
         </motion.span>
       </div>
       <Separator className="my-3 bg-primary/20" />

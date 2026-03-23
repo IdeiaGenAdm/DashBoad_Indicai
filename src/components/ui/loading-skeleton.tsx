@@ -19,14 +19,14 @@ export function LoadingSkeleton({
 }: LoadingSkeletonProps) {
   if (variant === 'table-rows') {
     return (
-      <div className={cn('space-y-0 rounded-md border', className)}>
-        <div className="flex border-b bg-primary/10 p-4">
+      <div className={cn('space-y-0 overflow-hidden rounded-xl', className)}>
+        <div className="flex bg-primary/10 p-4">
           {[1, 2, 3, 4].map((i) => (
             <Skeleton key={i} className="h-4 flex-1" />
           ))}
         </div>
         {Array.from({ length: rowCount }).map((_, i) => (
-          <div key={i} className="flex gap-4 border-b p-4 last:border-b-0">
+          <div key={i} className="flex gap-4 border-b border-border/30 p-4 last:border-b-0">
             {[1, 2, 3, 4].map((j) => (
               <Skeleton key={j} className="h-4 flex-1" />
             ))}
@@ -40,7 +40,7 @@ export function LoadingSkeleton({
     return (
       <div className={cn('grid gap-4 sm:grid-cols-2 lg:grid-cols-3', className)}>
         {Array.from({ length: rowCount }).map((_, i) => (
-          <div key={i} className="space-y-3 rounded-lg border p-4">
+          <div key={i} className="space-y-3 rounded-xl bg-muted/30 p-4">
             <Skeleton className="h-5 w-2/3" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />

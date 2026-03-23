@@ -85,7 +85,7 @@ export function QuickActions() {
                       key={action.href}
                       href={action.href}
                       onClick={() => setOpen(false)}
-                      className="group flex flex-col items-center gap-1.5 rounded-lg border bg-card p-2.5 transition-all hover:border-primary hover:bg-primary/5"
+                      className="group flex flex-col items-center gap-1.5 rounded-lg bg-muted/50 p-2.5 transition-all hover:bg-primary/10"
                     >
                       <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/20">
                         <Icon className="size-4 text-primary" />

@@ -139,7 +139,7 @@ export const MobileSidebar = ({ className, children, ...props }: React.Component
                 ease: 'easeInOut',
               }}
               className={cn(
-                'fixed inset-0 z-[100] flex h-full w-full flex-col justify-between bg-white p-10 dark:bg-neutral-900',
+                'fixed inset-0 z-100 flex h-full w-full flex-col justify-between bg-white p-10 dark:bg-neutral-900',
                 className
               )}
             >
@@ -185,11 +185,14 @@ export const SidebarLink = ({
   const { isExpanded, animate } = useAceternitySidebar()
   const isActive =
     pathname === link.href || (link.href !== '/dashboard' && pathname.startsWith(link.href + '/'))
+  const collapsed = animate && !isExpanded
+
   return (
     <a
       href={link.href}
       className={cn(
-        'group/sidebar relative flex items-center justify-start gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-all duration-150',
+        'group/sidebar relative flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-150',
+        collapsed ? 'justify-center px-2 py-2.5' : 'justify-start px-3 py-2.5',
         isActive
           ? 'bg-primary text-primary-foreground shadow-sm'
           : 'text-neutral-400 hover:bg-primary/10 hover:text-primary dark:text-neutral-400 dark:hover:text-primary',
@@ -197,7 +200,15 @@ export const SidebarLink = ({
       )}
       {...props}
     >
-      <span className={cn('shrink-0 transition-colors', isActive ? 'text-primary-foreground' : '')}>
+      <span
+        className={cn(
+          'shrink-0 transition-colors',
+          collapsed &&
+            !isActive &&
+            'flex size-8 items-center justify-center rounded-md hover:bg-primary/10',
+          isActive ? 'text-primary-foreground' : ''
+        )}
+      >
         {link.icon}
       </span>
 
@@ -207,7 +218,7 @@ export const SidebarLink = ({
           opacity: animate ? (isExpanded ? 1 : 0) : 1,
         }}
         className={cn(
-          '!m-0 inline-block !p-0 whitespace-pre transition-transform duration-150 group-hover/sidebar:translate-x-0.5',
+          'm-0! inline-block p-0! whitespace-pre transition-transform duration-150 group-hover/sidebar:translate-x-0.5',
           isActive
             ? 'font-semibold text-primary-foreground'
             : 'font-medium text-neutral-700 dark:text-neutral-200'
