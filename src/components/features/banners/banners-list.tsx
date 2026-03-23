@@ -188,16 +188,48 @@ export function BannersList() {
       </DataTable>
 
       <Dialog open={!!detailBanner} onOpenChange={(o) => !o && setDetailBanner(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>{detailBanner?.title ?? 'Detalhe do banner'}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <ImageIcon className="size-5 text-primary" />
+              Detalhe do banner
+            </DialogTitle>
             <DialogDescription />
           </DialogHeader>
           {detailBanner && (
-            <div className="space-y-2 text-sm">
-              <p><span className="font-medium">Conteúdo:</span> {detailBanner.body ?? '-'}</p>
-              <p><span className="font-medium">Destinatários:</span> {labelAudienceType(detailBanner.audienceType)}</p>
-              <p><span className="font-medium">Vigência:</span> {detailBanner.startsAt || detailBanner.endsAt ? `${formatDateDMY(detailBanner.startsAt) || '—'} a ${formatDateDMY(detailBanner.endsAt) || '—'}` : 'Sem limite'}</p>
+            <div className="space-y-4">
+              <div className="relative overflow-hidden rounded-xl border-2 border-primary/30 bg-linear-to-br from-primary/10 via-primary/5 to-transparent p-5 shadow-sm dark:from-primary/15 dark:via-primary/8">
+                <div className="absolute top-0 right-0 size-24 rounded-full bg-primary/10 blur-2xl" />
+                <div className="relative space-y-2.5">
+                  <div className="flex items-start gap-3">
+                    <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                      <ImageIcon className="size-5" />
+                    </div>
+                    <div className="min-w-0 flex-1 space-y-1.5">
+                      <h4 className="text-base font-bold leading-tight text-foreground">
+                        {detailBanner.title}
+                      </h4>
+                      <p className="text-sm leading-relaxed text-muted-foreground">
+                        {detailBanner.body}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2 rounded-lg bg-muted/30 p-3 text-xs dark:bg-muted/20">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Destinatários</span>
+                  <span className="font-medium">{labelAudienceType(detailBanner.audienceType)}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Vigência</span>
+                  <span className="font-medium">
+                    {detailBanner.startsAt || detailBanner.endsAt
+                      ? `${formatDateDMY(detailBanner.startsAt) || '—'} a ${formatDateDMY(detailBanner.endsAt) || '—'}`
+                      : 'Sem limite'}
+                  </span>
+                </div>
+              </div>
             </div>
           )}
         </DialogContent>
