@@ -53,31 +53,31 @@ export { NAV_LINKS }
 function SidebarNavContent({ onLogout }: { onLogout: () => void }) {
   const { isExpanded, animate } = useAceternitySidebar()
   return (
-    <div className="relative flex h-full min-h-0 flex-col overflow-hidden py-4">
-      <div className="flex min-w-0 shrink-0 items-center gap-2 px-2">
-        <span className="shrink-0 text-lg font-bold text-primary">I</span>
+    <div className="flex h-full flex-col py-4">
+      <div className="flex min-w-0 shrink-0 items-center gap-2 px-3 pb-1">
+        <span className="shrink-0 text-xl font-bold text-primary">I</span>
         <motion.span
           animate={{
             display: animate ? (isExpanded ? 'inline-block' : 'none') : 'inline-block',
             opacity: animate ? (isExpanded ? 1 : 0) : 1,
           }}
-          className="truncate text-lg font-bold text-primary"
+          className="truncate text-xl font-bold text-primary"
         >
           ndicai
         </motion.span>
       </div>
-      <Separator className="my-2 bg-primary/20" />
+      <Separator className="my-3 bg-primary/20" />
       <nav className="min-h-0 flex-1 overflow-y-auto px-2">
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5">
           {NAV_LINKS.map((link) => (
             <SidebarLink key={link.href} link={link} />
           ))}
         </div>
       </nav>
-      <div className="absolute inset-x-0 bottom-0 border-t border-primary/20 bg-sidebar px-2 py-4">
+      <Separator className="my-3 bg-primary/20" />
+      <div className="shrink-0 px-2">
         <SidebarUserMenu onLogout={onLogout} />
       </div>
-      <div className="h-16 shrink-0" aria-hidden />
     </div>
   )
 }

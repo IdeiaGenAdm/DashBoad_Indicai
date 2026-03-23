@@ -24,7 +24,7 @@ export function SidebarUserMenu({ onLogout }: { onLogout: () => void }) {
   const { isExpanded, animate } = useAceternitySidebar()
 
   const nome = (user?.nomeCompleto ?? user?.nome ?? 'Administrador') as string
-  const firstLetter = (nome.trim()[0] ?? 'U').toUpperCase()
+  const firstLetter = (nome.trim()[0] ?? 'A').toUpperCase()
 
   return (
     <>
@@ -32,9 +32,9 @@ export function SidebarUserMenu({ onLogout }: { onLogout: () => void }) {
         <DropdownMenuTrigger asChild>
           <button
             type="button"
-            className="group/sidebar flex w-full min-w-0 items-center justify-start gap-2 rounded-md py-2 text-left text-neutral-400 transition-colors hover:bg-primary/10 hover:text-primary"
+            className="group/sidebar flex w-full min-w-0 items-center justify-start gap-3 rounded-lg px-3 py-2.5 text-left text-neutral-400 transition-all duration-150 hover:bg-primary/10 hover:text-primary"
           >
-            <div className="flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
+            <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground shadow-sm">
               {firstLetter}
             </div>
             <motion.span
@@ -42,7 +42,7 @@ export function SidebarUserMenu({ onLogout }: { onLogout: () => void }) {
                 display: animate ? (isExpanded ? 'inline-block' : 'none') : 'inline-block',
                 opacity: animate ? (isExpanded ? 1 : 0) : 1,
               }}
-              className="truncate text-left text-sm font-medium text-neutral-700 dark:text-neutral-200"
+              className="truncate text-left text-sm font-semibold text-neutral-700 dark:text-neutral-200"
             >
               {nome}
             </motion.span>
