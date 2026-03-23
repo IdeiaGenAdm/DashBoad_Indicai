@@ -162,11 +162,11 @@
 
 **Teste independente**: Ver fila, distinguir tipo/estado, enviar resposta e validar associação.
 
-- [ ] T049 [P] [US6] Criar `src/services/admin-relatorios-fetch.ts` com listRelatorios, listFeedbackSummary, respondReportFeedback, updateReportStatus
-- [ ] T050 [US6] Criar `src/schemas/relatorios.ts` para resposta (texto, validação de e-mail)
-- [ ] T051 [US6] Criar `src/components/features/denuncias/feedback-list.tsx` com tabela/cards, filtros por tipo/estado, nuqs, Skeleton, EmptyState
-- [ ] T052 [US6] Criar `src/components/features/denuncias/respond-feedback-dialog.tsx` com campo de resposta e envio; tratar autor sem e-mail com feedback claro
-- [ ] T053 [US6] Conectar `app/(private)/dashboard/denuncias/page.tsx` aos componentes
+- [x] T049 [P] [US6] Criar `src/services/admin-relatorios-fetch.ts` com listRelatorios, listFeedbackSummary, respondReportFeedback, updateReportStatus
+- [x] T050 [US6] Criar `src/schemas/relatorios.ts` para resposta (texto, validação de e-mail)
+- [x] T051 [US6] Criar `src/components/features/denuncias/feedback-list.tsx` com tabela/cards, filtros por tipo/estado, nuqs, Skeleton, EmptyState
+- [x] T052 [US6] Criar `src/components/features/denuncias/respond-feedback-dialog.tsx` com campo de resposta e envio; tratar autor sem e-mail com feedback claro
+- [x] T053 [US6] Conectar `app/(private)/dashboard/denuncias/page.tsx` aos componentes
 
 ### ✅ Checkpoint Phase 8
 
