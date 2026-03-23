@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -27,18 +26,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/contexts/auth-context'
-
-const loginSchema = z.object({
-  cpf: z
-    .string()
-    .min(11, 'CPF deve ter 11 dígitos ou CNPJ 14 dígitos')
-    .refine((val) => val.replace(/\D/g, '').length === 11 || val.replace(/\D/g, '').length === 14, {
-      message: 'Digite um CPF (11 dígitos) ou CNPJ (14 dígitos) válido',
-    }),
-  senha: z.string().min(1, 'Senha é obrigatória'),
-})
-
-type LoginFormValues = z.infer<typeof loginSchema>
+import { loginSchema, type LoginFormValues } from '@/schemas/auth'
 
 export function LoginForm() {
   const { login } = useAuth()

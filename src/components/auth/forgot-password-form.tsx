@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -27,12 +26,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { forgotPassword } from '@/lib/api'
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email('Email inválido'),
-})
-
-type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>
+import { forgotPasswordSchema, type ForgotPasswordFormValues } from '@/schemas/auth'
 
 export function ForgotPasswordForm() {
   const [success, setSuccess] = useState(false)

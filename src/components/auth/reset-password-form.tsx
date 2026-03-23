@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form'
 import Link from 'next/link'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -27,24 +26,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { resetPassword } from '@/lib/api'
-
-const resetPasswordSchema = z
-  .object({
-    cpf: z
-      .string()
-      .transform((val) => val.replace(/\D/g, ''))
-      .refine((val) => val.length === 11, {
-        message: 'CPF deve ter 11 dígitos',
-      }),
-    senha: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
-    confirmSenha: z.string().min(1, 'Confirmação de senha é obrigatória'),
-  })
-  .refine((data) => data.senha === data.confirmSenha, {
-    message: 'As senhas não coincidem',
-    path: ['confirmSenha'],
-  })
-
-type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>
+import { resetPasswordSchema, type ResetPasswordFormValues } from '@/schemas/auth'
 
 interface ResetPasswordFormProps {
   token: string
