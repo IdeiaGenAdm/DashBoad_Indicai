@@ -127,10 +127,10 @@
 
 **Teste independente**: Listar avaliações, aplicar filtros via URL, suspender e apagar com confirmação.
 
-- [ ] T040 [P] [US4] Criar `src/services/admin-avaliacoes-fetch.ts` com listAvaliacoes, suspendAvaliacao, restoreAvaliacao, deleteAvaliacao
-- [ ] T041 [US4] Criar `src/schemas/avaliacoes.ts` se houver formulários de validação (ex.: filtros)
-- [ ] T042 [US4] Criar `src/components/features/avaliacoes/avaliacoes-list.tsx` com DataTable, nuqs (page, search, sortBy, status), Skeleton, EmptyState, ações suspender/restaurar/apagar com Dialog de confirmação
-- [ ] T043 [US4] Conectar `app/(private)/dashboard/avaliacoes/page.tsx` a avaliacoes-list; garantir partilha de URL
+- [x] T040 [P] [US4] Criar `src/services/admin-avaliacoes-fetch.ts` com listAvaliacoes, suspendAvaliacao, restoreAvaliacao, deleteAvaliacao
+- [x] T041 [US4] Criar `src/schemas/avaliacoes.ts` se houver formulários de validação (ex.: filtros) — omitido: filtros via nuqs, sem formulário
+- [x] T042 [US4] Criar `src/components/features/avaliacoes/avaliacoes-list.tsx` com DataTable, nuqs (page, search, sortBy, status), Skeleton, EmptyState, ações suspender/restaurar/apagar com Dialog de confirmação
+- [x] T043 [US4] Conectar `app/(private)/dashboard/avaliacoes/page.tsx` a avaliacoes-list; garantir partilha de URL
 
 ### ✅ Checkpoint Phase 6
 
