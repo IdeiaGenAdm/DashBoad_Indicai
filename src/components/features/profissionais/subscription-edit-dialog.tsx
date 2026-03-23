@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/select'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
+import { dateInputToIsoStart, formatDateForInput } from '@/lib/utils'
 import { type SubscriptionEditFormValues, subscriptionEditSchema } from '@/schemas/profissionais'
 import type { ProfessionalListItem } from '@/services/admin-profissionais-fetch'
 import { updateProfessionalSubscription, updateRating } from '@/services/admin-profissionais-fetch'
@@ -60,12 +61,7 @@ export function SubscriptionEditDialog({
   useEffect(() => {
     if (professional && open) {
       const exp = professional.expiresAt
-      const expDate =
-        typeof exp === 'string' && exp
-          ? exp.includes('T')
-            ? exp.slice(0, 10)
-            : exp.slice(0, 10)
-          : ''
+      const expDate = formatDateForInput(exp)
       form.reset({
         plano: typeof professional.plano === 'string' ? professional.plano : '',
         estrelas: typeof professional.rating === 'number' ? professional.rating : 0,
@@ -80,7 +76,9 @@ export function SubscriptionEditDialog({
     try {
       await updateProfessionalSubscription(token, professional.id, {
         plano: values.plano,
-        expiresAt: values.nuncaExpirar ? undefined : values.expiresAt || undefined,
+        expiresAt: values.nuncaExpirar
+          ? undefined
+          : dateInputToIsoStart(values.expiresAt || '') || undefined,
         nuncaExpirar: values.nuncaExpirar,
       })
       await updateRating(token, professional.id, { estrelas: values.estrelas })

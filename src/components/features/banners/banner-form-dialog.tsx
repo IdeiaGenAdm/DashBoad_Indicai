@@ -31,10 +31,10 @@ import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
-import { cn } from '@/lib/utils'
+import { cn, dateInputToIsoEnd, dateInputToIsoStart, formatDateForInput } from '@/lib/utils'
 import { type BannerFormValues, bannerSchema } from '@/schemas/banners'
 import type { BannerApi } from '@/services/admin-banners-fetch'
-import { createBanner, formatBannerDate, updateBanner } from '@/services/admin-banners-fetch'
+import { createBanner, updateBanner } from '@/services/admin-banners-fetch'
 
 function destinatariosToAudienceType(v: string): 'all' | 'users' | 'segment' {
   if (v === 'todos') return 'all'
@@ -45,16 +45,6 @@ function audienceTypeToDestinatarios(t: BannerApi['audienceType']): string {
   if (t === 'all') return 'todos'
   if (t === 'users') return 'profissionais'
   return 'todos'
-}
-
-function dateToIsoStart(s: string): string | undefined {
-  if (!s?.trim()) return undefined
-  return new Date(`${s}T00:00:00.000Z`).toISOString()
-}
-
-function dateToIsoEnd(s: string): string | undefined {
-  if (!s?.trim()) return undefined
-  return new Date(`${s}T23:59:59.999Z`).toISOString()
 }
 
 const DESTINATARIOS_OPTIONS = [
@@ -98,8 +88,8 @@ export function BannerFormDialog({
         titulo: banner.title ?? '',
         conteudo: banner.body ?? '',
         destinatarios: audienceTypeToDestinatarios(banner.audienceType),
-        vigenciaInicio: formatBannerDate(banner.startsAt) || '',
-        vigenciaFim: formatBannerDate(banner.endsAt) || '',
+        vigenciaInicio: formatDateForInput(banner.startsAt) || '',
+        vigenciaFim: formatDateForInput(banner.endsAt) || '',
       })
     } else if (!banner && open) {
       form.reset({
@@ -119,8 +109,8 @@ export function BannerFormDialog({
         title: values.titulo,
         body: values.conteudo,
         audienceType: destinatariosToAudienceType(values.destinatarios || 'todos'),
-        startsAt: dateToIsoStart(values.vigenciaInicio ?? '') ?? null,
-        endsAt: dateToIsoEnd(values.vigenciaFim ?? '') ?? null,
+        startsAt: dateInputToIsoStart(values.vigenciaInicio ?? '') ?? null,
+        endsAt: dateInputToIsoEnd(values.vigenciaFim ?? '') ?? null,
         active: true,
       }
       if (isEdit && banner) {

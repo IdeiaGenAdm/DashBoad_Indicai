@@ -113,5 +113,8 @@ export function formatBannerDate(v: string | Date | null | undefined): string {
   if (v == null) return ''
   const d = typeof v === 'string' ? new Date(v) : v
   if (Number.isNaN(d.getTime())) return ''
-  return d.toISOString().slice(0, 10)
+  const year = d.getFullYear()
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
