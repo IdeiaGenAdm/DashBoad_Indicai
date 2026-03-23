@@ -1,6 +1,7 @@
 'use client'
 import React, { createContext, useContext, useState } from 'react'
 
+import { usePathname } from 'next/navigation'
 import { IconMenu2, IconX } from '@tabler/icons-react'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
@@ -50,7 +51,7 @@ export const AceternitySidebarProvider = ({
   const open = openProp !== undefined ? openProp : openState
   const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState
 
-  const isExpanded = pinned || open
+  const isExpanded = pinned
 
   return (
     <SidebarContext.Provider value={{ open, setOpen, animate, pinned, setPinned, isExpanded }}>
@@ -91,19 +92,17 @@ export const DesktopSidebar = ({
   children,
   ...props
 }: React.ComponentProps<typeof motion.div>) => {
-  const { setOpen, animate, isExpanded, pinned, setPinned } = useAceternitySidebar()
+  const { animate, isExpanded } = useAceternitySidebar()
   return (
     <>
       <motion.div
         className={cn(
-          'hidden h-full shrink-0 bg-neutral-100 px-4 py-4 md:flex md:flex-col dark:bg-neutral-800',
+          'hidden h-dvh shrink-0 overflow-hidden bg-neutral-100 px-3 py-4 md:flex md:flex-col dark:bg-neutral-800',
           className
         )}
         animate={{
           width: animate ? (isExpanded ? '260px' : '72px') : '260px',
         }}
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => !pinned && setOpen(false)}
         {...props}
       >
         {children}
@@ -181,11 +180,21 @@ export const SidebarLink = ({
   link: AceternitySidebarLink
   className?: string
 }) => {
+  const pathname = usePathname()
   const { isExpanded, animate } = useAceternitySidebar()
+  const isActive =
+    pathname === link.href ||
+    (link.href !== '/dashboard' && pathname.startsWith(link.href + '/'))
   return (
     <a
       href={link.href}
-      className={cn('group/sidebar flex items-center justify-start gap-2 py-2', className)}
+      className={cn(
+        'group/sidebar flex items-center justify-start gap-2 rounded-md py-2 transition-colors',
+        isActive
+          ? 'bg-primary/10 text-primary'
+          : 'text-neutral-300 hover:bg-primary/10 hover:text-primary dark:text-neutral-400 dark:hover:text-primary',
+        className
+      )}
       {...props}
     >
       {link.icon}
@@ -195,7 +204,10 @@ export const SidebarLink = ({
           display: animate ? (isExpanded ? 'inline-block' : 'none') : 'inline-block',
           opacity: animate ? (isExpanded ? 1 : 0) : 1,
         }}
-        className="!m-0 inline-block !p-0 text-sm whitespace-pre text-neutral-700 transition duration-150 group-hover/sidebar:translate-x-1 dark:text-neutral-200"
+        className={cn(
+          '!m-0 inline-block !p-0 text-sm whitespace-pre transition duration-150 group-hover/sidebar:translate-x-1',
+          isActive ? 'font-medium text-primary' : 'text-neutral-700 dark:text-neutral-200'
+        )}
       >
         {link.label}
       </motion.span>

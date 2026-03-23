@@ -129,3 +129,15 @@ body {
   color: hsl(var(--foreground));
   font-family: var(--font-sans), system-ui, sans-serif;
 }
+
+/* Sonner: sucesso verde escuro, posição bottom-right (via Toaster) */
+[data-rich-colors='true'][data-sonner-toast][data-type='success'] {
+  background: hsl(var(--success)) !important;
+  border-color: hsl(var(--success)) !important;
+  color: white !important;
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='success'] [data-close-button] {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+}

@@ -7,31 +7,34 @@ Material de apoio para decisões de design. Consultar quando precisar de detalhe
 ## Variáveis CSS (globals.css)
 
 ### Light ( :root )
-| Variável | Valor | Uso |
-|----------|-------|-----|
-| --background | 60 9% 98% | Fundo da página |
-| --foreground | 0 0% 4% | Texto principal |
-| --primary | 52 98% 52% | Amarelo IndicAI |
-| --primary-foreground | 0 0% 0% | Texto sobre primary |
-| --secondary | 220 14% 96% | Fundos secundários |
-| --muted | 220 14% 96% | Fundos discretos |
-| --muted-foreground | 220 9% 46% | Texto secundário |
-| --accent | 52 98% 95% | Hover suave em primary |
-| --destructive | 0 84% 60% | Erros, exclusões |
-| --border | 220 13% 91% | Bordas |
-| --ring | 52 98% 52% | Focus rings |
-| --radius | 0.625rem | Border radius base |
-| --success | 142 76% 36% | Confirmações |
+
+| Variável             | Valor       | Uso                    |
+| -------------------- | ----------- | ---------------------- |
+| --background         | 60 9% 98%   | Fundo da página        |
+| --foreground         | 0 0% 4%     | Texto principal        |
+| --primary            | 52 98% 52%  | Amarelo IndicAI        |
+| --primary-foreground | 0 0% 0%     | Texto sobre primary    |
+| --secondary          | 220 14% 96% | Fundos secundários     |
+| --muted              | 220 14% 96% | Fundos discretos       |
+| --muted-foreground   | 220 9% 46%  | Texto secundário       |
+| --accent             | 52 98% 95%  | Hover suave em primary |
+| --destructive        | 0 84% 60%   | Erros, exclusões       |
+| --border             | 220 13% 91% | Bordas                 |
+| --ring               | 52 98% 52%  | Focus rings            |
+| --radius             | 0.625rem    | Border radius base     |
+| --success            | 142 76% 36% | Confirmações           |
 
 ### Dark ( .dark )
-| Variável | Valor | Notas |
-|----------|-------|-------|
-| --background | 0 0% 4% | Fundo escuro |
-| --foreground | 60 9% 98% | Texto claro |
-| --primary | 52 98% 55% | Amarelo ligeiramente mais vibrante |
-| --card | 0 0% 8% | Cards escuros |
+
+| Variável     | Valor      | Notas                              |
+| ------------ | ---------- | ---------------------------------- |
+| --background | 0 0% 4%    | Fundo escuro                       |
+| --foreground | 60 9% 98%  | Texto claro                        |
+| --primary    | 52 98% 55% | Amarelo ligeiramente mais vibrante |
+| --card       | 0 0% 8%    | Cards escuros                      |
 
 ### Uso no Tailwind
+
 - `bg-background`, `text-foreground`
 - `bg-primary`, `text-primary`, `text-primary-foreground`
 - `bg-muted`, `text-muted-foreground`
@@ -57,21 +60,21 @@ Não sobrescrever estes estilos a menos que haja motivo explícito.
 
 ## Button — Variantes
 
-| Variant | Uso |
-|---------|-----|
-| default | Ação primária (primary amarelo) |
-| destructive | Exclusão, confirmação de risco |
-| outline | Ação secundária, cancelar |
-| secondary | Ação neutra |
-| ghost | Ação terciária, itens de menu |
-| link | Links inline |
+| Variant     | Uso                             |
+| ----------- | ------------------------------- |
+| default     | Ação primária (primary amarelo) |
+| destructive | Exclusão, confirmação de risco  |
+| outline     | Ação secundária, cancelar       |
+| secondary   | Ação neutra                     |
+| ghost       | Ação terciária, itens de menu   |
+| link        | Links inline                    |
 
-| Size | Uso |
-|------|-----|
-| default | Botões padrão |
-| sm | Botões compactos, EmptyState |
-| lg | CTAs grandes |
-| icon | Botão só ícone (quadrado) |
+| Size    | Uso                          |
+| ------- | ---------------------------- |
+| default | Botões padrão                |
+| sm      | Botões compactos, EmptyState |
+| lg      | CTAs grandes                 |
+| icon    | Botão só ícone (quadrado)    |
 
 ---
 

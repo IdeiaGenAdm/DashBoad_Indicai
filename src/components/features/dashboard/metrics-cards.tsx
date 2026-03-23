@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 
-import { BarChart3, Briefcase, Users } from 'lucide-react'
+import { BarChart3, Briefcase, Building2, Star, Users } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -44,8 +44,8 @@ export function MetricsCards() {
 
   if (isLoading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {[1, 2, 3, 4].map((i) => (
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {[1, 2, 3, 4, 5].map((i) => (
           <Card key={i} className="overflow-hidden border-0 shadow-md">
             <CardHeader className="pb-2">
               <div className="h-4 w-24 animate-pulse rounded bg-primary/10" />
@@ -61,34 +61,69 @@ export function MetricsCards() {
 
   const usersCount = overview?.users ?? overview?.total ?? 0
   const profissionaisCount = overview?.profissionais ?? 0
+  const empresasCount = overview?.empresas ?? 0
+  const clientesCount = overview?.clientes ?? 0
+  const avaliacoesCount = overview?.avaliacoes ?? 0
+
+  const kpiCards = [
+    {
+      label: 'Utilizadores',
+      value: usersCount,
+      desc: 'Total de contas registadas',
+      icon: Users,
+    },
+    {
+      label: 'Profissionais',
+      value: profissionaisCount,
+      desc: 'Profissionais ativos',
+      icon: Briefcase,
+    },
+    {
+      label: 'Empresas',
+      value: empresasCount,
+      desc: 'Empresas registadas',
+      icon: Building2,
+    },
+    {
+      label: 'Clientes',
+      value: clientesCount,
+      desc: 'Clientes na plataforma',
+      icon: Users,
+    },
+    {
+      label: 'Avaliações',
+      value: avaliacoesCount,
+      desc: 'Total de avaliações',
+      icon: Star,
+    },
+  ]
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      <Card className="overflow-hidden border-0 shadow-md transition-shadow hover:shadow-lg">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Utilizadores</CardTitle>
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20">
-            <Users className="size-5 text-primary" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-3xl font-bold tracking-tight">{usersCount}</div>
-          <p className="mt-1 text-xs text-muted-foreground">Total de contas registadas</p>
-        </CardContent>
-      </Card>
-
-      <Card className="overflow-hidden border-0 shadow-md transition-shadow hover:shadow-lg">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium text-muted-foreground">Profissionais</CardTitle>
-          <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20">
-            <Briefcase className="size-5 text-primary" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <div className="text-3xl font-bold tracking-tight">{profissionaisCount}</div>
-          <p className="mt-1 text-xs text-muted-foreground">Profissionais ativos</p>
-        </CardContent>
-      </Card>
+    <div className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+        {kpiCards.map((kpi) => {
+          const Icon = kpi.icon
+          return (
+            <Card
+              key={kpi.label}
+              className="overflow-hidden border-0 shadow-md transition-shadow hover:shadow-lg"
+            >
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
+                  {kpi.label}
+                </CardTitle>
+                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20">
+                  <Icon className="size-5 text-primary" />
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold tracking-tight">{kpi.value}</div>
+                <p className="mt-1 text-xs text-muted-foreground">{kpi.desc}</p>
+              </CardContent>
+            </Card>
+          )
+        })}
+      </div>
 
       {comparison && comparison.length > 0 && (
         <Card className="col-span-full overflow-hidden border-0 shadow-md lg:col-span-2">
