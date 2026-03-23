@@ -6,6 +6,9 @@ import { BarChart3, LayoutGrid } from 'lucide-react'
 
 import { DashboardCharts } from '@/components/features/dashboard/dashboard-charts'
 import { MetricsCards } from '@/components/features/dashboard/metrics-cards'
+import { QuickActions } from '@/components/features/dashboard/quick-actions'
+import { RecentUsersTable } from '@/components/features/dashboard/recent-users-table'
+import { TopRatedTable } from '@/components/features/dashboard/top-rated-table'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/auth-context'
@@ -15,8 +18,6 @@ type ViewMode = 'kpi' | 'charts'
 export function DashboardContent() {
   const { user } = useAuth()
   const [viewMode, setViewMode] = useState<ViewMode>('kpi')
-
-  const nome = (user?.nomeCompleto ?? user?.nome ?? 'Utilizador') as string
 
   return (
     <div className="space-y-8">
@@ -57,7 +58,15 @@ export function DashboardContent() {
         </CardContent>
       </Card>
 
+      <QuickActions />
+
       {viewMode === 'kpi' && <MetricsCards />}
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <RecentUsersTable />
+        <TopRatedTable />
+      </div>
+
       {viewMode === 'charts' && <DashboardCharts />}
     </div>
   )
