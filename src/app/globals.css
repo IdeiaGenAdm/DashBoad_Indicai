@@ -136,13 +136,31 @@ body {
   font-family: var(--font-sans), system-ui, sans-serif;
 }
 
-/* Sonner: sucesso verde escuro, posição bottom-right (via Toaster) */
+/* Sonner: sucesso verde escuro */
 [data-rich-colors='true'][data-sonner-toast][data-type='success'] {
   background: hsl(var(--success)) !important;
   border-color: hsl(var(--success)) !important;
   color: white !important;
 }
 [data-rich-colors='true'][data-sonner-toast][data-type='success'] [data-close-button] {
+  background: transparent !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: white !important;
+}
+
+/* Sonner: erro vermelho escuro */
+[data-rich-colors='true'][data-sonner-toast][data-type='error'] {
+  background: hsl(0 65% 22%) !important;
+  border-color: hsl(0 60% 28%) !important;
+  color: hsl(0 0% 96%) !important;
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='error'] [data-description] {
+  color: hsl(0 0% 80%) !important;
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='error'] [data-icon] {
+  color: hsl(0 80% 70%) !important;
+}
+[data-rich-colors='true'][data-sonner-toast][data-type='error'] [data-close-button] {
   background: transparent !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
   color: white !important;
