@@ -2,6 +2,10 @@
 
 import { useState } from 'react'
 
+import { Users } from 'lucide-react'
+
+import { PageHeader } from '@/components/ui/page-header'
+
 import { CreateUserDialog } from './create-user-dialog'
 import { UserList } from './user-list'
 
@@ -10,9 +14,12 @@ export function UsuariosContent() {
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold">Usuários</h1>
+    <div className="space-y-6">
+      <PageHeader
+        title="Utilizadores"
+        description="Gestão de contas e permissões da plataforma"
+        icon={Users}
+      >
         <CreateUserDialog
           open={createDialogOpen}
           onOpenChange={setCreateDialogOpen}
@@ -21,7 +28,7 @@ export function UsuariosContent() {
             setCreateDialogOpen(false)
           }}
         />
-      </div>
+      </PageHeader>
       <UserList refreshKey={refreshKey} onEmptyAction={() => setCreateDialogOpen(true)} />
     </div>
   )

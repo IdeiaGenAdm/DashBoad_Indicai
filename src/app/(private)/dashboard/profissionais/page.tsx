@@ -1,12 +1,16 @@
+import { Briefcase } from 'lucide-react'
+
 import { ProfissionaisList } from '@/components/features/profissionais/profissionais-list'
+import { PageHeader } from '@/components/ui/page-header'
 
 export default function ProfissionaisPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Profissionais</h1>
-        <p className="text-muted-foreground">Gestão de profissionais e planos.</p>
-      </div>
+      <PageHeader
+        title="Profissionais"
+        description="Gestão de profissionais e planos de subscrição"
+        icon={Briefcase}
+      />
       <ProfissionaisList />
     </div>
   )

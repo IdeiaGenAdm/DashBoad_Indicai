@@ -1,12 +1,16 @@
+import { Settings } from 'lucide-react'
+
 import { MaintenanceToggle } from '@/components/features/sistema/maintenance-toggle'
+import { PageHeader } from '@/components/ui/page-header'
 
 export default function SistemaPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Sistema</h1>
-        <p className="text-muted-foreground">Configurações e manutenção do sistema.</p>
-      </div>
+      <PageHeader
+        title="Sistema"
+        description="Configurações e manutenção da plataforma"
+        icon={Settings}
+      />
       <MaintenanceToggle />
     </div>
   )

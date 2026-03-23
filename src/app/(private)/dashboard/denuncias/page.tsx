@@ -1,12 +1,16 @@
+import { Flag } from 'lucide-react'
+
 import { FeedbackList } from '@/components/features/denuncias/feedback-list'
+import { PageHeader } from '@/components/ui/page-header'
 
 export default function DenunciasPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Denúncias</h1>
-        <p className="text-muted-foreground">Gestão de denúncias, sugestões e reclamações.</p>
-      </div>
+      <PageHeader
+        title="Denúncias"
+        description="Gestão de denúncias, sugestões e reclamações"
+        icon={Flag}
+      />
       <FeedbackList />
     </div>
   )

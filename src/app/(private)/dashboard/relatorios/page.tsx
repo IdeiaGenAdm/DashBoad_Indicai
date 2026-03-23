@@ -1,15 +1,19 @@
+import { BarChart3 } from 'lucide-react'
+
 import { FinancialReport } from '@/components/features/relatorios/financial-report'
 import { LocationStats } from '@/components/features/relatorios/location-stats'
 import { TopProfessionsCard } from '@/components/features/relatorios/top-professions-card'
 import { TopRatedProfessionalsCard } from '@/components/features/relatorios/top-rated-professionals-card'
+import { PageHeader } from '@/components/ui/page-header'
 
 export default function RelatoriosPage() {
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Relatórios</h1>
-        <p className="text-muted-foreground">Métricas e analytics.</p>
-      </div>
+      <PageHeader
+        title="Relatórios"
+        description="Métricas, analytics e desempenho da plataforma"
+        icon={BarChart3}
+      />
       <div className="grid gap-6 lg:grid-cols-2">
         <TopProfessionsCard />
         <TopRatedProfessionalsCard />

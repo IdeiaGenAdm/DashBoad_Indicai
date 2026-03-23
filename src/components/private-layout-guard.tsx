@@ -35,16 +35,23 @@ export function PrivateLayoutGuard({ children }: { children: React.ReactNode }) 
     return null
   }
 
+  const firstLetter = (nome.trim()[0] ?? 'A').toUpperCase()
+
   return (
     <DashboardSidebar onLogout={logout}>
-      <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-card/50 px-4 shadow-sm md:h-16">
-        <div className="flex items-center gap-4">
+      <header className="flex h-14 shrink-0 items-center justify-between gap-4 border-b bg-card/80 px-4 shadow-sm backdrop-blur-sm md:h-16 md:px-6">
+        <div className="flex items-center gap-3">
           <div className="hidden md:block">
             <SidebarToggle />
           </div>
-          <span className="text-sm font-medium text-muted-foreground md:text-base">
-            Bem vindo{nome ? `, ${nome}` : ''}
-          </span>
+          {nome && (
+            <div className="flex items-center gap-2.5 rounded-lg bg-primary/10 px-3 py-1.5">
+              <div className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
+                {firstLetter}
+              </div>
+              <span className="hidden text-sm font-semibold text-foreground sm:inline">{nome}</span>
+            </div>
+          )}
         </div>
         <ThemeToggle />
       </header>
