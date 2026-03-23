@@ -21,7 +21,7 @@ interface AuthContextValue {
   token: string | null
   isLoading: boolean
   login: (cpf: string, senha: string) => Promise<void>
-  logout: () => void
+  logout: (options?: { message?: string }) => void
   setUser: (user: User | null) => void
   setToken: (token: string | null) => void
 }
@@ -63,11 +63,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [router, setToken]
   )
 
-  const logout = useCallback(() => {
-    setToken(null)
-    setUser(null)
-    router.push('/login')
-  }, [router, setToken])
+  const logout = useCallback(
+    (options?: { message?: string }) => {
+      setToken(null)
+      setUser(null)
+      const search = options?.message
+        ? `?message=${encodeURIComponent(options.message)}`
+        : ''
+      router.push(`/login${search}`)
+    },
+    [router, setToken]
+  )
 
   useEffect(() => {
     const storedToken = getStoredToken()

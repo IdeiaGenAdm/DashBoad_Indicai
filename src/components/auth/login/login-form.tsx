@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { useSearchParams } from 'next/navigation'
 
 import Link from 'next/link'
 
@@ -29,6 +30,8 @@ import { useAuth } from '@/contexts/auth-context'
 import { loginSchema, type LoginFormValues } from '@/schemas/auth'
 
 export function LoginForm() {
+  const searchParams = useSearchParams()
+  const redirectMessage = searchParams.get('message')
   const { login } = useAuth()
   const [error, setError] = useState<string | null>(null)
 
@@ -61,6 +64,11 @@ export function LoginForm() {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           <CardContent className="space-y-5 pt-0">
+            {redirectMessage && (
+              <p className="rounded-lg bg-amber-500/10 px-3 py-2 text-sm font-medium text-amber-700 dark:text-amber-400">
+                {redirectMessage}
+              </p>
+            )}
             {error && (
               <p className="rounded-lg bg-destructive/10 px-3 py-2 text-sm font-medium text-destructive">
                 {error}

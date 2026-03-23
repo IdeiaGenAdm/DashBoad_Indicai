@@ -96,6 +96,17 @@ function adminHeaders(authToken: string): HeadersInit {
   }
 }
 
+export class AdminApiError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number,
+    public readonly data?: Record<string, unknown>
+  ) {
+    super(message)
+    this.name = 'AdminApiError'
+  }
+}
+
 export async function adminFetch<T>(
   path: string,
   authToken: string,
@@ -108,7 +119,8 @@ export async function adminFetch<T>(
   })
   if (!res.ok) {
     const data = await res.json().catch(() => ({}))
-    throw new Error(data.error || data.message || `Erro: ${res.status}`)
+    const message = (data.error || data.message || `Erro: ${res.status}`) as string
+    throw new AdminApiError(message, res.status, data as Record<string, unknown>)
   }
   return res.json()
 }

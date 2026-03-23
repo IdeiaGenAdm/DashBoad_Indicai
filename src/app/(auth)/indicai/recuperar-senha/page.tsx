@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 
-import { RecuperarSenhaContent } from './recuperar-senha-content'
+import { RecuperarSenhaContent } from '@/components/auth/recuperar-senha/recuperar-senha-content'
 
 export default function RecuperarSenhaPage() {
   return (

@@ -70,11 +70,11 @@
 
 **Teste independente**: Login com admin ok; login com user comum rejeitado; alteração de senha invalida outras sessões.
 
-- [ ] T022 [US1] Garantir que `src/contexts/auth-context.tsx` valida role admin em login e getMe (já deve estar; verificar `isAdminRole`)
-- [ ] T023 [US1] Criar `src/components/features/settings/change-password-form.tsx` com formulário para alterar senha (usar schema de auth), spinner no submit, toast Sonner em sucesso/erro
-- [ ] T024 [US1] Adicionar link/botão para alteração de senha no sidebar ou área de perfil (ex.: em `PrivateLayoutGuard` ou dropdown do utilizador)
-- [ ] T025 [US1] Criar página ou modal de alteração de senha acessível ao admin autenticado e integrar com `admin-auth-fetch.changeAdminPassword`
-- [ ] T026 [US1] Tratar erro 403 (sessão invalidada) no auth-context: fazer logout e redirecionar para login com mensagem clara
+- [X] T022 [US1] Garantir que `src/contexts/auth-context.tsx` valida role admin em login e getMe (já deve estar; verificar `isAdminRole`)
+- [X] T023 [US1] Criar `src/components/features/settings/change-password-form.tsx` com formulário para alterar senha (usar schema de auth), spinner no submit, toast Sonner em sucesso/erro
+- [X] T024 [US1] Adicionar link/botão para alteração de senha no sidebar ou área de perfil (ex.: em `PrivateLayoutGuard` ou dropdown do utilizador) — UserMenu no header com dropdown
+- [X] T025 [US1] Criar página ou modal de alteração de senha acessível ao admin autenticado e integrar com `admin-auth-fetch.changeAdminPassword` — modal Dialog no UserMenu
+- [X] T026 [US1] Tratar erro 403 (sessão invalidada) no auth-context: fazer logout e redirecionar para login com mensagem clara — AdminApiError em lib/api; logout(options?: {message}); LoginForm mostra message da URL
 
 ### ✅ Checkpoint Phase 3
 
