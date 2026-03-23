@@ -1,8 +1,13 @@
+import { ProfissionaisList } from '@/components/features/profissionais/profissionais-list'
+
 export default function ProfissionaisPage() {
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Profissionais</h1>
-      <p className="text-muted-foreground">Gestão de profissionais e planos.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">Profissionais</h1>
+        <p className="text-muted-foreground">Gestão de profissionais e planos.</p>
+      </div>
+      <ProfissionaisList />
     </div>
   )
 }

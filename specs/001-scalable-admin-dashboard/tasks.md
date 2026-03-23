@@ -144,11 +144,11 @@
 
 **Teste independente**: Alterar plano/expiração e ver alterações refletidas.
 
-- [ ] T044 [P] [US5] Criar `src/services/admin-profissionais-fetch.ts` com updateProfessionalSubscription, updateRating (conforme contracts)
-- [ ] T045 [US5] Criar `src/schemas/profissionais.ts` para alteração de plano e expiração
-- [ ] T046 [US5] Criar `src/components/features/profissionais/subscription-edit-dialog.tsx` com formulário (plano, classificação, data expiração, checkbox nunca expirar), validação e Sonner
-- [ ] T047 [US5] Criar listagem ou detalhe de profissionais em `src/components/features/profissionais/` com botão para abrir subscription-edit-dialog
-- [ ] T048 [US5] Conectar `app/(private)/dashboard/profissionais/page.tsx` aos componentes
+- [x] T044 [P] [US5] Criar `src/services/admin-profissionais-fetch.ts` com updateProfessionalSubscription, updateRating (conforme contracts)
+- [x] T045 [US5] Criar `src/schemas/profissionais.ts` para alteração de plano e expiração
+- [x] T046 [US5] Criar `src/components/features/profissionais/subscription-edit-dialog.tsx` com formulário (plano, classificação, data expiração, checkbox nunca expirar), validação e Sonner
+- [x] T047 [US5] Criar listagem ou detalhe de profissionais em `src/components/features/profissionais/` com botão para abrir subscription-edit-dialog
+- [x] T048 [US5] Conectar `app/(private)/dashboard/profissionais/page.tsx` aos componentes
 
 ### ✅ Checkpoint Phase 7
 
