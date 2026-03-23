@@ -2,7 +2,7 @@ import { ThemeToggle } from '@/components/theme-toggle'
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4 md:p-6">
+    <div className="relative flex min-h-screen flex-col items-center justify-center bg-background p-4 md:p-8">
       <div
         className="pointer-events-none fixed inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,hsl(var(--primary)/0.12),transparent)]"
         aria-hidden
