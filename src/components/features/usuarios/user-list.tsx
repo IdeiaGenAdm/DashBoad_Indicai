@@ -41,6 +41,53 @@ import { banUser, deleteUser, listUsers, unbanUser } from '@/services/admin-user
 
 import { UserDetailDialog } from './user-detail-dialog'
 
+function StatusBadge({ status }: { status?: string }) {
+  if (!status) return <span className="text-xs text-muted-foreground">—</span>
+  const styles: Record<string, string> = {
+    ativo: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+    bloqueado: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+    desativado: 'bg-muted text-muted-foreground',
+  }
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${styles[status.toLowerCase()] ?? 'bg-muted text-muted-foreground'}`}
+    >
+      {status}
+    </span>
+  )
+}
+
+function TypeBadge({ type }: { type?: string }) {
+  if (!type) return <span className="text-xs text-muted-foreground">—</span>
+  const styles: Record<string, string> = {
+    profissional: 'bg-primary/15 text-primary dark:bg-primary/20',
+    cliente: 'bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400',
+    empresa: 'bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400',
+  }
+  return (
+    <span
+      className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium capitalize ${styles[type.toLowerCase()] ?? 'bg-muted text-muted-foreground'}`}
+    >
+      {type}
+    </span>
+  )
+}
+
+function UserAvatar({ name }: { name: string }) {
+  const initials = name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((n) => n[0])
+    .join('')
+    .toUpperCase()
+  return (
+    <div className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-semibold text-primary">
+      {initials || '?'}
+    </div>
+  )
+}
+
 const PARAMS = {
   page: parseAsInteger.withDefault(1),
   search: parseAsString.withDefault(''),
@@ -198,70 +245,76 @@ export function UserList({
             </DataTableRow>
           </DataTableHeader>
           <DataTableBody>
-            {data.map((user) => (
-              <DataTableRow key={user.id}>
-                <DataTableCell className="font-medium">
-                  {typeof user.nomeCompleto === 'string'
-                    ? user.nomeCompleto
-                    : typeof user.nome === 'string'
-                      ? user.nome
-                      : '-'}
-                </DataTableCell>
-                <DataTableCell>{user.email ?? '-'}</DataTableCell>
-                <DataTableCell>{user.tipoUsuario ?? '-'}</DataTableCell>
-                <DataTableCell>
-                  <span
-                    className={
-                      user.status === 'bloqueado'
-                        ? 'text-destructive'
-                        : user.status === 'desativado'
-                          ? 'text-muted-foreground'
-                          : ''
-                    }
-                  >
-                    {user.status ?? 'ativo'}
-                  </span>
-                </DataTableCell>
-                <DataTableCell className="text-right">
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="default"
-                      size="sm"
-                      onClick={() => setDetailUserId(user.id)}
-                      title="Ver detalhes"
-                    >
-                      <Eye className="mr-1 size-4" />
-                      Ver detalhes
-                    </Button>
-                    {user.status === 'bloqueado' ? (
+            {data.map((user) => {
+              const name =
+                typeof user.nomeCompleto === 'string'
+                  ? user.nomeCompleto
+                  : typeof user.nome === 'string'
+                    ? user.nome
+                    : '-'
+              return (
+                <DataTableRow key={user.id}>
+                  <DataTableCell>
+                    <div className="flex items-center gap-2.5">
+                      <UserAvatar name={name} />
+                      <span className="max-w-[160px] truncate font-medium">{name}</span>
+                    </div>
+                  </DataTableCell>
+                  <DataTableCell className="text-sm text-muted-foreground">
+                    {user.email ?? '-'}
+                  </DataTableCell>
+                  <DataTableCell>
+                    <TypeBadge type={user.tipoUsuario} />
+                  </DataTableCell>
+                  <DataTableCell>
+                    <StatusBadge status={user.status ?? 'ativo'} />
+                  </DataTableCell>
+                  <DataTableCell className="text-right">
+                    <div className="flex justify-end gap-1.5">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setConfirmAction({ type: 'unban', user })}
+                        onClick={() => setDetailUserId(user.id)}
+                        title="Ver detalhes"
+                        className="h-8 px-2.5"
                       >
-                        Desbloquear
+                        <Eye className="size-3.5" />
                       </Button>
-                    ) : (
+                      {user.status === 'bloqueado' ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setConfirmAction({ type: 'unban', user })}
+                          title="Desbloquear"
+                          className="h-8 px-2.5"
+                        >
+                          <Ban className="size-3.5 text-muted-foreground" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setConfirmAction({ type: 'ban', user })}
+                          title="Bloquear"
+                          className="h-8 px-2.5"
+                        >
+                          <Ban className="size-3.5" />
+                        </Button>
+                      )}
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setConfirmAction({ type: 'ban', user })}
+                        className="h-8 px-2.5 text-destructive hover:text-destructive"
+                        onClick={() => setConfirmAction({ type: 'delete', user })}
+                        title="Eliminar conta"
                       >
-                        <Ban className="size-4" />
+                        <Trash2 className="size-3.5" />
                       </Button>
-                    )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-destructive hover:text-destructive"
-                      onClick={() => setConfirmAction({ type: 'delete', user })}
-                    >
-                      <Trash2 className="size-4" />
-                    </Button>
-                  </div>
-                </DataTableCell>
-              </DataTableRow>
-            ))}
+                    </div>
+                  </DataTableCell>
+                </DataTableRow>
+              )
+            })}
           </DataTableBody>
         </DataTable>
 

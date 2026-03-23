@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 
-import { Users } from 'lucide-react'
+import { PlusCircle, Users } from 'lucide-react'
 
+import { Button } from '@/components/ui/button'
 import { PageHeader } from '@/components/ui/page-header'
 
 import { CreateUserDialog } from './create-user-dialog'
@@ -20,15 +21,21 @@ export function UsuariosContent() {
         description="Gestão de contas e permissões da plataforma"
         icon={Users}
       >
-        <CreateUserDialog
-          open={createDialogOpen}
-          onOpenChange={setCreateDialogOpen}
-          onSuccess={() => {
-            setRefreshKey((k) => k + 1)
-            setCreateDialogOpen(false)
-          }}
-        />
+        <Button onClick={() => setCreateDialogOpen(true)} className="gap-1.5">
+          <PlusCircle className="size-4" />
+          Nova conta
+        </Button>
       </PageHeader>
+
+      <CreateUserDialog
+        open={createDialogOpen}
+        onOpenChange={setCreateDialogOpen}
+        onSuccess={() => {
+          setRefreshKey((k) => k + 1)
+          setCreateDialogOpen(false)
+        }}
+      />
+
       <UserList refreshKey={refreshKey} onEmptyAction={() => setCreateDialogOpen(true)} />
     </div>
   )
