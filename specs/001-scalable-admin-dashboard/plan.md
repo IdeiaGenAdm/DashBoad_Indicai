@@ -49,14 +49,15 @@ src/
 │   │   └── indicai/recuperar-senha/page.tsx
 │   ├── (private)/
 │   │   ├── layout.tsx
-│   │   ├── dashboard/page.tsx
-│   │   ├── usuarios/page.tsx
-│   │   ├── profissionais/page.tsx
-│   │   ├── avaliacoes/page.tsx
-│   │   ├── denuncias/page.tsx
-│   │   ├── relatorios/page.tsx
-│   │   ├── banners/page.tsx
-│   │   └── sistema/page.tsx
+│   │   └── dashboard/
+│   │       ├── page.tsx              # Página central do dashboard
+│   │       ├── usuarios/page.tsx
+│   │       ├── profissionais/page.tsx
+│   │       ├── avaliacoes/page.tsx
+│   │       ├── denuncias/page.tsx
+│   │       ├── relatorios/page.tsx
+│   │       ├── banners/page.tsx
+│   │       └── sistema/page.tsx
 │   ├── layout.tsx
 │   └── globals.css
 │

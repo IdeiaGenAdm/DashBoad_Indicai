@@ -46,7 +46,7 @@ npx shadcn@latest add chart
 1. **Layout**: Substituir sidebar atual por Aceternity; criar `BottomNav` para mobile
 2. **Auth**: Reorganizar `components/auth/login/` e `components/auth/recuperar-senha/`
 3. **Services**: Criar `services/admin-users-fetch.ts` e demais por domínio
-4. **Rotas**: Adicionar páginas em `app/(private)/[feature]/`
+4. **Rotas**: Adicionar páginas em `app/(private)/dashboard/[feature]/` (URLs: /dashboard, /dashboard/usuarios, etc.)
 5. **Tabelas**: Criar componente `DataTable` com padrão visual (header amarelo, linhas alternadas) e nuqs
 
 ## Backend
