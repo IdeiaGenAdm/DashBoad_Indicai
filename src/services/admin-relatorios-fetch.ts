@@ -78,6 +78,17 @@ export async function respondReportFeedback(
   })
 }
 
+/** DELETE /admin/relatorios/:tipo/:id — Eliminar */
+export async function deleteRelatorio(
+  authToken: string,
+  tipo: string,
+  id: string
+): Promise<{ message?: string }> {
+  return adminFetch<{ message?: string }>(`/relatorios/${tipo}/${id}`, authToken, {
+    method: 'DELETE',
+  })
+}
+
 /** PATCH /admin/relatorios/:tipo/:id/status — Atualizar estado */
 export async function updateReportStatus(
   authToken: string,

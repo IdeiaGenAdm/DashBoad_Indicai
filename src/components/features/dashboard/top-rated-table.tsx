@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react'
 
-import { ArrowRight, Star, User } from 'lucide-react'
 import Link from 'next/link'
+
+import { ArrowRight, Star, User } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -39,7 +40,7 @@ function UserAvatar({ name }: { name: string }) {
 }
 
 function StarRating({ rating }: { rating?: number }) {
-  if (typeof rating !== 'number') return <span className="text-muted-foreground text-xs">—</span>
+  if (typeof rating !== 'number') return <span className="text-xs text-muted-foreground">—</span>
   return (
     <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-xs font-semibold text-primary">
       <Star className="size-3 fill-primary text-primary" />
@@ -71,8 +72,7 @@ export function TopRatedTable() {
       .finally(() => setIsLoading(false))
   }, [token])
 
-  const displayName = (item: TopRatedProfessionalItem) =>
-    item.nomeCompleto ?? item.nome ?? 'N/A'
+  const displayName = (item: TopRatedProfessionalItem) => item.nomeCompleto ?? item.nome ?? 'N/A'
 
   const header = (
     <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0 pb-3">
@@ -85,7 +85,12 @@ export function TopRatedTable() {
           <CardDescription className="text-xs">Top profissionais da plataforma</CardDescription>
         </div>
       </div>
-      <Button variant="ghost" size="sm" asChild className="gap-1 text-xs text-muted-foreground hover:text-primary">
+      <Button
+        variant="ghost"
+        size="sm"
+        asChild
+        className="gap-1 text-xs text-muted-foreground hover:text-primary"
+      >
         <Link href="/dashboard/relatorios">
           Ver relatórios
           <ArrowRight className="size-3" />
@@ -135,18 +140,18 @@ export function TopRatedTable() {
                 <DataTableCell>
                   <div className="flex items-center gap-2.5">
                     <UserAvatar name={displayName(item)} />
-                    <span className="truncate text-sm font-medium max-w-[120px]">
+                    <span className="max-w-[120px] truncate text-sm font-medium">
                       {displayName(item)}
                     </span>
                   </div>
                 </DataTableCell>
-                <DataTableCell className="hidden sm:table-cell text-xs text-muted-foreground capitalize">
+                <DataTableCell className="hidden text-xs text-muted-foreground capitalize sm:table-cell">
                   {item.profissao ?? '—'}
                 </DataTableCell>
                 <DataTableCell>
                   <StarRating rating={item.rating} />
                 </DataTableCell>
-                <DataTableCell className="hidden md:table-cell text-sm">
+                <DataTableCell className="hidden text-sm md:table-cell">
                   {item.avaliacoes ?? '—'}
                 </DataTableCell>
               </DataTableRow>

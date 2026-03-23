@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { RotateCcw, Search, Star, Trash2 } from 'lucide-react'
+import { Eye, Pause, RotateCcw, Search, Star, Trash2 } from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
@@ -28,6 +28,7 @@ import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
+import { formatDateDMY } from '@/lib/utils'
 import type { AvaliacaoListItem } from '@/services/admin-avaliacoes-fetch'
 import {
   deleteAvaliacao,
@@ -50,6 +51,7 @@ export function AvaliacoesList() {
   const [data, setData] = useState<AvaliacaoListItem[]>([])
   const [, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
+  const [detailItem, setDetailItem] = useState<AvaliacaoListItem | null>(null)
   const [confirmAction, setConfirmAction] = useState<{
     type: 'suspend' | 'restore' | 'delete'
     item: AvaliacaoListItem
@@ -185,7 +187,16 @@ export function AvaliacoesList() {
                 </span>
               </DataTableCell>
               <DataTableCell className="text-right">
-                <div className="flex justify-end gap-2">
+                <div className="flex justify-end gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDetailItem(item)}
+                    title="Ver detalhes"
+                    className="h-8 px-2.5"
+                  >
+                    <Eye className="size-3.5" />
+                  </Button>
                   {item.status === 'suspensa' ||
                   item.status === 'suspendida' ||
                   item.status === 'suspended' ? (
@@ -193,26 +204,30 @@ export function AvaliacoesList() {
                       variant="outline"
                       size="sm"
                       onClick={() => setConfirmAction({ type: 'restore', item })}
+                      title="Restaurar"
+                      className="h-8 px-2.5"
                     >
-                      <RotateCcw className="size-4" />
-                      Restaurar
+                      <RotateCcw className="size-3.5" />
                     </Button>
                   ) : (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setConfirmAction({ type: 'suspend', item })}
+                      title="Suspender"
+                      className="h-8 px-2.5"
                     >
-                      Suspender
+                      <Pause className="size-3.5" />
                     </Button>
                   )}
                   <Button
                     variant="outline"
                     size="sm"
-                    className="text-destructive hover:text-destructive"
+                    className="h-8 px-2.5 text-destructive hover:text-destructive"
                     onClick={() => setConfirmAction({ type: 'delete', item })}
+                    title="Eliminar"
                   >
-                    <Trash2 className="size-4" />
+                    <Trash2 className="size-3.5" />
                   </Button>
                 </div>
               </DataTableCell>
@@ -221,6 +236,24 @@ export function AvaliacoesList() {
         </DataTableBody>
       </DataTable>
 
+      <Dialog open={!!detailItem} onOpenChange={(o) => !o && setDetailItem(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Detalhe da avaliação</DialogTitle>
+            <DialogDescription />
+          </DialogHeader>
+          {detailItem && (
+            <div className="space-y-2 text-sm">
+              <p><span className="font-medium">Autor:</span> {displayName(detailItem)}</p>
+              <p><span className="font-medium">Profissional:</span> {detailItem.profissionalNome ?? '-'}</p>
+              <p><span className="font-medium">Rating:</span> {typeof detailItem.rating === 'number' ? detailItem.rating.toFixed(1) : '-'}</p>
+              <p><span className="font-medium">Comentário:</span> {detailItem.comentario ?? '-'}</p>
+              <p><span className="font-medium">Status:</span> {detailItem.status ?? '-'}</p>
+              <p><span className="font-medium">Data:</span> {detailItem.createdAt ? formatDateDMY(detailItem.createdAt) : '-'}</p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
       <Dialog open={!!confirmAction} onOpenChange={(open) => !open && setConfirmAction(null)}>
         <DialogContent>
           <DialogHeader>

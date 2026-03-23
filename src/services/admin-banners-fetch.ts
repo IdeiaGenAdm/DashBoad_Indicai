@@ -1,15 +1,18 @@
 import { adminFetch } from '@/lib/api'
 
-export interface BannerListItem {
+/** Formato devolvido pelo backend (Drizzle camelCase). */
+export interface BannerApi {
   id: string
-  titulo?: string
-  conteudo?: string
-  destinatarios?: string
-  vigenciaInicio?: string
-  vigenciaFim?: string
-  ativo?: boolean
-  createdAt?: string
-  [key: string]: unknown
+  title: string
+  body: string
+  imageUrl?: string | null
+  startsAt?: string | Date | null
+  endsAt?: string | Date | null
+  audienceType: 'all' | 'users' | 'segment'
+  audienceUserIds?: string[] | null
+  createdByAdminId: string
+  active: boolean
+  createdAt?: string | Date | null
 }
 
 export interface ListBannersParams {
@@ -18,14 +21,22 @@ export interface ListBannersParams {
 }
 
 export interface ListBannersResponse {
-  banners?: BannerListItem[]
-  data?: BannerListItem[]
+  banners?: BannerApi[]
   total?: number
-  page?: number
-  limit?: number
 }
 
-/** GET /admin/banners — Listar banners */
+/** Resposta real do POST /api/admin/banners */
+export interface CreateBannerResponse {
+  message: string
+  bannerId: string
+}
+
+export interface UpdateBannerResponse {
+  message: string
+  bannerId: string
+}
+
+/** GET /api/admin/banners */
 export async function listBanners(
   authToken: string,
   params?: ListBannersParams
@@ -37,52 +48,70 @@ export async function listBanners(
   return adminFetch<ListBannersResponse>(`/banners${qs ? `?${qs}` : ''}`, authToken)
 }
 
+/** Corpo aceite pelo backend (createAdminBannerSchema). */
 export interface CreateBannerBody {
-  titulo: string
-  conteudo: string
-  destinatarios?: string
-  vigenciaInicio?: string
-  vigenciaFim?: string
+  title: string
+  body: string
+  imageUrl?: string | null
+  startsAt?: string | null
+  endsAt?: string | null
+  audienceType?: 'all' | 'users' | 'segment'
+  audienceUserIds?: string[] | null
+  active?: boolean
 }
 
-/** POST /admin/banners — Criar banner */
+/** POST /api/admin/banners */
 export async function createBanner(
   authToken: string,
   body: CreateBannerBody
-): Promise<{ banner: BannerListItem; message?: string }> {
-  return adminFetch<{ banner: BannerListItem; message?: string }>('/banners', authToken, {
+): Promise<CreateBannerResponse> {
+  return adminFetch<CreateBannerResponse>('/banners', authToken, {
     method: 'POST',
     body: JSON.stringify(body),
   })
 }
 
-export interface UpdateBannerBody {
-  titulo?: string
-  conteudo?: string
-  destinatarios?: string
-  vigenciaInicio?: string
-  vigenciaFim?: string
-  ativo?: boolean
-}
+export type UpdateBannerBody = Partial<CreateBannerBody>
 
-/** PATCH /admin/banners/:bannerId — Atualizar banner */
+/** PATCH /api/admin/banners/:bannerId */
 export async function updateBanner(
   authToken: string,
   bannerId: string,
   body: UpdateBannerBody
-): Promise<{ message?: string }> {
-  return adminFetch<{ message?: string }>(`/banners/${bannerId}`, authToken, {
+): Promise<UpdateBannerResponse> {
+  return adminFetch<UpdateBannerResponse>(`/banners/${bannerId}`, authToken, {
     method: 'PATCH',
     body: JSON.stringify(body),
   })
 }
 
-/** DELETE /admin/banners/:bannerId — Eliminar banner */
+/** DELETE /api/admin/banners/:bannerId */
 export async function deleteBanner(
   authToken: string,
   bannerId: string
-): Promise<{ message?: string }> {
-  return adminFetch<{ message?: string }>(`/banners/${bannerId}`, authToken, {
+): Promise<{ message: string; bannerId: string }> {
+  return adminFetch<{ message: string; bannerId: string }>(`/banners/${bannerId}`, authToken, {
     method: 'DELETE',
   })
+}
+
+/** Etiqueta PT para a tabela (o backend só tem all | users | segment). */
+export function labelAudienceType(t: BannerApi['audienceType']): string {
+  switch (t) {
+    case 'all':
+      return 'Todos'
+    case 'users':
+      return 'Utilizadores autenticados'
+    case 'segment':
+      return 'Segmento (IDs)'
+    default:
+      return String(t)
+  }
+}
+
+export function formatBannerDate(v: string | Date | null | undefined): string {
+  if (v == null) return ''
+  const d = typeof v === 'string' ? new Date(v) : v
+  if (Number.isNaN(d.getTime())) return ''
+  return d.toISOString().slice(0, 10)
 }

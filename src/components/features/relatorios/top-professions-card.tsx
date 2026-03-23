@@ -78,7 +78,10 @@ export function TopProfessionsCard() {
       <CardContent>
         <div className="space-y-2">
           {items.map((item, i) => (
-            <div key={i} className="flex items-center justify-between rounded-lg bg-muted/40 p-3 dark:bg-muted/20">
+            <div
+              key={i}
+              className="flex items-center justify-between rounded-lg bg-muted/40 p-3 dark:bg-muted/20"
+            >
               <span className="font-medium capitalize">
                 {typeof item.profissao === 'string'
                   ? item.profissao

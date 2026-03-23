@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/dialog'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
+import { formatDateDMY } from '@/lib/utils'
 import type { UserListItem } from '@/services/admin-users-fetch'
 import {
   getUserById,
@@ -149,11 +150,7 @@ export function UserDetailDialog({
               {user.createdAt && (
                 <div className="mt-2 text-xs text-muted-foreground">
                   Registado em{' '}
-                  {new Date(user.createdAt).toLocaleDateString('pt-PT', {
-                    day: '2-digit',
-                    month: 'long',
-                    year: 'numeric',
-                  })}
+                  {formatDateDMY(user.createdAt)}
                 </div>
               )}
             </div>

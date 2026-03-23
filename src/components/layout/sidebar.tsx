@@ -12,8 +12,6 @@ import {
 } from 'lucide-react'
 import { motion } from 'motion/react'
 
-import { Separator } from '@/components/ui/separator'
-
 import {
   AceternitySidebar,
   type AceternitySidebarLink,
@@ -24,6 +22,7 @@ import {
   useAceternitySidebar,
 } from '@/components/layout/aceternity-sidebar'
 import { SidebarUserMenu } from '@/components/layout/sidebar-user-menu'
+import { Separator } from '@/components/ui/separator'
 
 const NAV_LINKS: AceternitySidebarLink[] = [
   { label: 'Dashboard', href: '/dashboard', icon: <LayoutDashboard className="size-5 shrink-0" /> },
@@ -54,7 +53,9 @@ function SidebarNavContent({ onLogout }: { onLogout: () => void }) {
   const { isExpanded, animate } = useAceternitySidebar()
   return (
     <div className="flex h-full flex-col py-4">
-      <div className={`flex min-w-0 shrink-0 items-center gap-2.5 pb-1 ${animate && !isExpanded ? 'justify-center px-2' : 'px-3'}`}>
+      <div
+        className={`flex min-w-0 shrink-0 items-center gap-2.5 pb-1 ${animate && !isExpanded ? 'justify-center px-2' : 'px-3'}`}
+      >
         <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground shadow-sm">
           IA
         </div>

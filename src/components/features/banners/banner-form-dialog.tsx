@@ -4,7 +4,7 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Loader2 } from 'lucide-react'
+import { Calendar, Loader2, Megaphone, Users } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -25,12 +26,43 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
+import { cn } from '@/lib/utils'
 import { type BannerFormValues, bannerSchema } from '@/schemas/banners'
-import type { BannerListItem } from '@/services/admin-banners-fetch'
-import { createBanner, updateBanner } from '@/services/admin-banners-fetch'
+import type { BannerApi } from '@/services/admin-banners-fetch'
+import { createBanner, formatBannerDate, updateBanner } from '@/services/admin-banners-fetch'
+
+function destinatariosToAudienceType(v: string): 'all' | 'users' | 'segment' {
+  if (v === 'todos') return 'all'
+  return 'users'
+}
+
+function audienceTypeToDestinatarios(t: BannerApi['audienceType']): string {
+  if (t === 'all') return 'todos'
+  if (t === 'users') return 'profissionais'
+  return 'todos'
+}
+
+function dateToIsoStart(s: string): string | undefined {
+  if (!s?.trim()) return undefined
+  return new Date(`${s}T00:00:00.000Z`).toISOString()
+}
+
+function dateToIsoEnd(s: string): string | undefined {
+  if (!s?.trim()) return undefined
+  return new Date(`${s}T23:59:59.999Z`).toISOString()
+}
+
+const DESTINATARIOS_OPTIONS = [
+  { value: 'todos', label: 'Todos os utilizadores' },
+  { value: 'profissionais', label: 'Profissionais' },
+  { value: 'clientes', label: 'Clientes' },
+  { value: 'empresas', label: 'Empresas' },
+] as const
 
 export function BannerFormDialog({
   banner,
@@ -38,7 +70,7 @@ export function BannerFormDialog({
   onOpenChange,
   onSuccess,
 }: {
-  banner?: BannerListItem | null
+  banner?: BannerApi | null
   open: boolean
   onOpenChange: (open: boolean) => void
   onSuccess?: () => void
@@ -57,15 +89,17 @@ export function BannerFormDialog({
     },
   })
 
+  const titulo = form.watch('titulo')
+  const conteudo = form.watch('conteudo')
+
   useEffect(() => {
     if (banner && open) {
       form.reset({
-        titulo: typeof banner.titulo === 'string' ? banner.titulo : '',
-        conteudo: typeof banner.conteudo === 'string' ? banner.conteudo : '',
-        destinatarios: typeof banner.destinatarios === 'string' ? banner.destinatarios : 'todos',
-        vigenciaInicio:
-          typeof banner.vigenciaInicio === 'string' ? banner.vigenciaInicio.slice(0, 10) : '',
-        vigenciaFim: typeof banner.vigenciaFim === 'string' ? banner.vigenciaFim.slice(0, 10) : '',
+        titulo: banner.title ?? '',
+        conteudo: banner.body ?? '',
+        destinatarios: audienceTypeToDestinatarios(banner.audienceType),
+        vigenciaInicio: formatBannerDate(banner.startsAt) || '',
+        vigenciaFim: formatBannerDate(banner.endsAt) || '',
       })
     } else if (!banner && open) {
       form.reset({
@@ -81,23 +115,19 @@ export function BannerFormDialog({
   async function onSubmit(values: BannerFormValues) {
     if (!token) return
     try {
+      const payload = {
+        title: values.titulo,
+        body: values.conteudo,
+        audienceType: destinatariosToAudienceType(values.destinatarios || 'todos'),
+        startsAt: dateToIsoStart(values.vigenciaInicio ?? '') ?? null,
+        endsAt: dateToIsoEnd(values.vigenciaFim ?? '') ?? null,
+        active: true,
+      }
       if (isEdit && banner) {
-        await updateBanner(token, banner.id, {
-          titulo: values.titulo,
-          conteudo: values.conteudo,
-          destinatarios: values.destinatarios || 'todos',
-          vigenciaInicio: values.vigenciaInicio || undefined,
-          vigenciaFim: values.vigenciaFim || undefined,
-        })
+        await updateBanner(token, banner.id, payload)
         toast.success('Banner atualizado')
       } else {
-        await createBanner(token, {
-          titulo: values.titulo,
-          conteudo: values.conteudo,
-          destinatarios: values.destinatarios || 'todos',
-          vigenciaInicio: values.vigenciaInicio || undefined,
-          vigenciaFim: values.vigenciaFim || undefined,
-        })
+        await createBanner(token, payload)
         toast.success('Banner criado')
       }
       form.reset()
@@ -114,100 +144,193 @@ export function BannerFormDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>{isEdit ? 'Editar banner' : 'Criar banner'}</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Megaphone className="size-5 text-primary" />
+            {isEdit ? 'Editar banner' : 'Criar banner'}
+          </DialogTitle>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="titulo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Título</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="Título do banner" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="conteudo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Conteúdo</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} placeholder="Conteúdo do banner" rows={4} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="destinatarios"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Destinatários</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="todos">Todos os utilizadores</SelectItem>
-                      <SelectItem value="profissionais">Profissionais</SelectItem>
-                      <SelectItem value="clientes">Clientes</SelectItem>
-                      <SelectItem value="empresas">Empresas</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="grid grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            <div className="space-y-4">
               <FormField
                 control={form.control}
-                name="vigenciaInicio"
+                name="titulo"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Início vigência</FormLabel>
+                    <FormLabel>Título</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Input
+                        {...field}
+                        placeholder="Ex.: Manutenção agendada"
+                        maxLength={80}
+                        className="font-medium"
+                      />
                     </FormControl>
-                    <FormMessage />
+                    <div className="flex items-center justify-between gap-2">
+                      <FormMessage />
+                      <span
+                        className={cn(
+                          'text-[10px] text-muted-foreground tabular-nums',
+                          (field.value?.length ?? 0) >= 75 && 'text-amber-600 dark:text-amber-400'
+                        )}
+                      >
+                        {field.value?.length ?? 0}/80
+                      </span>
+                    </div>
                   </FormItem>
                 )}
               />
               <FormField
                 control={form.control}
-                name="vigenciaFim"
+                name="conteudo"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Fim vigência</FormLabel>
+                    <FormLabel>Conteúdo</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} />
+                      <Textarea
+                        {...field}
+                        placeholder="Mensagem principal que será exibida aos utilizadores..."
+                        rows={4}
+                        maxLength={500}
+                        className="resize-none"
+                      />
                     </FormControl>
+                    <div className="flex items-center justify-between gap-2">
+                      <FormMessage />
+                      <span
+                        className={cn(
+                          'text-[10px] text-muted-foreground tabular-nums',
+                          (field.value?.length ?? 0) >= 450 && 'text-amber-600 dark:text-amber-400'
+                        )}
+                      >
+                        {field.value?.length ?? 0}/500
+                      </span>
+                    </div>
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            <Separator className="bg-border/50" />
+
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="destinatarios"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="flex items-center gap-2">
+                      <Users className="size-4" />
+                      Destinatários
+                    </FormLabel>
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Quem verá este banner?" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {DESTINATARIOS_OPTIONS.map((opt) => (
+                          <SelectItem key={opt.value} value={opt.value}>
+                            {opt.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Escolha o perfil de utilizadores que verá este banner
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
-              {form.formState.isSubmitting ? (
-                <>
-                  <Loader2 className="mr-2 size-4 animate-spin" />A guardar...
-                </>
-              ) : isEdit ? (
-                'Atualizar'
-              ) : (
-                'Criar'
-              )}
-            </Button>
+
+            <div className="space-y-4">
+              <Label className="flex items-center gap-2 text-sm font-medium">
+                <Calendar className="size-4" />
+                Vigência
+              </Label>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="vigenciaInicio"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-normal text-muted-foreground">
+                        Início
+                      </FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vigenciaFim"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-xs font-normal text-muted-foreground">
+                        Fim
+                      </FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Opcional. Sem datas = visível a partir de agora até ser desativado manualmente
+              </p>
+            </div>
+
+            {/* Preview */}
+            {(titulo || conteudo) && (
+              <>
+                <Separator className="bg-border/50" />
+                <div className="space-y-2">
+                  <Label className="text-xs font-normal text-muted-foreground">Pré-visualização</Label>
+                  <div className="rounded-xl border border-primary/20 bg-primary/5 p-4 dark:bg-primary/10">
+                    <div className="space-y-1">
+                      <p className="font-semibold text-foreground">
+                        {titulo || 'Título do banner'}
+                      </p>
+                      <p className="line-clamp-3 text-sm text-muted-foreground">
+                        {conteudo || 'Conteúdo do banner será exibido aqui.'}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+
+            <div className="flex gap-3 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                className="flex-1"
+              >
+                Cancelar
+              </Button>
+              <Button type="submit" disabled={form.formState.isSubmitting} className="flex-1">
+                {form.formState.isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 size-4 animate-spin" />A guardar...
+                  </>
+                ) : isEdit ? (
+                  'Atualizar'
+                ) : (
+                  'Criar banner'
+                )}
+              </Button>
+            </div>
           </form>
         </Form>
       </DialogContent>

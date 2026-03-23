@@ -2,11 +2,19 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { Flag, Mail, Search } from 'lucide-react'
+import { Eye, Flag, Mail, Pencil, Search, Trash2 } from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   DataTable,
   DataTableBody,
@@ -26,9 +34,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuth } from '@/contexts/auth-context'
+import { formatDateDMY } from '@/lib/utils'
 import { AdminApiError } from '@/lib/api'
 import type { RelatorioListItem } from '@/services/admin-relatorios-fetch'
-import { listRelatorios } from '@/services/admin-relatorios-fetch'
+import { deleteRelatorio, listRelatorios } from '@/services/admin-relatorios-fetch'
 
 import { RespondFeedbackDialog } from './respond-feedback-dialog'
 
@@ -48,6 +57,8 @@ export function FeedbackList() {
   const [, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [respondItem, setRespondItem] = useState<RelatorioListItem | null>(null)
+  const [detailItem, setDetailItem] = useState<RelatorioListItem | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<RelatorioListItem | null>(null)
 
   const fetchData = useCallback(async () => {
     if (!token) return
@@ -90,6 +101,22 @@ export function FeedbackList() {
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  async function handleDelete() {
+    if (!token || !confirmDelete) return
+    try {
+      await deleteRelatorio(token, confirmDelete.tipo ?? 'reclamacao', confirmDelete.id)
+      toast.success('Relatório eliminado')
+      setConfirmDelete(null)
+      fetchData()
+    } catch (e) {
+      if (e instanceof AdminApiError && e.status === 403) {
+        toast.error('Sessão expirada. Faça login novamente.')
+        return
+      }
+      toast.error(e instanceof Error ? e.message : 'Erro ao eliminar')
+    }
+  }
 
   function hasEmail(item: RelatorioListItem): boolean {
     const email = item.autorEmail ?? (item as { email?: string }).email
@@ -185,29 +212,77 @@ export function FeedbackList() {
               </DataTableCell>
               <DataTableCell>
                 {typeof item.createdAt === 'string'
-                  ? new Date(item.createdAt).toLocaleDateString('pt-PT')
+                  ? formatDateDMY(item.createdAt)
                   : '-'}
               </DataTableCell>
               <DataTableCell className="text-right">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setRespondItem(item)}
-                  disabled={!hasEmail(item)}
-                  title={
-                    !hasEmail(item)
-                      ? 'Autor sem email registado. Não é possível responder.'
-                      : 'Responder ao autor'
-                  }
-                >
-                  Responder
-                </Button>
+                <div className="flex justify-end gap-1.5">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDetailItem(item)}
+                    title="Ver detalhes"
+                    className="h-8 px-2.5"
+                  >
+                    <Eye className="size-3.5" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setRespondItem(item)}
+                    disabled={!hasEmail(item)}
+                    title={hasEmail(item) ? 'Responder' : 'Autor sem email'}
+                    className="h-8 px-2.5"
+                  >
+                    <Pencil className="size-3.5" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2.5 text-destructive hover:text-destructive"
+                    onClick={() => setConfirmDelete(item)}
+                    title="Eliminar"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </Button>
+                </div>
               </DataTableCell>
             </DataTableRow>
           ))}
         </DataTableBody>
       </DataTable>
 
+      <Dialog open={!!detailItem} onOpenChange={(o) => !o && setDetailItem(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Detalhe do relatório</DialogTitle>
+            <DialogDescription />
+          </DialogHeader>
+          {detailItem && (
+            <div className="space-y-2 text-sm">
+              <p><span className="font-medium">Tipo:</span> {detailItem.tipo ?? '-'}</p>
+              <p><span className="font-medium">Autor:</span> {detailItem.autorNome ?? detailItem.autorEmail ?? '-'}</p>
+              <p><span className="font-medium">Mensagem:</span> {detailItem.mensagem ?? '-'}</p>
+              <p><span className="font-medium">Estado:</span> {detailItem.estado ?? detailItem.status ?? '-'}</p>
+              <p><span className="font-medium">Data:</span> {detailItem.createdAt ? formatDateDMY(detailItem.createdAt) : '-'}</p>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+      <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Eliminar relatório</DialogTitle>
+            <DialogDescription>
+              Eliminar este {confirmDelete?.tipo ?? 'relatório'}? Esta ação não pode ser revertida.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDelete(null)}>Cancelar</Button>
+            <Button variant="destructive" onClick={handleDelete}>Eliminar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <RespondFeedbackDialog
         item={respondItem}
         open={!!respondItem}

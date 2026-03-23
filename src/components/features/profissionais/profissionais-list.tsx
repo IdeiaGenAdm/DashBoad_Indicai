@@ -2,11 +2,19 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { Briefcase, Pencil, Search } from 'lucide-react'
+import { Briefcase, Eye, Pencil, Search, Trash2 } from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   DataTable,
   DataTableBody,
@@ -19,10 +27,13 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { useAuth } from '@/contexts/auth-context'
+import { formatDateDMY } from '@/lib/utils'
 import { AdminApiError } from '@/lib/api'
 import type { ProfessionalListItem } from '@/services/admin-profissionais-fetch'
 import { listProfessionals } from '@/services/admin-profissionais-fetch'
+import { deleteUser } from '@/services/admin-users-fetch'
 
+import { UserDetailDialog } from '../usuarios/user-detail-dialog'
 import { SubscriptionEditDialog } from './subscription-edit-dialog'
 
 const PARAMS = {
@@ -39,6 +50,8 @@ export function ProfissionaisList() {
   const [, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [editProfessional, setEditProfessional] = useState<ProfessionalListItem | null>(null)
+  const [detailUserId, setDetailUserId] = useState<string | null>(null)
+  const [confirmDelete, setConfirmDelete] = useState<ProfessionalListItem | null>(null)
 
   const fetchData = useCallback(async () => {
     if (!token) return
@@ -71,6 +84,22 @@ export function ProfissionaisList() {
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  async function handleDelete() {
+    if (!token || !confirmDelete?.userId) return
+    try {
+      await deleteUser(token, confirmDelete.userId)
+      toast.success('Profissional eliminado')
+      setConfirmDelete(null)
+      fetchData()
+    } catch (e) {
+      if (e instanceof AdminApiError && e.status === 403) {
+        toast.error('Sessão expirada. Faça login novamente.')
+        return
+      }
+      toast.error(e instanceof Error ? e.message : 'Erro ao eliminar')
+    }
+  }
 
   function displayName(item: ProfessionalListItem): string {
     return (
@@ -126,26 +155,79 @@ export function ProfissionaisList() {
               </DataTableCell>
               <DataTableCell>
                 {typeof item.expiresAt === 'string' && item.expiresAt
-                  ? new Date(item.expiresAt).toLocaleDateString('pt-PT')
+                  ? formatDateDMY(item.expiresAt)
                   : 'Nunca'}
               </DataTableCell>
               <DataTableCell className="text-right">
-                <Button variant="outline" size="sm" onClick={() => setEditProfessional(item)}>
-                  <Pencil className="size-4" />
-                  Editar
-                </Button>
+                <div className="flex justify-end gap-1.5">
+                  {item.userId && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setDetailUserId(item.userId!)}
+                      title="Ver detalhes"
+                      className="h-8 px-2.5"
+                    >
+                      <Eye className="size-3.5" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setEditProfessional(item)}
+                    title="Editar"
+                    className="h-8 px-2.5"
+                  >
+                    <Pencil className="size-3.5" />
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-8 px-2.5 text-destructive hover:text-destructive"
+                    onClick={() => item.userId && setConfirmDelete(item)}
+                    title={item.userId ? 'Eliminar' : 'Eliminar através de Utilizadores'}
+                    disabled={!item.userId}
+                  >
+                    <Trash2 className="size-3.5" />
+                  </Button>
+                </div>
               </DataTableCell>
             </DataTableRow>
           ))}
         </DataTableBody>
       </DataTable>
 
+      <UserDetailDialog
+        userId={detailUserId}
+        open={!!detailUserId}
+        onOpenChange={(open) => !open && setDetailUserId(null)}
+        onSuccess={fetchData}
+      />
       <SubscriptionEditDialog
         professional={editProfessional}
         open={!!editProfessional}
         onOpenChange={(open) => !open && setEditProfessional(null)}
         onSuccess={fetchData}
       />
+      <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Eliminar profissional</DialogTitle>
+            <DialogDescription>
+              Eliminar a conta do profissional {displayName(confirmDelete!)}? Esta ação não pode ser
+              revertida.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmDelete(null)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Eliminar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
