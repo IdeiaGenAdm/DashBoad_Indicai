@@ -49,9 +49,7 @@ export interface TopProfessionsResponse {
 }
 
 /** GET /admin/stats/top-professions — Profissões mais buscadas */
-export async function getTopProfessions(
-  authToken: string
-): Promise<TopProfessionsResponse> {
+export async function getTopProfessions(authToken: string): Promise<TopProfessionsResponse> {
   return adminFetch<TopProfessionsResponse>('/stats/top-professions', authToken)
 }
 
@@ -75,8 +73,57 @@ export interface TopRatedProfessionalsResponse {
 export async function getTopRatedProfessionals(
   authToken: string
 ): Promise<TopRatedProfessionalsResponse> {
-  return adminFetch<TopRatedProfessionalsResponse>(
-    '/stats/top-rated-professionals',
-    authToken
-  )
+  return adminFetch<TopRatedProfessionalsResponse>('/stats/top-rated-professionals', authToken)
+}
+
+export interface FinancialReportItem {
+  periodo?: string
+  plano?: string
+  total?: number
+  receita?: number
+  profissionais?: number
+  [key: string]: unknown
+}
+
+export interface FinancialReportResponse {
+  report?: FinancialReportItem[]
+  data?: FinancialReportItem[]
+  total?: number
+  [key: string]: unknown
+}
+
+export interface FinancialReportParams {
+  periodo?: string
+  plano?: string
+}
+
+/** GET /admin/stats/financial — Relatório financeiro */
+export async function getFinancialReport(
+  authToken: string,
+  params?: FinancialReportParams
+): Promise<FinancialReportResponse> {
+  const search = new URLSearchParams()
+  if (params?.periodo) search.set('periodo', params.periodo)
+  if (params?.plano) search.set('plano', params.plano)
+  const qs = search.toString()
+  return adminFetch<FinancialReportResponse>(`/stats/financial${qs ? `?${qs}` : ''}`, authToken)
+}
+
+export interface PlanStatsItem {
+  plano?: string
+  total?: number
+  ativos?: number
+  [key: string]: unknown
+}
+
+export interface PlanStatsResponse {
+  plans?: PlanStatsItem[]
+  stats?: PlanStatsItem[]
+  data?: PlanStatsItem[]
+  [key: string]: unknown
+}
+
+/** GET /admin/stats/plans — Stats planos */
+export async function getPlanStats(authToken: string): Promise<PlanStatsResponse> {
+  return adminFetch<PlanStatsResponse>('/stats/plans', authToken)
 }

@@ -180,9 +180,9 @@
 
 **Teste independente**: Ver totais e detalhes; aplicar filtros por período/plano.
 
-- [ ] T054 [P] [US7] Adicionar getFinancialReport, getPlanStats em `src/services/admin-metrics-fetch.ts` (ou criar admin-financial-fetch.ts)
-- [ ] T055 [US7] Criar `src/components/features/relatorios/financial-report.tsx` com dados agregados, filtros (período, plano), Chart se aplicável, Skeleton, EmptyState
-- [ ] T056 [US7] Integrar financial-report em `app/(private)/dashboard/relatorios/page.tsx`
+- [x] T054 [P] [US7] Adicionar getFinancialReport, getPlanStats em `src/services/admin-metrics-fetch.ts` (ou criar admin-financial-fetch.ts)
+- [x] T055 [US7] Criar `src/components/features/relatorios/financial-report.tsx` com dados agregados, filtros (período, plano), Chart se aplicável, Skeleton, EmptyState
+- [x] T056 [US7] Integrar financial-report em `app/(private)/dashboard/relatorios/page.tsx`
 
 ### ✅ Checkpoint Phase 9
 
