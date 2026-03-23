@@ -1,12 +1,13 @@
 'use client'
 
 import { useEffect } from 'react'
+
 import { useRouter } from 'next/navigation'
 
-import { ThemeToggle } from '@/components/theme-toggle'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { DashboardSidebar } from '@/components/layout/sidebar'
 import { UserMenu } from '@/components/layout/user-menu'
+import { ThemeToggle } from '@/components/theme-toggle'
 import { useAuth } from '@/contexts/auth-context'
 
 export function PrivateLayoutGuard({ children }: { children: React.ReactNode }) {

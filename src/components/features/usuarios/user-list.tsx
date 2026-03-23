@@ -2,11 +2,12 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { Ban, Search, Trash2, Users as UsersIcon } from 'lucide-react'
+import { Ban, ImageIcon, Search, Trash2, Users as UsersIcon } from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   DataTable,
   DataTableBody,
@@ -29,7 +30,15 @@ import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
 import type { UserListItem } from '@/services/admin-users-fetch'
-import { banUser, deleteUser, listUsers, unbanUser } from '@/services/admin-users-fetch'
+import {
+  banUser,
+  banUsersBulk,
+  deleteUser,
+  listUsers,
+  unbanUser,
+} from '@/services/admin-users-fetch'
+
+import { UserDetailDialog } from './user-detail-dialog'
 
 const PARAMS = {
   page: parseAsInteger.withDefault(1),
@@ -49,12 +58,15 @@ export function UserList({
   const { token } = useAuth()
   const [params, setParams] = useQueryStates(PARAMS)
   const [data, setData] = useState<UserListItem[]>([])
-  const [total, setTotal] = useState(0)
+  const [, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [confirmAction, setConfirmAction] = useState<{
     type: 'ban' | 'unban' | 'delete'
     user: UserListItem
   } | null>(null)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
+  const [confirmBulkBan, setConfirmBulkBan] = useState(false)
+  const [detailUserId, setDetailUserId] = useState<string | null>(null)
 
   const fetchUsers = useCallback(async () => {
     if (!token) return
@@ -114,6 +126,41 @@ export function UserList({
     }
   }
 
+  const selectableUsers = data.filter((u) => u.status !== 'bloqueado')
+  const selectedCount = selectedIds.size
+  const toggleSelect = (id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+  const toggleSelectAll = () => {
+    if (selectedCount >= selectableUsers.length) {
+      setSelectedIds(new Set())
+    } else {
+      setSelectedIds(new Set(selectableUsers.map((u) => u.id)))
+    }
+  }
+
+  async function handleBulkBan() {
+    if (!token || selectedIds.size === 0) return
+    try {
+      await banUsersBulk(token, Array.from(selectedIds))
+      toast.success(`${selectedIds.size} utilizador(es) bloqueado(s)`)
+      setSelectedIds(new Set())
+      setConfirmBulkBan(false)
+      fetchUsers()
+    } catch (e) {
+      if (e instanceof AdminApiError && e.status === 403) {
+        toast.error('Sessão expirada. Faça login novamente.')
+        return
+      }
+      toast.error(e instanceof Error ? e.message : 'Erro ao bloquear em massa')
+    }
+  }
+
   if (isLoading) {
     return <LoadingSkeleton variant="table-rows" rowCount={5} />
   }
@@ -140,11 +187,32 @@ export function UserList({
             className="pl-9"
           />
         </div>
+        {selectedCount > 0 && (
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">{selectedCount} selecionado(s)</span>
+            <Button variant="destructive" size="sm" onClick={() => setConfirmBulkBan(true)}>
+              <Ban className="mr-1 size-4" />
+              Bloquear selecionados
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => setSelectedIds(new Set())}>
+              Limpar
+            </Button>
+          </div>
+        )}
       </div>
 
       <DataTable>
         <DataTableHeader>
           <DataTableRow>
+            <DataTableHead className="w-12">
+              {selectableUsers.length > 0 && (
+                <Checkbox
+                  checked={selectedCount > 0 && selectedCount >= selectableUsers.length}
+                  onCheckedChange={toggleSelectAll}
+                  aria-label="Selecionar todos"
+                />
+              )}
+            </DataTableHead>
             <DataTableHead>Nome</DataTableHead>
             <DataTableHead>Email</DataTableHead>
             <DataTableHead>Tipo</DataTableHead>
@@ -155,6 +223,15 @@ export function UserList({
         <DataTableBody>
           {data.map((user) => (
             <DataTableRow key={user.id}>
+              <DataTableCell className="w-12">
+                {user.status !== 'bloqueado' && (
+                  <Checkbox
+                    checked={selectedIds.has(user.id)}
+                    onCheckedChange={() => toggleSelect(user.id)}
+                    aria-label={`Selecionar ${user.nomeCompleto ?? user.email}`}
+                  />
+                )}
+              </DataTableCell>
               <DataTableCell className="font-medium">
                 {typeof user.nomeCompleto === 'string'
                   ? user.nomeCompleto
@@ -179,6 +256,14 @@ export function UserList({
               </DataTableCell>
               <DataTableCell className="text-right">
                 <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setDetailUserId(user.id)}
+                    title="Gerir fotos"
+                  >
+                    <ImageIcon className="size-4" />
+                  </Button>
                   {user.status === 'bloqueado' ? (
                     <Button
                       variant="outline"
@@ -237,6 +322,34 @@ export function UserList({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={confirmBulkBan} onOpenChange={setConfirmBulkBan}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Bloquear utilizadores em massa</DialogTitle>
+            <DialogDescription>
+              Tem a certeza que deseja bloquear {selectedCount} utilizador(es)? Eles não poderão
+              aceder à plataforma até serem desbloqueados. Esta ação pode ser revertida
+              individualmente.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmBulkBan(false)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleBulkBan}>
+              Bloquear {selectedCount} utilizador(es)
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <UserDetailDialog
+        userId={detailUserId}
+        open={!!detailUserId}
+        onOpenChange={(open) => !open && setDetailUserId(null)}
+        onSuccess={fetchUsers}
+      />
     </div>
   )
 }

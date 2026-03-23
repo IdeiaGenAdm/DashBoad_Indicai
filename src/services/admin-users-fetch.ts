@@ -79,10 +79,42 @@ export async function banUser(authToken: string, userId: string): Promise<{ mess
   })
 }
 
+/** POST /admin/users/ban-bulk — Bloquear em massa */
+export async function banUsersBulk(
+  authToken: string,
+  userIds: string[]
+): Promise<{ message?: string }> {
+  return adminFetch<{ message?: string }>('/users/ban-bulk', authToken, {
+    method: 'POST',
+    body: JSON.stringify({ userIds }),
+  })
+}
+
 /** POST /admin/users/:userId/unban — Desbloquear utilizador */
 export async function unbanUser(authToken: string, userId: string): Promise<{ message?: string }> {
   return adminFetch<{ message?: string }>(`/users/${userId}/unban`, authToken, {
     method: 'POST',
+  })
+}
+
+/** DELETE /admin/users/:userId/profile-photo — Remover foto perfil */
+export async function removeUserProfilePhoto(
+  authToken: string,
+  userId: string
+): Promise<{ message?: string }> {
+  return adminFetch<{ message?: string }>(`/users/${userId}/profile-photo`, authToken, {
+    method: 'DELETE',
+  })
+}
+
+/** DELETE /admin/users/:userId/vitrine-photos/:photoId — Remover foto vitrine */
+export async function removeVitrinePhoto(
+  authToken: string,
+  userId: string,
+  photoId: string
+): Promise<{ message?: string }> {
+  return adminFetch<{ message?: string }>(`/users/${userId}/vitrine-photos/${photoId}`, authToken, {
+    method: 'DELETE',
   })
 }
 

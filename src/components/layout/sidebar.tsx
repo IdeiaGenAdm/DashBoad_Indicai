@@ -83,7 +83,7 @@ export function DashboardSidebar({
   return (
     <AceternitySidebar>
       <div className="flex min-h-svh w-full flex-col md:flex-row">
-        <SidebarBody className="shrink-0 border-primary/20 bg-neutral-900 dark:bg-neutral-950 md:border-r max-md:border-b">
+        <SidebarBody className="shrink-0 border-primary/20 bg-neutral-900 max-md:border-b md:border-r dark:bg-neutral-950">
           <SidebarNavContent onLogout={onLogout} />
         </SidebarBody>
         <div className="flex min-h-svh flex-1 flex-col">{children}</div>

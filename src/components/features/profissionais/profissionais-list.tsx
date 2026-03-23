@@ -36,7 +36,7 @@ export function ProfissionaisList() {
   const { token } = useAuth()
   const [params, setParams] = useQueryStates(PARAMS)
   const [data, setData] = useState<ProfessionalListItem[]>([])
-  const [total, setTotal] = useState(0)
+  const [, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [editProfessional, setEditProfessional] = useState<ProfessionalListItem | null>(null)
 

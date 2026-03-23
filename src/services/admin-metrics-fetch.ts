@@ -127,3 +127,38 @@ export interface PlanStatsResponse {
 export async function getPlanStats(authToken: string): Promise<PlanStatsResponse> {
   return adminFetch<PlanStatsResponse>('/stats/plans', authToken)
 }
+
+export interface UsersByCityItem {
+  cidade?: string
+  regiao?: string
+  total?: number
+  [key: string]: unknown
+}
+
+export interface UsersByCityResponse {
+  cities?: UsersByCityItem[]
+  data?: UsersByCityItem[]
+  [key: string]: unknown
+}
+
+/** GET /admin/stats/users-by-city — Utilizadores por cidade */
+export async function getUsersByCity(authToken: string): Promise<UsersByCityResponse> {
+  return adminFetch<UsersByCityResponse>('/stats/users-by-city', authToken)
+}
+
+export interface DemandByRegionItem {
+  regiao?: string
+  total?: number
+  [key: string]: unknown
+}
+
+export interface DemandByRegionResponse {
+  regions?: DemandByRegionItem[]
+  data?: DemandByRegionItem[]
+  [key: string]: unknown
+}
+
+/** GET /admin/stats/demand-by-region — Demanda por região */
+export async function getDemandByRegion(authToken: string): Promise<DemandByRegionResponse> {
+  return adminFetch<DemandByRegionResponse>('/stats/demand-by-region', authToken)
+}

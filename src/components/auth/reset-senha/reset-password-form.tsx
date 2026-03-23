@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { resetPassword } from '@/lib/api'
-import { resetPasswordSchema, type ResetPasswordFormValues } from '@/schemas/auth'
+import { type ResetPasswordFormValues, resetPasswordSchema } from '@/schemas/auth'
 
 interface ResetPasswordFormProps {
   token: string
@@ -133,7 +133,11 @@ export function ResetPasswordForm({ token }: ResetPasswordFormProps) {
             />
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="h-11 w-full font-semibold" disabled={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              className="h-11 w-full font-semibold"
+              disabled={form.formState.isSubmitting}
+            >
               {form.formState.isSubmitting ? 'Salvando...' : 'Redefinir senha'}
             </Button>
           </CardFooter>

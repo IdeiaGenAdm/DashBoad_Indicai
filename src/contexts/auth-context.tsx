@@ -67,9 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     (options?: { message?: string }) => {
       setToken(null)
       setUser(null)
-      const search = options?.message
-        ? `?message=${encodeURIComponent(options.message)}`
-        : ''
+      const search = options?.message ? `?message=${encodeURIComponent(options.message)}` : ''
       router.push(`/login${search}`)
     },
     [router, setToken]

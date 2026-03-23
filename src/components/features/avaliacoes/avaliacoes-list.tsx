@@ -48,7 +48,7 @@ export function AvaliacoesList() {
   const { token } = useAuth()
   const [params, setParams] = useQueryStates(PARAMS)
   const [data, setData] = useState<AvaliacaoListItem[]>([])
-  const [total, setTotal] = useState(0)
+  const [, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [confirmAction, setConfirmAction] = useState<{
     type: 'suspend' | 'restore' | 'delete'

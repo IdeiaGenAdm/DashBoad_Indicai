@@ -18,7 +18,7 @@
 - Q: Parâmetros na URL (nuqs) — quais sincronizar? → A: B — page, search, sortBy, sortOrder, filtros por coluna (ex.: status, tipo).
 - Q: Onde ficam os componentes — dentro de app ou fora? → A: Em `app/` apenas pastas de rota e `page.tsx`; todos os demais componentes em `components/`, organizados por área (ex.: `components/auth/login/`, `components/auth/recuperar-senha/`). Ajustar login e recuperar-senha para seguir esta convenção.
 
-## User Scenarios & Testing *(mandatory)*
+## User Scenarios & Testing _(mandatory)_
 
 ### User Story 1 - Login único e alteração de senha (Priority: P1)
 
@@ -198,7 +198,7 @@ Um administrador precisa remover fotos de perfil ou de vitrine quando o conteúd
 - Erros de rede ou API: feedback claro ao utilizador (toast Sonner, erro inline por campo quando aplicável); opção de retry em falhas de rede; sem perder o contexto da página.
 - Sessão expirada durante operação: redirecionamento para login com mensagem adequada.
 
-## Requirements *(mandatory)*
+## Requirements _(mandatory)_
 
 ### Functional Requirements
 
@@ -223,7 +223,7 @@ Um administrador precisa remover fotos de perfil ou de vitrine quando o conteúd
 - **FR-019**: Schemas Zod MUST ficar em `schemas/`, organizados por domínio (ex.: `schemas/auth.ts`, `schemas/usuarios.ts`).
 - **FR-020**: Páginas (`page.tsx`) MUST ser Server Components (SSR) por defeito; usar `"use client"` apenas em componentes que requeiram interactividade (hooks, formulários, nuqs, context). A composição Server → Client deve ser usada: a página renderiza no servidor e importa componentes client onde necessário.
 
-### Key Entities *(include if feature involves data)*
+### Key Entities _(include if feature involves data)_
 
 - **Administrador**: utilizador com role privilegiado; autentica-se no dashboard; pode alterar própria senha.
 - **Conta**: profissional, empresa ou cliente; pode ser criada e desativada pelo admin.
@@ -248,7 +248,7 @@ Um administrador precisa remover fotos de perfil ou de vitrine quando o conteúd
 - Filtros e pesquisa sincronizados com URL via nuqs: page, search, sortBy, sortOrder, filtros por coluna (status, tipo, etc.) para partilha e bookmark.
 - Todas as ações administrativas deixam registo de auditoria no backend; o dashboard pode expor visualização de logs de auditoria quando relevante.
 
-## Success Criteria *(mandatory)*
+## Success Criteria _(mandatory)_
 
 ### Measurable Outcomes
 

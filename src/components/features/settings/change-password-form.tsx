@@ -3,10 +3,9 @@
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
+import { zodResolver } from '@hookform/resolvers/zod'
 import { Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
-
-import { zodResolver } from '@hookform/resolvers/zod'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -18,10 +17,10 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { AdminApiError } from '@/lib/api'
 import { useAuth } from '@/contexts/auth-context'
+import { AdminApiError } from '@/lib/api'
+import { type ChangePasswordFormValues, changePasswordSchema } from '@/schemas/auth'
 import { changeAdminPassword } from '@/services/admin-auth-fetch'
-import { changePasswordSchema, type ChangePasswordFormValues } from '@/schemas/auth'
 
 export function ChangePasswordForm({ onSuccess }: { onSuccess?: () => void }) {
   const { token, logout } = useAuth()

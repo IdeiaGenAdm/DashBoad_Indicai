@@ -12,7 +12,11 @@ interface LoadingSkeletonProps {
   className?: string
 }
 
-export function LoadingSkeleton({ variant = 'table-rows', rowCount = 5, className }: LoadingSkeletonProps) {
+export function LoadingSkeleton({
+  variant = 'table-rows',
+  rowCount = 5,
+  className,
+}: LoadingSkeletonProps) {
   if (variant === 'table-rows') {
     return (
       <div className={cn('space-y-0 rounded-md border', className)}>
@@ -36,7 +40,7 @@ export function LoadingSkeleton({ variant = 'table-rows', rowCount = 5, classNam
     return (
       <div className={cn('grid gap-4 sm:grid-cols-2 lg:grid-cols-3', className)}>
         {Array.from({ length: rowCount }).map((_, i) => (
-          <div key={i} className="rounded-lg border p-4 space-y-3">
+          <div key={i} className="space-y-3 rounded-lg border p-4">
             <Skeleton className="h-5 w-2/3" />
             <Skeleton className="h-4 w-full" />
             <Skeleton className="h-4 w-full" />

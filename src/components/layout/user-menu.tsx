@@ -4,20 +4,15 @@ import { useState } from 'react'
 
 import { KeyRound, LogOut, User } from 'lucide-react'
 
+import { ChangePasswordForm } from '@/components/features/settings/change-password-form'
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { ChangePasswordForm } from '@/components/features/settings/change-password-form'
 import { useAuth } from '@/contexts/auth-context'
 
 export function UserMenu() {
@@ -33,7 +28,7 @@ export function UserMenu() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" size="sm" className="gap-2">
               <User className="size-4" />
-              <span className="hidden truncate max-w-24 sm:inline">{nome}</span>
+              <span className="hidden max-w-24 truncate sm:inline">{nome}</span>
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">

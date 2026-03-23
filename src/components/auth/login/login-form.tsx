@@ -2,9 +2,9 @@
 
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useSearchParams } from 'next/navigation'
 
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 
 import { zodResolver } from '@hookform/resolvers/zod'
 
@@ -27,7 +27,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { useAuth } from '@/contexts/auth-context'
-import { loginSchema, type LoginFormValues } from '@/schemas/auth'
+import { type LoginFormValues, loginSchema } from '@/schemas/auth'
 
 export function LoginForm() {
   const searchParams = useSearchParams()

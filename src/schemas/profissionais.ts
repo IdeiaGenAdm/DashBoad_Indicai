@@ -10,11 +10,11 @@ export const subscriptionEditSchema = z
   })
   .refine(
     (data) =>
-      data.nuncaExpirar ||
-      (typeof data.expiresAt === 'string' && data.expiresAt.trim().length > 0),
+      data.nuncaExpirar || (typeof data.expiresAt === 'string' && data.expiresAt.trim().length > 0),
     {
-    message: 'Defina data de expiração ou marque "Nunca expirar"',
-    path: ['expiresAt'],
-  })
+      message: 'Defina data de expiração ou marque "Nunca expirar"',
+      path: ['expiresAt'],
+    }
+  )
 
 export type SubscriptionEditFormValues = z.infer<typeof subscriptionEditSchema>

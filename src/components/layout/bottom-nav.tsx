@@ -4,14 +4,14 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import {
-  LayoutDashboard,
-  Users,
-  Briefcase,
-  Star,
-  Flag,
   BarChart3,
+  Briefcase,
+  Flag,
   Image,
+  LayoutDashboard,
   Settings,
+  Star,
+  Users,
 } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
@@ -32,7 +32,7 @@ export function BottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center overflow-x-auto border-t border-primary/20 bg-neutral-900 px-1 py-2 dark:bg-neutral-950 [&::-webkit-scrollbar]:hidden">
+    <nav className="fixed right-0 bottom-0 left-0 z-50 flex items-center overflow-x-auto border-t border-primary/20 bg-neutral-900 px-1 py-2 md:hidden dark:bg-neutral-950 [&::-webkit-scrollbar]:hidden">
       {MOBILE_LINKS.map((link) => {
         const Icon = link.icon
         const isActive = pathname === link.href || pathname.startsWith(link.href + '/')

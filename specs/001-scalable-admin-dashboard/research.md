@@ -15,6 +15,7 @@ Todas as decisões técnicas foram resolvidas durante a sessão de clarificaçã
 **Rationale**: Um módulo por área admin (usuários, avaliações, banners, etc.) permite escalar sem duplicação; colocation de componentes por feature facilita manutenção.
 
 **Alternatives considered**:
+
 - B (Flat simples): Menos hierarquia; menos escalável.
 - C (Feature-first com colocation total): Mais complexo para Next.js App Router.
 
@@ -27,6 +28,7 @@ Todas as decisões técnicas foram resolvidas durante a sessão de clarificaçã
 **Rationale**: Alinhado à spec; melhor UX em desktop (expansão sem clicar) e mobile (acesso rápido na parte inferior).
 
 **Alternatives considered**:
+
 - A (Manter shadcn Sidebar): Menos animação; não explora Aceternity.
 - C (Sidebar fixa): Simples mas menos flexível em mobile.
 
@@ -39,6 +41,7 @@ Todas as decisões técnicas foram resolvidas durante a sessão de clarificaçã
 **Rationale**: Consistência com paleta; boa legibilidade; suporte a temas.
 
 **Alternatives considered**:
+
 - B (Header preto): Mais contraste; menos destaque de marca.
 - C (Borda/acento): Mais subtil; menos consistente.
 
@@ -51,6 +54,7 @@ Todas as decisões técnicas foram resolvidas durante a sessão de clarificaçã
 **Rationale**: Feedback completo ao utilizador; reduz confusão em erros e listagens vazias.
 
 **Alternatives considered**:
+
 - A (Mínimo): Menos implementação; UX inferior.
 - B (Padrão): Intermédio; sem retry nem skeleton customizado.
 
@@ -63,6 +67,7 @@ Todas as decisões técnicas foram resolvidas durante a sessão de clarificaçã
 **Rationale**: Cobertura do essencial para partilha e bookmark; não polui a URL com limit/view.
 
 **Alternatives considered**:
+
 - A (Só page e search): Insuficiente para filtros avançados.
 - C (+ limit, view): Mais flexível; mais complexo; pode ser adicionado depois.
 
@@ -95,10 +100,12 @@ Todas as decisões técnicas foram resolvidas durante a sessão de clarificaçã
 **Rationale**: Next.js App Router favorece Server Components para melhor desempenho (menos JavaScript no cliente), SEO e carregamento inicial. Formulários, listagens com filtros nuqs e componentes com hooks precisam de client; a composição Server → Client mantém a página leve.
 
 **Guidelines**:
+
 - `page.tsx` = Server Component (sem `"use client"`)
 - Componente que usa `useState`, `useEffect`, `useForm`, nuqs ou context → `"use client"`
 - Dados iniciais (quando acedíveis sem token no servidor) podem ser fetches async nas páginas
 
 **Alternatives considered**:
+
 - Client-only SPA: Mais JavaScript; carregamento mais lento; rejeitado.
 - Full RSC (sem client): Formulários e nuqs exigem client; híbrido é o equilíbrio.

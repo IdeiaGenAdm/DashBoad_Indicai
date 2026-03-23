@@ -196,9 +196,9 @@
 
 **Teste independente**: Ver agrupamentos por região; comportamento para utilizadores sem localização.
 
-- [ ] T057 [P] [US8] Adicionar getUsersByCity, getDemandByRegion em `src/services/admin-metrics-fetch.ts`
-- [ ] T058 [US8] Criar `src/components/features/relatorios/location-stats.tsx` com dados por cidade/região, tratamento explícito de “desconhecido”
-- [ ] T059 [US8] Integrar em `app/(private)/dashboard/relatorios/page.tsx` ou secção dedicada
+- [x] T057 [P] [US8] Adicionar getUsersByCity, getDemandByRegion em `src/services/admin-metrics-fetch.ts`
+- [x] T058 [US8] Criar `src/components/features/relatorios/location-stats.tsx` com dados por cidade/região, tratamento explícito de “desconhecido”
+- [x] T059 [US8] Integrar em `app/(private)/dashboard/relatorios/page.tsx` ou secção dedicada
 
 ### ✅ Checkpoint Phase 10
 
@@ -212,11 +212,11 @@
 
 **Teste independente**: Criar banner, definir destinatários, remover.
 
-- [ ] T060 [P] [US9] Criar `src/services/admin-banners-fetch.ts` com listBanners, createBanner, updateBanner, deleteBanner
-- [ ] T061 [US9] Criar `src/schemas/banners.ts` para criação/edição (título, conteúdo, destinatários, vigência)
-- [ ] T062 [US9] Criar `src/components/features/banners/banners-list.tsx` com tabela, nuqs, Skeleton, EmptyState
-- [ ] T063 [US9] Criar `src/components/features/banners/banner-form-dialog.tsx` para criar/editar; selector de destinatários (lista ou “todos”)
-- [ ] T064 [US9] Conectar `app/(private)/dashboard/banners/page.tsx` aos componentes
+- [x] T060 [P] [US9] Criar `src/services/admin-banners-fetch.ts` com listBanners, createBanner, updateBanner, deleteBanner
+- [x] T061 [US9] Criar `src/schemas/banners.ts` para criação/edição (título, conteúdo, destinatários, vigência)
+- [x] T062 [US9] Criar `src/components/features/banners/banners-list.tsx` com tabela, nuqs, Skeleton, EmptyState
+- [x] T063 [US9] Criar `src/components/features/banners/banner-form-dialog.tsx` para criar/editar; selector de destinatários (lista ou “todos”)
+- [x] T064 [US9] Conectar `app/(private)/dashboard/banners/page.tsx` aos componentes
 
 ### ✅ Checkpoint Phase 11
 
@@ -230,10 +230,10 @@
 
 **Teste independente**: Ativar manutenção (admins mantêm acesso); bloquear utilizadores; confirmação em ações em massa.
 
-- [ ] T065 [P] [US10] Adicionar getMaintenanceMode, enableMaintenanceMode, disableMaintenanceMode em `src/services/admin-auth-fetch.ts` ou criar `admin-system-fetch.ts`
-- [ ] T066 [US10] Criar `src/components/features/sistema/maintenance-toggle.tsx` para ativar/desativar manutenção (apenas master)
-- [ ] T067 [US10] Implementar bloqueio individual e em massa em user-list com Dialog de confirmação reforçada para bulk
-- [ ] T068 [US10] Integrar maintenance-toggle e lógica de bloqueio em `app/(private)/dashboard/sistema/page.tsx` e user-list
+- [x] T065 [P] [US10] Adicionar getMaintenanceMode, enableMaintenanceMode, disableMaintenanceMode em `src/services/admin-auth-fetch.ts` ou criar `admin-system-fetch.ts`
+- [x] T066 [US10] Criar `src/components/features/sistema/maintenance-toggle.tsx` para ativar/desativar manutenção (apenas master)
+- [x] T067 [US10] Implementar bloqueio individual e em massa em user-list com Dialog de confirmação reforçada para bulk
+- [x] T068 [US10] Integrar maintenance-toggle e lógica de bloqueio em `app/(private)/dashboard/sistema/page.tsx` e user-list
 
 ### ✅ Checkpoint Phase 12
 
@@ -247,9 +247,9 @@
 
 **Teste independente**: Remover foto e ver estado coerente para o utilizador afetado.
 
-- [ ] T069 [P] [US11] Adicionar removeUserProfilePhoto, removeVitrinePhoto em `src/services/admin-users-fetch.ts`
-- [ ] T070 [US11] Adicionar ações de remoção de foto de perfil e fotos de vitrine na view de detalhe do utilizador/profissional (com Dialog de confirmação)
-- [ ] T071 [US11] Garantir feedback Sonner e estado atualizado após remoção
+- [x] T069 [P] [US11] Adicionar removeUserProfilePhoto, removeVitrinePhoto em `src/services/admin-users-fetch.ts`
+- [x] T070 [US11] Adicionar ações de remoção de foto de perfil e fotos de vitrine na view de detalhe do utilizador/profissional (com Dialog de confirmação)
+- [x] T071 [US11] Garantir feedback Sonner e estado atualizado após remoção
 
 ### ✅ Checkpoint Phase 13
 
@@ -261,10 +261,10 @@
 
 **Objetivo**: Consistência, performance e validação final.
 
-- [ ] T072 [P] Revisar todos os componentes para garantir padrão FR-017 (Skeleton, empty state, toast, spinner, retry quando aplicável)
-- [ ] T073 [P] Garantir que todas as tabelas/listagens usam DataTable com header amarelo e linhas alternadas (FR-014)
-- [ ] T074 [P] Verificar dark/light em componentes críticos (sidebar, bottom-nav, tabelas)
-- [ ] T075 Executar `pnpm format` e `pnpm lint`; corrigir erros
+- [x] T072 [P] Revisar todos os componentes para garantir padrão FR-017 (Skeleton, empty state, toast, spinner, retry quando aplicável)
+- [x] T073 [P] Garantir que todas as tabelas/listagens usam DataTable com header amarelo e linhas alternadas (FR-014)
+- [x] T074 [P] Verificar dark/light em componentes críticos (sidebar, bottom-nav, tabelas)
+- [x] T075 Executar `pnpm format` e `pnpm lint`; corrigir erros
 - [ ] T076 Validar quickstart.md: instalar deps, rodar dev, testar fluxos principais
 - [ ] T077 Documentar em README ou CONTRIBUTING a convenção de checkpoints (reportar + autorização entre phases)
 

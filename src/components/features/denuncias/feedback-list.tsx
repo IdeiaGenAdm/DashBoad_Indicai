@@ -45,7 +45,7 @@ export function FeedbackList() {
   const { token } = useAuth()
   const [params, setParams] = useQueryStates(PARAMS)
   const [data, setData] = useState<RelatorioListItem[]>([])
-  const [total, setTotal] = useState(0)
+  const [, setTotal] = useState(0)
   const [isLoading, setIsLoading] = useState(true)
   const [respondItem, setRespondItem] = useState<RelatorioListItem | null>(null)
 

@@ -18,11 +18,11 @@ Adaptar o dashboard administrativo IndicAI com arquitetura modular por domínio,
 **Project Type**: Web application (Next.js App Router com SSR)  
 **Performance Goals**: Carregamento de listagens em <2s; transições suaves  
 **Constraints**: CORS configurado no backend; token JWT em localStorage  
-**Scale/Scope**: ~15 páginas admin; ~12 domains de services; paleta preto+amarelo; dark/light mode  
+**Scale/Scope**: ~15 páginas admin; ~12 domains de services; paleta preto+amarelo; dark/light mode
 
 ## Constitution Check
 
-*GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
+_GATE: Must pass before Phase 0 research. Re-check after Phase 1 design._
 
 - Constitution file not found (`.specify/memory/constitution.md`); gates skipped.
 

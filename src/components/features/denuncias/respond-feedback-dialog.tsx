@@ -8,12 +8,7 @@ import { AlertCircle, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import {
   Form,
   FormControl,
@@ -25,10 +20,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
-import {
-  type RespondFeedbackFormValues,
-  respondFeedbackSchema,
-} from '@/schemas/relatorios'
+import { type RespondFeedbackFormValues, respondFeedbackSchema } from '@/schemas/relatorios'
 import type { RelatorioListItem } from '@/services/admin-relatorios-fetch'
 import { respondReportFeedback } from '@/services/admin-relatorios-fetch'
 
@@ -93,8 +85,8 @@ export function RespondFeedbackDialog({
           <div className="flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
             <AlertCircle className="size-5 shrink-0" />
             <p>
-              Este autor não tem email registado. Não é possível enviar resposta
-              por email. Contacte o utilizador por outro canal.
+              Este autor não tem email registado. Não é possível enviar resposta por email. Contacte
+              o utilizador por outro canal.
             </p>
           </div>
         )}
@@ -119,15 +111,10 @@ export function RespondFeedbackDialog({
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                disabled={form.formState.isSubmitting}
-                className="w-full"
-              >
+              <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
                 {form.formState.isSubmitting ? (
                   <>
-                    <Loader2 className="mr-2 size-4 animate-spin" />
-                    A enviar...
+                    <Loader2 className="mr-2 size-4 animate-spin" />A enviar...
                   </>
                 ) : (
                   'Enviar resposta'
@@ -137,9 +124,7 @@ export function RespondFeedbackDialog({
           </Form>
         )}
         {!item && (
-          <p className="text-sm text-muted-foreground">
-            Selecione um item para responder.
-          </p>
+          <p className="text-sm text-muted-foreground">Selecione um item para responder.</p>
         )}
       </DialogContent>
     </Dialog>

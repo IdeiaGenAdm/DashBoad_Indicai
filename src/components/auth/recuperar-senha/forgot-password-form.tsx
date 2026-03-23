@@ -26,7 +26,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { forgotPassword } from '@/lib/api'
-import { forgotPasswordSchema, type ForgotPasswordFormValues } from '@/schemas/auth'
+import { type ForgotPasswordFormValues, forgotPasswordSchema } from '@/schemas/auth'
 
 export function ForgotPasswordForm() {
   const [success, setSuccess] = useState(false)
@@ -97,7 +97,11 @@ export function ForgotPasswordForm() {
             />
           </CardContent>
           <CardFooter className="flex flex-col gap-2">
-            <Button type="submit" className="h-11 w-full font-semibold" disabled={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              className="h-11 w-full font-semibold"
+              disabled={form.formState.isSubmitting}
+            >
               {form.formState.isSubmitting ? 'Enviando...' : 'Enviar link'}
             </Button>
             <Button asChild variant="ghost" className="w-full">

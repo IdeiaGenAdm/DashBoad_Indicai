@@ -1,4 +1,5 @@
 import { FinancialReport } from '@/components/features/relatorios/financial-report'
+import { LocationStats } from '@/components/features/relatorios/location-stats'
 import { TopProfessionsCard } from '@/components/features/relatorios/top-professions-card'
 import { TopRatedProfessionalsCard } from '@/components/features/relatorios/top-rated-professionals-card'
 
@@ -14,6 +15,7 @@ export default function RelatoriosPage() {
         <TopRatedProfessionalsCard />
       </div>
       <FinancialReport />
+      <LocationStats />
     </div>
   )
 }

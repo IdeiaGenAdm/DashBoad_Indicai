@@ -2,9 +2,10 @@
 
 import { type ReactNode } from 'react'
 
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
 import { Toaster } from 'sonner'
-import { ThemeProvider as NextThemesProvider } from 'next-themes'
 
 export function Providers({ children }: { children: ReactNode }) {
   return (
