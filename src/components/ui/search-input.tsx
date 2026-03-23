@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import { Search } from 'lucide-react'
 import { parseAsString, useQueryState } from 'nuqs'
@@ -38,7 +38,7 @@ export function SearchInput({ placeholder = 'Pesquisar...', className }: SearchI
 
   return (
     <div className="relative flex-1">
-        <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
+      <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
       <Input
         placeholder={placeholder}
         value={localSearch}

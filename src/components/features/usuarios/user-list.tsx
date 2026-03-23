@@ -2,14 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import {
-  Ban,
-  ChevronLeft,
-  ChevronRight,
-  Eye,
-  Trash2,
-  Users as UsersIcon,
-} from 'lucide-react'
+import { Ban, ChevronLeft, ChevronRight, Eye, Trash2, Users as UsersIcon } from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
@@ -33,8 +26,8 @@ import {
 import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
-import { useAuth } from '@/contexts/auth-context'
 import { SearchInput } from '@/components/ui/search-input'
+import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
 import type { UserListItem } from '@/services/admin-users-fetch'
 import { banUser, deleteUser, listUsers, unbanUser } from '@/services/admin-users-fetch'
@@ -211,117 +204,117 @@ export function UserList({
       </div>
 
       <div className="overflow-hidden rounded-xl shadow-sm">
-        <DataTable>
-          <DataTableHeader>
-            <DataTableRow>
-              <DataTableHead>Nome</DataTableHead>
-              <DataTableHead>Email</DataTableHead>
-              <DataTableHead>Tipo</DataTableHead>
-              <DataTableHead>Status</DataTableHead>
-              <DataTableHead className="text-right">Ações</DataTableHead>
-            </DataTableRow>
-          </DataTableHeader>
-          <DataTableBody>
-            {isLoading ? (
+        {showEmpty ? (
+          <div className="flex min-h-[400px] items-center justify-center rounded-lg border border-border/50 bg-muted/20">
+            <EmptyState
+              icon={UsersIcon}
+              message={
+                hasFilters
+                  ? 'Nenhum utilizador encontrado com os filtros aplicados.'
+                  : 'Nenhum utilizador encontrado.'
+              }
+              action={
+                !hasFilters && onEmptyAction
+                  ? { label: 'Criar conta', onClick: onEmptyAction }
+                  : undefined
+              }
+            />
+          </div>
+        ) : (
+          <DataTable>
+            <DataTableHeader>
               <DataTableRow>
-                <DataTableCell colSpan={5} className="h-32 text-center">
-                  <LoadingSkeleton variant="table-rows" rowCount={3} />
-                </DataTableCell>
+                <DataTableHead>Nome</DataTableHead>
+                <DataTableHead>Email</DataTableHead>
+                <DataTableHead>Tipo</DataTableHead>
+                <DataTableHead>Status</DataTableHead>
+                <DataTableHead className="text-right">Ações</DataTableHead>
               </DataTableRow>
-            ) : showEmpty ? (
-              <DataTableRow>
-                <DataTableCell colSpan={5} className="h-32 text-center">
-                  <EmptyState
-                    icon={UsersIcon}
-                    message={
-                      hasFilters
-                        ? 'Nenhum utilizador encontrado com os filtros aplicados.'
-                        : 'Nenhum utilizador encontrado.'
-                    }
-                    action={
-                      !hasFilters && onEmptyAction
-                        ? { label: 'Criar conta', onClick: onEmptyAction }
-                        : undefined
-                    }
-                  />
-                </DataTableCell>
-              </DataTableRow>
-            ) : (
-              data.map((user) => {
-              const name =
-                typeof user.nomeCompleto === 'string'
-                  ? user.nomeCompleto
-                  : typeof user.nome === 'string'
-                    ? user.nome
-                    : '-'
-              return (
-                <DataTableRow key={user.id}>
-                  <DataTableCell>
-                    <div className="flex items-center gap-2.5">
-                      <UserAvatar name={name} />
-                      <span className="max-w-[160px] truncate font-medium">{name}</span>
-                    </div>
-                  </DataTableCell>
-                  <DataTableCell className="text-sm text-muted-foreground">
-                    {user.email ?? '-'}
-                  </DataTableCell>
-                  <DataTableCell>
-                    <TypeBadge type={user.tipoUsuario} />
-                  </DataTableCell>
-                  <DataTableCell>
-                    <StatusBadge status={user.status ?? 'ativo'} />
-                  </DataTableCell>
-                  <DataTableCell className="text-right">
-                    <div className="flex justify-end gap-1.5">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setDetailUserId(user.id)}
-                        title="Ver detalhes"
-                        className="h-8 px-2.5"
-                      >
-                        <Eye className="size-3.5" />
-                      </Button>
-                      {user.status === 'bloqueado' ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setConfirmAction({ type: 'unban', user })}
-                          title="Desbloquear"
-                          className="h-8 px-2.5"
-                        >
-                          <Ban className="size-3.5 text-muted-foreground" />
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setConfirmAction({ type: 'ban', user })}
-                          title="Bloquear"
-                          className="h-8 px-2.5"
-                        >
-                          <Ban className="size-3.5" />
-                        </Button>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="h-8 px-2.5 text-destructive hover:text-destructive"
-                        onClick={() => setConfirmAction({ type: 'delete', user })}
-                        title="Eliminar conta"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </Button>
-                    </div>
+            </DataTableHeader>
+            <DataTableBody>
+              {isLoading ? (
+                <DataTableRow>
+                  <DataTableCell colSpan={5} className="h-32 text-center">
+                    <LoadingSkeleton variant="table-rows" rowCount={3} />
                   </DataTableCell>
                 </DataTableRow>
-              )
-              })
-            )}
-          </DataTableBody>
-        </DataTable>
+              ) : (
+                data.map((user) => {
+                  const name =
+                    typeof user.nomeCompleto === 'string'
+                      ? user.nomeCompleto
+                      : typeof user.nome === 'string'
+                        ? user.nome
+                        : '-'
+                  return (
+                    <DataTableRow key={user.id}>
+                      <DataTableCell>
+                        <div className="flex items-center gap-2.5">
+                          <UserAvatar name={name} />
+                          <span className="max-w-[160px] truncate font-medium">{name}</span>
+                        </div>
+                      </DataTableCell>
+                      <DataTableCell className="text-sm text-muted-foreground">
+                        {user.email ?? '-'}
+                      </DataTableCell>
+                      <DataTableCell>
+                        <TypeBadge type={user.tipoUsuario} />
+                      </DataTableCell>
+                      <DataTableCell>
+                        <StatusBadge status={user.status ?? 'ativo'} />
+                      </DataTableCell>
+                      <DataTableCell className="text-right">
+                        <div className="flex justify-end gap-1.5">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setDetailUserId(user.id)}
+                            title="Ver detalhes"
+                            className="h-8 px-2.5"
+                          >
+                            <Eye className="size-3.5" />
+                          </Button>
+                          {user.status === 'bloqueado' ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setConfirmAction({ type: 'unban', user })}
+                              title="Desbloquear"
+                              className="h-8 px-2.5"
+                            >
+                              <Ban className="size-3.5 text-muted-foreground" />
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setConfirmAction({ type: 'ban', user })}
+                              title="Bloquear"
+                              className="h-8 px-2.5"
+                            >
+                              <Ban className="size-3.5" />
+                            </Button>
+                          )}
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="h-8 px-2.5 text-destructive hover:text-destructive"
+                            onClick={() => setConfirmAction({ type: 'delete', user })}
+                            title="Eliminar conta"
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </div>
+                      </DataTableCell>
+                    </DataTableRow>
+                  )
+                })
+              )}
+            </DataTableBody>
+          </DataTable>
+        )}
 
-        {totalPages > 1 && (
+        {!showEmpty && totalPages > 1 && (
           <div className="flex flex-col items-center justify-between gap-4 border-t px-4 py-3 sm:flex-row">
             <p className="text-sm text-muted-foreground">
               Página {params.page} de {totalPages} · {total} utilizador(es)

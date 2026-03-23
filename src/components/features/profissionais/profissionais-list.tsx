@@ -26,8 +26,8 @@ import {
 import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
-import { useAuth } from '@/contexts/auth-context'
 import { SearchInput } from '@/components/ui/search-input'
+import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
 import { formatDateDMY } from '@/lib/utils'
 import type { ProfessionalListItem } from '@/services/admin-profissionais-fetch'
@@ -124,85 +124,85 @@ export function ProfissionaisList() {
         <SearchInput placeholder="Pesquisar por nome, profissão..." />
       </div>
 
-      <DataTable>
-        <DataTableHeader>
-          <DataTableRow>
-            <DataTableHead>Nome</DataTableHead>
-            <DataTableHead>Profissão</DataTableHead>
-            <DataTableHead>Plano</DataTableHead>
-            <DataTableHead>Rating</DataTableHead>
-            <DataTableHead>Expira em</DataTableHead>
-            <DataTableHead className="text-right">Ações</DataTableHead>
-          </DataTableRow>
-        </DataTableHeader>
-        <DataTableBody>
-          {isLoading ? (
+      {showEmpty ? (
+        <div className="flex min-h-[400px] items-center justify-center rounded-lg border border-border/50 bg-muted/20">
+          <EmptyState icon={Briefcase} message="Nenhum profissional encontrado." />
+        </div>
+      ) : (
+        <DataTable>
+          <DataTableHeader>
             <DataTableRow>
-              <DataTableCell colSpan={6} className="h-32 text-center">
-                <LoadingSkeleton variant="table-rows" rowCount={3} />
-              </DataTableCell>
+              <DataTableHead>Nome</DataTableHead>
+              <DataTableHead>Profissão</DataTableHead>
+              <DataTableHead>Plano</DataTableHead>
+              <DataTableHead>Rating</DataTableHead>
+              <DataTableHead>Expira em</DataTableHead>
+              <DataTableHead className="text-right">Ações</DataTableHead>
             </DataTableRow>
-          ) : showEmpty ? (
-            <DataTableRow>
-              <DataTableCell colSpan={6} className="h-32 text-center">
-                <EmptyState icon={Briefcase} message="Nenhum profissional encontrado." />
-              </DataTableCell>
-            </DataTableRow>
-          ) : (
-            data.map((item) => (
-            <DataTableRow key={item.id}>
-              <DataTableCell className="font-medium">{displayName(item)}</DataTableCell>
-              <DataTableCell className="capitalize">
-                {typeof item.profissao === 'string' ? item.profissao : '-'}
-              </DataTableCell>
-              <DataTableCell>{typeof item.plano === 'string' ? item.plano : '-'}</DataTableCell>
-              <DataTableCell>
-                {typeof item.rating === 'number' ? item.rating.toFixed(1) : '-'}
-              </DataTableCell>
-              <DataTableCell>
-                {typeof item.expiresAt === 'string' && item.expiresAt
-                  ? formatDateDMY(item.expiresAt)
-                  : 'Nunca'}
-              </DataTableCell>
-              <DataTableCell className="text-right">
-                <div className="flex justify-end gap-1.5">
-                  {item.userId && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setDetailUserId(item.userId!)}
-                      title="Ver detalhes"
-                      className="h-8 px-2.5"
-                    >
-                      <Eye className="size-3.5" />
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setEditProfessional(item)}
-                    title="Editar"
-                    className="h-8 px-2.5"
-                  >
-                    <Pencil className="size-3.5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 px-2.5 text-destructive hover:text-destructive"
-                    onClick={() => item.userId && setConfirmDelete(item)}
-                    title={item.userId ? 'Eliminar' : 'Eliminar através de Utilizadores'}
-                    disabled={!item.userId}
-                  >
-                    <Trash2 className="size-3.5" />
-                  </Button>
-                </div>
-              </DataTableCell>
-            </DataTableRow>
-            ))
-          )}
-        </DataTableBody>
-      </DataTable>
+          </DataTableHeader>
+          <DataTableBody>
+            {isLoading ? (
+              <DataTableRow>
+                <DataTableCell colSpan={6} className="h-32 text-center">
+                  <LoadingSkeleton variant="table-rows" rowCount={3} />
+                </DataTableCell>
+              </DataTableRow>
+            ) : (
+              data.map((item) => (
+                <DataTableRow key={item.id}>
+                  <DataTableCell className="font-medium">{displayName(item)}</DataTableCell>
+                  <DataTableCell className="capitalize">
+                    {typeof item.profissao === 'string' ? item.profissao : '-'}
+                  </DataTableCell>
+                  <DataTableCell>{typeof item.plano === 'string' ? item.plano : '-'}</DataTableCell>
+                  <DataTableCell>
+                    {typeof item.rating === 'number' ? item.rating.toFixed(1) : '-'}
+                  </DataTableCell>
+                  <DataTableCell>
+                    {typeof item.expiresAt === 'string' && item.expiresAt
+                      ? formatDateDMY(item.expiresAt)
+                      : 'Nunca'}
+                  </DataTableCell>
+                  <DataTableCell className="text-right">
+                    <div className="flex justify-end gap-1.5">
+                      {item.userId && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setDetailUserId(item.userId!)}
+                          title="Ver detalhes"
+                          className="h-8 px-2.5"
+                        >
+                          <Eye className="size-3.5" />
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditProfessional(item)}
+                        title="Editar"
+                        className="h-8 px-2.5"
+                      >
+                        <Pencil className="size-3.5" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-2.5 text-destructive hover:text-destructive"
+                        onClick={() => item.userId && setConfirmDelete(item)}
+                        title={item.userId ? 'Eliminar' : 'Eliminar através de Utilizadores'}
+                        disabled={!item.userId}
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
+                  </DataTableCell>
+                </DataTableRow>
+              ))
+            )}
+          </DataTableBody>
+        </DataTable>
+      )}
 
       <UserDetailDialog
         userId={detailUserId}

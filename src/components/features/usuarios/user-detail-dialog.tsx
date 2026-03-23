@@ -149,8 +149,7 @@ export function UserDetailDialog({
               </div>
               {user.createdAt && (
                 <div className="mt-2 text-xs text-muted-foreground">
-                  Registado em{' '}
-                  {formatDateDMY(user.createdAt)}
+                  Registado em {formatDateDMY(user.createdAt)}
                 </div>
               )}
             </div>

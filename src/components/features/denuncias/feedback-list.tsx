@@ -26,6 +26,7 @@ import {
 import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
+import { SearchInput } from '@/components/ui/search-input'
 import {
   Select,
   SelectContent,
@@ -34,7 +35,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuth } from '@/contexts/auth-context'
-import { SearchInput } from '@/components/ui/search-input'
 import { AdminApiError } from '@/lib/api'
 import { formatDateDMY } from '@/lib/utils'
 import type { RelatorioListItem } from '@/services/admin-relatorios-fetch'
@@ -158,96 +158,96 @@ export function FeedbackList() {
         </Select>
       </div>
 
-      <DataTable>
-        <DataTableHeader>
-          <DataTableRow>
-            <DataTableHead>Tipo</DataTableHead>
-            <DataTableHead>Autor</DataTableHead>
-            <DataTableHead>Mensagem</DataTableHead>
-            <DataTableHead>Estado</DataTableHead>
-            <DataTableHead>Data</DataTableHead>
-            <DataTableHead className="text-right">Ações</DataTableHead>
-          </DataTableRow>
-        </DataTableHeader>
-        <DataTableBody>
-          {isLoading ? (
+      {showEmpty ? (
+        <div className="flex min-h-[400px] items-center justify-center rounded-lg border border-border/50 bg-muted/20">
+          <EmptyState icon={Flag} message="Nenhuma denúncia, sugestão ou reclamação encontrada." />
+        </div>
+      ) : (
+        <DataTable>
+          <DataTableHeader>
             <DataTableRow>
-              <DataTableCell colSpan={6} className="h-32 text-center">
-                <LoadingSkeleton variant="table-rows" rowCount={3} />
-              </DataTableCell>
+              <DataTableHead>Tipo</DataTableHead>
+              <DataTableHead>Autor</DataTableHead>
+              <DataTableHead>Mensagem</DataTableHead>
+              <DataTableHead>Estado</DataTableHead>
+              <DataTableHead>Data</DataTableHead>
+              <DataTableHead className="text-right">Ações</DataTableHead>
             </DataTableRow>
-          ) : showEmpty ? (
-            <DataTableRow>
-              <DataTableCell colSpan={6} className="h-32 text-center">
-                <EmptyState icon={Flag} message="Nenhuma denúncia, sugestão ou reclamação encontrada." />
-              </DataTableCell>
-            </DataTableRow>
-          ) : (
-            data.map((item) => (
-            <DataTableRow key={item.id}>
-              <DataTableCell className="font-medium capitalize">
-                {typeof item.tipo === 'string' ? item.tipo : '-'}
-              </DataTableCell>
-              <DataTableCell>
-                <div className="flex items-center gap-1">
-                  {hasEmail(item) ? (
-                    <Mail className="size-4 text-muted-foreground" />
-                  ) : (
-                    <span className="text-xs text-muted-foreground">sem email</span>
-                  )}
-                  {typeof item.autorNome === 'string'
-                    ? item.autorNome
-                    : typeof item.autorEmail === 'string'
-                      ? item.autorEmail
-                      : '-'}
-                </div>
-              </DataTableCell>
-              <DataTableCell className="max-w-[200px] truncate">
-                {typeof item.mensagem === 'string' ? item.mensagem : '-'}
-              </DataTableCell>
-              <DataTableCell className="capitalize">
-                {item.estado ?? item.status ?? '-'}
-              </DataTableCell>
-              <DataTableCell>
-                {typeof item.createdAt === 'string' ? formatDateDMY(item.createdAt) : '-'}
-              </DataTableCell>
-              <DataTableCell className="text-right">
-                <div className="flex justify-end gap-1.5">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setDetailItem(item)}
-                    title="Ver detalhes"
-                    className="h-8 px-2.5"
-                  >
-                    <Eye className="size-3.5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setRespondItem(item)}
-                    disabled={!hasEmail(item)}
-                    title={hasEmail(item) ? 'Responder' : 'Autor sem email'}
-                    className="h-8 px-2.5"
-                  >
-                    <Pencil className="size-3.5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 px-2.5 text-destructive hover:text-destructive"
-                    onClick={() => setConfirmDelete(item)}
-                    title="Eliminar"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </Button>
-                </div>
-              </DataTableCell>
-            </DataTableRow>
-            ))
-          )}
-        </DataTableBody>
-      </DataTable>
+          </DataTableHeader>
+          <DataTableBody>
+            {isLoading ? (
+              <DataTableRow>
+                <DataTableCell colSpan={6} className="h-32 text-center">
+                  <LoadingSkeleton variant="table-rows" rowCount={3} />
+                </DataTableCell>
+              </DataTableRow>
+            ) : (
+              data.map((item) => (
+                <DataTableRow key={item.id}>
+                  <DataTableCell className="font-medium capitalize">
+                    {typeof item.tipo === 'string' ? item.tipo : '-'}
+                  </DataTableCell>
+                  <DataTableCell>
+                    <div className="flex items-center gap-1">
+                      {hasEmail(item) ? (
+                        <Mail className="size-4 text-muted-foreground" />
+                      ) : (
+                        <span className="text-xs text-muted-foreground">sem email</span>
+                      )}
+                      {typeof item.autorNome === 'string'
+                        ? item.autorNome
+                        : typeof item.autorEmail === 'string'
+                          ? item.autorEmail
+                          : '-'}
+                    </div>
+                  </DataTableCell>
+                  <DataTableCell className="max-w-[200px] truncate">
+                    {typeof item.mensagem === 'string' ? item.mensagem : '-'}
+                  </DataTableCell>
+                  <DataTableCell className="capitalize">
+                    {item.estado ?? item.status ?? '-'}
+                  </DataTableCell>
+                  <DataTableCell>
+                    {typeof item.createdAt === 'string' ? formatDateDMY(item.createdAt) : '-'}
+                  </DataTableCell>
+                  <DataTableCell className="text-right">
+                    <div className="flex justify-end gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDetailItem(item)}
+                        title="Ver detalhes"
+                        className="h-8 px-2.5"
+                      >
+                        <Eye className="size-3.5" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setRespondItem(item)}
+                        disabled={!hasEmail(item)}
+                        title={hasEmail(item) ? 'Responder' : 'Autor sem email'}
+                        className="h-8 px-2.5"
+                      >
+                        <Pencil className="size-3.5" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-2.5 text-destructive hover:text-destructive"
+                        onClick={() => setConfirmDelete(item)}
+                        title="Eliminar"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
+                  </DataTableCell>
+                </DataTableRow>
+              ))
+            )}
+          </DataTableBody>
+        </DataTable>
+      )}
 
       <Dialog open={!!detailItem} onOpenChange={(o) => !o && setDetailItem(null)}>
         <DialogContent>

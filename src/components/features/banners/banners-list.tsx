@@ -26,8 +26,8 @@ import {
 import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
-import { useAuth } from '@/contexts/auth-context'
 import { SearchInput } from '@/components/ui/search-input'
+import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
 import { formatDateDMY } from '@/lib/utils'
 import type { BannerApi } from '@/services/admin-banners-fetch'
@@ -114,81 +114,81 @@ export function BannersList() {
         <Button onClick={() => setCreateOpen(true)}>Criar banner</Button>
       </div>
 
-      <DataTable>
-        <DataTableHeader>
-          <DataTableRow>
-            <DataTableHead>Título</DataTableHead>
-            <DataTableHead>Destinatários</DataTableHead>
-            <DataTableHead>Vigência</DataTableHead>
-            <DataTableHead className="text-right">Ações</DataTableHead>
-          </DataTableRow>
-        </DataTableHeader>
-        <DataTableBody>
-          {isLoading ? (
+      {showEmpty ? (
+        <div className="flex min-h-[400px] items-center justify-center rounded-lg border border-border/50 bg-muted/20">
+          <EmptyState
+            icon={ImageIcon}
+            message="Nenhum banner encontrado."
+            action={{
+              label: 'Criar banner',
+              onClick: () => setCreateOpen(true),
+            }}
+          />
+        </div>
+      ) : (
+        <DataTable>
+          <DataTableHeader>
             <DataTableRow>
-              <DataTableCell colSpan={4} className="h-32 text-center">
-                <LoadingSkeleton variant="table-rows" rowCount={3} />
-              </DataTableCell>
+              <DataTableHead>Título</DataTableHead>
+              <DataTableHead>Destinatários</DataTableHead>
+              <DataTableHead>Vigência</DataTableHead>
+              <DataTableHead className="text-right">Ações</DataTableHead>
             </DataTableRow>
-          ) : showEmpty ? (
-            <DataTableRow>
-              <DataTableCell colSpan={4} className="h-32 text-center">
-                <EmptyState
-                  icon={ImageIcon}
-                  message="Nenhum banner encontrado."
-                  action={{
-                    label: 'Criar banner',
-                    onClick: () => setCreateOpen(true),
-                  }}
-                />
-              </DataTableCell>
-            </DataTableRow>
-          ) : (
-            data.map((item) => (
-            <DataTableRow key={item.id}>
-              <DataTableCell className="font-medium">{item.title || '-'}</DataTableCell>
-              <DataTableCell>{labelAudienceType(item.audienceType)}</DataTableCell>
-              <DataTableCell className="text-sm text-muted-foreground">
-                {item.startsAt || item.endsAt
-                  ? `${formatDateDMY(item.startsAt) || '—'} a ${formatDateDMY(item.endsAt) || '—'}`
-                  : 'Sem limite'}
-              </DataTableCell>
-              <DataTableCell className="text-right">
-                <div className="flex justify-end gap-1.5">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setDetailBanner(item)}
-                    title="Ver detalhes"
-                    className="h-8 px-2.5"
-                  >
-                    <Eye className="size-3.5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setEditBanner(item)}
-                    title="Editar"
-                    className="h-8 px-2.5"
-                  >
-                    <Pencil className="size-3.5" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 px-2.5 text-destructive hover:text-destructive"
-                    onClick={() => setConfirmDelete(item)}
-                    title="Eliminar"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </Button>
-                </div>
-              </DataTableCell>
-            </DataTableRow>
-            ))
-          )}
-        </DataTableBody>
-      </DataTable>
+          </DataTableHeader>
+          <DataTableBody>
+            {isLoading ? (
+              <DataTableRow>
+                <DataTableCell colSpan={4} className="h-32 text-center">
+                  <LoadingSkeleton variant="table-rows" rowCount={3} />
+                </DataTableCell>
+              </DataTableRow>
+            ) : (
+              data.map((item) => (
+                <DataTableRow key={item.id}>
+                  <DataTableCell className="font-medium">{item.title || '-'}</DataTableCell>
+                  <DataTableCell>{labelAudienceType(item.audienceType)}</DataTableCell>
+                  <DataTableCell className="text-sm text-muted-foreground">
+                    {item.startsAt || item.endsAt
+                      ? `${formatDateDMY(item.startsAt) || '—'} a ${formatDateDMY(item.endsAt) || '—'}`
+                      : 'Sem limite'}
+                  </DataTableCell>
+                  <DataTableCell className="text-right">
+                    <div className="flex justify-end gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDetailBanner(item)}
+                        title="Ver detalhes"
+                        className="h-8 px-2.5"
+                      >
+                        <Eye className="size-3.5" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setEditBanner(item)}
+                        title="Editar"
+                        className="h-8 px-2.5"
+                      >
+                        <Pencil className="size-3.5" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-2.5 text-destructive hover:text-destructive"
+                        onClick={() => setConfirmDelete(item)}
+                        title="Eliminar"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
+                  </DataTableCell>
+                </DataTableRow>
+              ))
+            )}
+          </DataTableBody>
+        </DataTable>
+      )}
 
       <Dialog open={!!detailBanner} onOpenChange={(o) => !o && setDetailBanner(null)}>
         <DialogContent className="sm:max-w-md">

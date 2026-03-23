@@ -26,8 +26,8 @@ import {
 import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
-import { useAuth } from '@/contexts/auth-context'
 import { SearchInput } from '@/components/ui/search-input'
+import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
 import { formatDateDMY } from '@/lib/utils'
 import type { AvaliacaoListItem } from '@/services/admin-avaliacoes-fetch'
@@ -143,105 +143,105 @@ export function AvaliacoesList() {
         )}
       </div>
 
-      <DataTable>
-        <DataTableHeader>
-          <DataTableRow>
-            <DataTableHead>Autor / Profissional</DataTableHead>
-            <DataTableHead>Rating</DataTableHead>
-            <DataTableHead>Comentário</DataTableHead>
-            <DataTableHead>Status</DataTableHead>
-            <DataTableHead className="text-right">Ações</DataTableHead>
-          </DataTableRow>
-        </DataTableHeader>
-        <DataTableBody>
-          {isLoading ? (
+      {showEmpty ? (
+        <div className="flex min-h-[400px] items-center justify-center rounded-lg border border-border/50 bg-muted/20">
+          <EmptyState icon={Star} message="Nenhuma avaliação encontrada." />
+        </div>
+      ) : (
+        <DataTable>
+          <DataTableHeader>
             <DataTableRow>
-              <DataTableCell colSpan={5} className="h-32 text-center">
-                <LoadingSkeleton variant="table-rows" rowCount={3} />
-              </DataTableCell>
+              <DataTableHead>Autor / Profissional</DataTableHead>
+              <DataTableHead>Rating</DataTableHead>
+              <DataTableHead>Comentário</DataTableHead>
+              <DataTableHead>Status</DataTableHead>
+              <DataTableHead className="text-right">Ações</DataTableHead>
             </DataTableRow>
-          ) : showEmpty ? (
-            <DataTableRow>
-              <DataTableCell colSpan={5} className="h-32 text-center">
-                <EmptyState icon={Star} message="Nenhuma avaliação encontrada." />
-              </DataTableCell>
-            </DataTableRow>
-          ) : (
-            data.map((item) => (
-            <DataTableRow key={item.id}>
-              <DataTableCell className="font-medium">{displayName(item)}</DataTableCell>
-              <DataTableCell>
-                <span className="flex items-center gap-1">
-                  <Star className="size-4 fill-primary text-primary" />
-                  {typeof item.rating === 'number' ? item.rating.toFixed(1) : '-'}
-                </span>
-              </DataTableCell>
-              <DataTableCell className="max-w-[200px] truncate">
-                {typeof item.comentario === 'string' ? item.comentario : '-'}
-              </DataTableCell>
-              <DataTableCell>
-                <span
-                  className={
-                    item.status === 'suspensa'
-                      ? 'text-destructive'
-                      : item.status === 'suspendida'
-                        ? 'text-destructive'
-                        : ''
-                  }
-                >
-                  {item.status ?? 'ativo'}
-                </span>
-              </DataTableCell>
-              <DataTableCell className="text-right">
-                <div className="flex justify-end gap-1.5">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setDetailItem(item)}
-                    title="Ver detalhes"
-                    className="h-8 px-2.5"
-                  >
-                    <Eye className="size-3.5" />
-                  </Button>
-                  {item.status === 'suspensa' ||
-                  item.status === 'suspendida' ||
-                  item.status === 'suspended' ? (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setConfirmAction({ type: 'restore', item })}
-                      title="Restaurar"
-                      className="h-8 px-2.5"
+          </DataTableHeader>
+          <DataTableBody>
+            {isLoading ? (
+              <DataTableRow>
+                <DataTableCell colSpan={5} className="h-32 text-center">
+                  <LoadingSkeleton variant="table-rows" rowCount={3} />
+                </DataTableCell>
+              </DataTableRow>
+            ) : (
+              data.map((item) => (
+                <DataTableRow key={item.id}>
+                  <DataTableCell className="font-medium">{displayName(item)}</DataTableCell>
+                  <DataTableCell>
+                    <span className="flex items-center gap-1">
+                      <Star className="size-4 fill-primary text-primary" />
+                      {typeof item.rating === 'number' ? item.rating.toFixed(1) : '-'}
+                    </span>
+                  </DataTableCell>
+                  <DataTableCell className="max-w-[200px] truncate">
+                    {typeof item.comentario === 'string' ? item.comentario : '-'}
+                  </DataTableCell>
+                  <DataTableCell>
+                    <span
+                      className={
+                        item.status === 'suspensa'
+                          ? 'text-destructive'
+                          : item.status === 'suspendida'
+                            ? 'text-destructive'
+                            : ''
+                      }
                     >
-                      <RotateCcw className="size-3.5" />
-                    </Button>
-                  ) : (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setConfirmAction({ type: 'suspend', item })}
-                      title="Suspender"
-                      className="h-8 px-2.5"
-                    >
-                      <Pause className="size-3.5" />
-                    </Button>
-                  )}
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="h-8 px-2.5 text-destructive hover:text-destructive"
-                    onClick={() => setConfirmAction({ type: 'delete', item })}
-                    title="Eliminar"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </Button>
-                </div>
-              </DataTableCell>
-            </DataTableRow>
-            ))
-          )}
-        </DataTableBody>
-      </DataTable>
+                      {item.status ?? 'ativo'}
+                    </span>
+                  </DataTableCell>
+                  <DataTableCell className="text-right">
+                    <div className="flex justify-end gap-1.5">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setDetailItem(item)}
+                        title="Ver detalhes"
+                        className="h-8 px-2.5"
+                      >
+                        <Eye className="size-3.5" />
+                      </Button>
+                      {item.status === 'suspensa' ||
+                      item.status === 'suspendida' ||
+                      item.status === 'suspended' ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setConfirmAction({ type: 'restore', item })}
+                          title="Restaurar"
+                          className="h-8 px-2.5"
+                        >
+                          <RotateCcw className="size-3.5" />
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setConfirmAction({ type: 'suspend', item })}
+                          title="Suspender"
+                          className="h-8 px-2.5"
+                        >
+                          <Pause className="size-3.5" />
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-8 px-2.5 text-destructive hover:text-destructive"
+                        onClick={() => setConfirmAction({ type: 'delete', item })}
+                        title="Eliminar"
+                      >
+                        <Trash2 className="size-3.5" />
+                      </Button>
+                    </div>
+                  </DataTableCell>
+                </DataTableRow>
+              ))
+            )}
+          </DataTableBody>
+        </DataTable>
+      )}
 
       <Dialog open={!!detailItem} onOpenChange={(o) => !o && setDetailItem(null)}>
         <DialogContent>

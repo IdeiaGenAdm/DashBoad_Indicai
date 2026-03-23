@@ -19,6 +19,7 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -26,7 +27,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
 import { useAuth } from '@/contexts/auth-context'
@@ -299,7 +299,7 @@ export function BannerFormDialog({
                           <Megaphone className="size-5" />
                         </div>
                         <div className="min-w-0 flex-1 space-y-1.5">
-                          <h4 className="text-base font-bold leading-tight text-foreground">
+                          <h4 className="text-base leading-tight font-bold text-foreground">
                             {titulo || 'Título do banner'}
                           </h4>
                           <p className="text-sm leading-relaxed text-muted-foreground">
