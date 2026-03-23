@@ -47,21 +47,11 @@ export function DashboardContent() {
 
       <Card className="overflow-hidden border-0 bg-linear-to-br from-primary/15 via-primary/5 to-transparent shadow-md dark:from-primary/20 dark:via-primary/10 dark:to-transparent">
         <CardContent className="flex flex-col gap-4 p-6 sm:flex-row sm:items-center">
-          <div className="flex size-14 shrink-0 items-center justify-center rounded-xl bg-primary/20 dark:bg-primary/30">
-            <span className="text-2xl font-bold text-primary">
-              {nome
-                .split(' ')
-                .map((n) => n[0])
-                .slice(0, 2)
-                .join('')
-                .toUpperCase()}
-            </span>
-          </div>
           <div>
-            <CardTitle className="text-xl">Bem-vindo, {nome}</CardTitle>
+            <CardTitle className="text-xl">Bem-vindo ao IndicAI</CardTitle>
             <CardDescription className="mt-1">
-              Está autenticado. Navegue pelo menu lateral para aceder às secções: utilizadores,
-              profissionais, avaliações, denúncias, relatórios e configurações do sistema.
+              Navegue pelo menu lateral para aceder às secções: utilizadores, profissionais,
+              avaliações, denúncias, relatórios e configurações do sistema.
             </CardDescription>
           </div>
         </CardContent>
