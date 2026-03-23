@@ -70,11 +70,11 @@
 
 **Teste independente**: Login com admin ok; login com user comum rejeitado; alteração de senha invalida outras sessões.
 
-- [X] T022 [US1] Garantir que `src/contexts/auth-context.tsx` valida role admin em login e getMe (já deve estar; verificar `isAdminRole`)
-- [X] T023 [US1] Criar `src/components/features/settings/change-password-form.tsx` com formulário para alterar senha (usar schema de auth), spinner no submit, toast Sonner em sucesso/erro
-- [X] T024 [US1] Adicionar link/botão para alteração de senha no sidebar ou área de perfil (ex.: em `PrivateLayoutGuard` ou dropdown do utilizador) — UserMenu no header com dropdown
-- [X] T025 [US1] Criar página ou modal de alteração de senha acessível ao admin autenticado e integrar com `admin-auth-fetch.changeAdminPassword` — modal Dialog no UserMenu
-- [X] T026 [US1] Tratar erro 403 (sessão invalidada) no auth-context: fazer logout e redirecionar para login com mensagem clara — AdminApiError em lib/api; logout(options?: {message}); LoginForm mostra message da URL
+- [x] T022 [US1] Garantir que `src/contexts/auth-context.tsx` valida role admin em login e getMe (já deve estar; verificar `isAdminRole`)
+- [x] T023 [US1] Criar `src/components/features/settings/change-password-form.tsx` com formulário para alterar senha (usar schema de auth), spinner no submit, toast Sonner em sucesso/erro
+- [x] T024 [US1] Adicionar link/botão para alteração de senha no sidebar ou área de perfil (ex.: em `PrivateLayoutGuard` ou dropdown do utilizador) — UserMenu no header com dropdown
+- [x] T025 [US1] Criar página ou modal de alteração de senha acessível ao admin autenticado e integrar com `admin-auth-fetch.changeAdminPassword` — modal Dialog no UserMenu
+- [x] T026 [US1] Tratar erro 403 (sessão invalidada) no auth-context: fazer logout e redirecionar para login com mensagem clara — AdminApiError em lib/api; logout(options?: {message}); LoginForm mostra message da URL
 
 ### ✅ Checkpoint Phase 3
 
@@ -88,15 +88,15 @@
 
 **Teste independente**: Criar conta de cada tipo; desativar conta; ver indicadores na dashboard.
 
-- [ ] T027 [P] [US2] Criar `src/services/admin-users-fetch.ts` com listUsers, getUserById, createUserAccount (POST /users), ban, unban, delete (conforme contracts/admin-api.md)
-- [ ] T028 [P] [US2] Criar `src/services/admin-empresas-fetch.ts` com createEmpresaAccount (POST /empresas)
-- [ ] T029 [P] [US2] Criar `src/services/admin-metrics-fetch.ts` com getOverviewMetrics, getAccountMetricsComparison
-- [ ] T030 [US2] Criar `src/schemas/usuarios.ts` com createUserSchema (campos por tipo: profissional, empresa, cliente)
-- [ ] T031 [US2] Criar `src/components/features/usuarios/user-list.tsx` com DataTable, nuqs (page, search, sortBy, sortOrder, status), Skeleton, EmptyState, toast em erros
-- [ ] T032 [US2] Criar `src/components/features/usuarios/create-user-dialog.tsx` com formulário e select de tipo; usar schemas e Sonner
-- [ ] T033 [US2] Implementar lógica de desativação/ban em user-list (botões + Dialog de confirmação para ações destrutivas)
-- [ ] T034 [US2] Adicionar cards ou secção de indicadores comparativos em `app/(private)/dashboard/page.tsx` consumindo admin-metrics-fetch (accounts-comparison, overview)
-- [ ] T035 [US2] Conectar `app/(private)/dashboard/usuarios/page.tsx` a user-list e create-user-dialog; garantir nuqs na URL
+- [x] T027 [P] [US2] Criar `src/services/admin-users-fetch.ts` com listUsers, getUserById, createUserAccount (POST /users), ban, unban, delete (conforme contracts/admin-api.md)
+- [x] T028 [P] [US2] Criar `src/services/admin-empresas-fetch.ts` com createEmpresaAccount (POST /empresas)
+- [x] T029 [P] [US2] Criar `src/services/admin-metrics-fetch.ts` com getOverviewMetrics, getAccountMetricsComparison
+- [x] T030 [US2] Criar `src/schemas/usuarios.ts` com createUserSchema (campos por tipo: profissional, empresa, cliente)
+- [x] T031 [US2] Criar `src/components/features/usuarios/user-list.tsx` com DataTable, nuqs (page, search, sortBy, sortOrder, status), Skeleton, EmptyState, toast em erros
+- [x] T032 [US2] Criar `src/components/features/usuarios/create-user-dialog.tsx` com formulário e select de tipo; usar schemas e Sonner
+- [x] T033 [US2] Implementar lógica de desativação/ban em user-list (botões + Dialog de confirmação para ações destrutivas)
+- [x] T034 [US2] Adicionar cards ou secção de indicadores comparativos em `app/(private)/dashboard/page.tsx` consumindo admin-metrics-fetch (accounts-comparison, overview)
+- [x] T035 [US2] Conectar `app/(private)/dashboard/usuarios/page.tsx` a user-list e create-user-dialog; garantir nuqs na URL
 
 ### ✅ Checkpoint Phase 4
 

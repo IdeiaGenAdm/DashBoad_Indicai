@@ -1,8 +1,11 @@
+import { Suspense } from 'react'
+
+import { UsuariosContent } from '@/components/features/usuarios/usuarios-content'
+
 export default function UsuariosPage() {
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Usuários</h1>
-      <p className="text-muted-foreground">Gestão de contas de utilizadores.</p>
-    </div>
+    <Suspense fallback={<div className="h-64 animate-pulse rounded-lg bg-muted" />}>
+      <UsuariosContent />
+    </Suspense>
   )
 }
