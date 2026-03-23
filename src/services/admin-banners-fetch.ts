@@ -18,6 +18,7 @@ export interface BannerApi {
 export interface ListBannersParams {
   page?: number
   limit?: number
+  search?: string
 }
 
 export interface ListBannersResponse {
@@ -41,10 +42,11 @@ export async function listBanners(
   authToken: string,
   params?: ListBannersParams
 ): Promise<ListBannersResponse> {
-  const search = new URLSearchParams()
-  if (params?.page != null) search.set('page', String(params.page))
-  if (params?.limit != null) search.set('limit', String(params.limit))
-  const qs = search.toString()
+  const searchParams = new URLSearchParams()
+  if (params?.page != null) searchParams.set('page', String(params.page))
+  if (params?.limit != null) searchParams.set('limit', String(params.limit))
+  if (params?.search) searchParams.set('search', params.search)
+  const qs = searchParams.toString()
   return adminFetch<ListBannersResponse>(`/banners${qs ? `?${qs}` : ''}`, authToken)
 }
 

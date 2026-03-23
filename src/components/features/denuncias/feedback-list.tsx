@@ -2,19 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { Eye, Flag, Mail, Pencil, Search, Trash2 } from 'lucide-react'
+import { Eye, Flag, Mail, Pencil, Trash2 } from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import {
   DataTable,
   DataTableBody,
@@ -23,6 +15,14 @@ import {
   DataTableHeader,
   DataTableRow,
 } from '@/components/ui/data-table'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
@@ -34,8 +34,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { useAuth } from '@/contexts/auth-context'
-import { formatDateDMY } from '@/lib/utils'
+import { SearchInput } from '@/components/ui/search-input'
 import { AdminApiError } from '@/lib/api'
+import { formatDateDMY } from '@/lib/utils'
 import type { RelatorioListItem } from '@/services/admin-relatorios-fetch'
 import { deleteRelatorio, listRelatorios } from '@/services/admin-relatorios-fetch'
 
@@ -43,7 +44,7 @@ import { RespondFeedbackDialog } from './respond-feedback-dialog'
 
 const PARAMS = {
   page: parseAsInteger.withDefault(1),
-  search: parseAsString.withDefault(''),
+  q: parseAsString.withDefault(''),
   tipo: parseAsString.withDefault(''),
   estado: parseAsString.withDefault(''),
   sortBy: parseAsString.withDefault('createdAt'),
@@ -67,7 +68,7 @@ export function FeedbackList() {
       const res = await listRelatorios(token, {
         page: params.page,
         limit: 10,
-        search: params.search || undefined,
+        search: params.q || undefined,
         tipo: params.tipo || undefined,
         estado: params.estado || undefined,
         sortBy: params.sortBy || undefined,
@@ -88,19 +89,17 @@ export function FeedbackList() {
     } finally {
       setIsLoading(false)
     }
-  }, [
-    token,
-    params.page,
-    params.search,
-    params.tipo,
-    params.estado,
-    params.sortBy,
-    params.sortOrder,
-  ])
+  }, [token, params.page, params.q, params.tipo, params.estado, params.sortBy, params.sortOrder])
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  useEffect(() => {
+    if (params.q && params.page !== 1) {
+      setParams({ page: 1 })
+    }
+  }, [params.q, params.page, setParams])
 
   async function handleDelete() {
     if (!token || !confirmDelete) return
@@ -123,26 +122,12 @@ export function FeedbackList() {
     return typeof email === 'string' && email.trim().length > 0
   }
 
-  if (isLoading) {
-    return <LoadingSkeleton variant="table-rows" rowCount={5} />
-  }
-
-  if (data.length === 0 && !params.search) {
-    return <EmptyState icon={Flag} message="Nenhuma denúncia, sugestão ou reclamação encontrada." />
-  }
+  const showEmpty = !isLoading && data.length === 0
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1">
-          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Pesquisar..."
-            value={params.search}
-            onChange={(e) => setParams({ search: e.target.value || null })}
-            className="pl-9"
-          />
-        </div>
+        <SearchInput placeholder="Pesquisar..." />
         <Select
           value={params.tipo || 'all'}
           onValueChange={(v) => setParams({ tipo: v === 'all' ? null : v })}
@@ -185,7 +170,20 @@ export function FeedbackList() {
           </DataTableRow>
         </DataTableHeader>
         <DataTableBody>
-          {data.map((item) => (
+          {isLoading ? (
+            <DataTableRow>
+              <DataTableCell colSpan={6} className="h-32 text-center">
+                <LoadingSkeleton variant="table-rows" rowCount={3} />
+              </DataTableCell>
+            </DataTableRow>
+          ) : showEmpty ? (
+            <DataTableRow>
+              <DataTableCell colSpan={6} className="h-32 text-center">
+                <EmptyState icon={Flag} message="Nenhuma denúncia, sugestão ou reclamação encontrada." />
+              </DataTableCell>
+            </DataTableRow>
+          ) : (
+            data.map((item) => (
             <DataTableRow key={item.id}>
               <DataTableCell className="font-medium capitalize">
                 {typeof item.tipo === 'string' ? item.tipo : '-'}
@@ -211,9 +209,7 @@ export function FeedbackList() {
                 {item.estado ?? item.status ?? '-'}
               </DataTableCell>
               <DataTableCell>
-                {typeof item.createdAt === 'string'
-                  ? formatDateDMY(item.createdAt)
-                  : '-'}
+                {typeof item.createdAt === 'string' ? formatDateDMY(item.createdAt) : '-'}
               </DataTableCell>
               <DataTableCell className="text-right">
                 <div className="flex justify-end gap-1.5">
@@ -248,7 +244,8 @@ export function FeedbackList() {
                 </div>
               </DataTableCell>
             </DataTableRow>
-          ))}
+            ))
+          )}
         </DataTableBody>
       </DataTable>
 
@@ -260,11 +257,24 @@ export function FeedbackList() {
           </DialogHeader>
           {detailItem && (
             <div className="space-y-2 text-sm">
-              <p><span className="font-medium">Tipo:</span> {detailItem.tipo ?? '-'}</p>
-              <p><span className="font-medium">Autor:</span> {detailItem.autorNome ?? detailItem.autorEmail ?? '-'}</p>
-              <p><span className="font-medium">Mensagem:</span> {detailItem.mensagem ?? '-'}</p>
-              <p><span className="font-medium">Estado:</span> {detailItem.estado ?? detailItem.status ?? '-'}</p>
-              <p><span className="font-medium">Data:</span> {detailItem.createdAt ? formatDateDMY(detailItem.createdAt) : '-'}</p>
+              <p>
+                <span className="font-medium">Tipo:</span> {detailItem.tipo ?? '-'}
+              </p>
+              <p>
+                <span className="font-medium">Autor:</span>{' '}
+                {detailItem.autorNome ?? detailItem.autorEmail ?? '-'}
+              </p>
+              <p>
+                <span className="font-medium">Mensagem:</span> {detailItem.mensagem ?? '-'}
+              </p>
+              <p>
+                <span className="font-medium">Estado:</span>{' '}
+                {detailItem.estado ?? detailItem.status ?? '-'}
+              </p>
+              <p>
+                <span className="font-medium">Data:</span>{' '}
+                {detailItem.createdAt ? formatDateDMY(detailItem.createdAt) : '-'}
+              </p>
             </div>
           )}
         </DialogContent>
@@ -278,8 +288,12 @@ export function FeedbackList() {
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDelete(null)}>Cancelar</Button>
-            <Button variant="destructive" onClick={handleDelete}>Eliminar</Button>
+            <Button variant="outline" onClick={() => setConfirmDelete(null)}>
+              Cancelar
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Eliminar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

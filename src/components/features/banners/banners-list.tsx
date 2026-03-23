@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { Image as ImageIcon, Eye, Pencil, Search, Trash2 } from 'lucide-react'
+import { Eye, Image as ImageIcon, Pencil, Trash2 } from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
@@ -27,6 +27,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { useAuth } from '@/contexts/auth-context'
+import { SearchInput } from '@/components/ui/search-input'
 import { AdminApiError } from '@/lib/api'
 import { formatDateDMY } from '@/lib/utils'
 import type { BannerApi } from '@/services/admin-banners-fetch'
@@ -36,7 +37,7 @@ import { BannerFormDialog } from './banner-form-dialog'
 
 const PARAMS = {
   page: parseAsInteger.withDefault(1),
-  search: parseAsString.withDefault(''),
+  q: parseAsString.withDefault(''),
   sortBy: parseAsString.withDefault('createdAt'),
   sortOrder: parseAsStringLiteral(['asc', 'desc'] as const).withDefault('desc'),
 }
@@ -59,6 +60,7 @@ export function BannersList() {
       const res = await listBanners(token, {
         page: params.page,
         limit: 10,
+        search: params.q || undefined,
       })
       const items = Array.isArray(res.banners)
         ? res.banners
@@ -75,11 +77,17 @@ export function BannersList() {
     } finally {
       setIsLoading(false)
     }
-  }, [token, params.page])
+  }, [token, params.page, params.q])
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  useEffect(() => {
+    if (params.q && params.page !== 1) {
+      setParams({ page: 1 })
+    }
+  }, [params.q, params.page, setParams])
 
   async function handleDelete() {
     if (!confirmDelete || !token) return
@@ -97,38 +105,12 @@ export function BannersList() {
     }
   }
 
-  if (isLoading) {
-    return <LoadingSkeleton variant="table-rows" rowCount={5} />
-  }
-
-  if (data.length === 0 && !params.search) {
-    return (
-      <div className="space-y-4">
-        <EmptyState
-          icon={ImageIcon}
-          message="Nenhum banner encontrado."
-          action={{
-            label: 'Criar banner',
-            onClick: () => setCreateOpen(true),
-          }}
-        />
-        <BannerFormDialog open={createOpen} onOpenChange={setCreateOpen} onSuccess={fetchData} />
-      </div>
-    )
-  }
+  const showEmpty = !isLoading && data.length === 0
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1">
-          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Pesquisar..."
-            value={params.search}
-            onChange={(e) => setParams({ search: e.target.value || null })}
-            className="pl-9"
-          />
-        </div>
+        <SearchInput placeholder="Pesquisar..." />
         <Button onClick={() => setCreateOpen(true)}>Criar banner</Button>
       </div>
 
@@ -142,7 +124,27 @@ export function BannersList() {
           </DataTableRow>
         </DataTableHeader>
         <DataTableBody>
-          {data.map((item) => (
+          {isLoading ? (
+            <DataTableRow>
+              <DataTableCell colSpan={4} className="h-32 text-center">
+                <LoadingSkeleton variant="table-rows" rowCount={3} />
+              </DataTableCell>
+            </DataTableRow>
+          ) : showEmpty ? (
+            <DataTableRow>
+              <DataTableCell colSpan={4} className="h-32 text-center">
+                <EmptyState
+                  icon={ImageIcon}
+                  message="Nenhum banner encontrado."
+                  action={{
+                    label: 'Criar banner',
+                    onClick: () => setCreateOpen(true),
+                  }}
+                />
+              </DataTableCell>
+            </DataTableRow>
+          ) : (
+            data.map((item) => (
             <DataTableRow key={item.id}>
               <DataTableCell className="font-medium">{item.title || '-'}</DataTableCell>
               <DataTableCell>{labelAudienceType(item.audienceType)}</DataTableCell>
@@ -183,7 +185,8 @@ export function BannersList() {
                 </div>
               </DataTableCell>
             </DataTableRow>
-          ))}
+            ))
+          )}
         </DataTableBody>
       </DataTable>
 
@@ -206,7 +209,7 @@ export function BannersList() {
                       <ImageIcon className="size-5" />
                     </div>
                     <div className="min-w-0 flex-1 space-y-1.5">
-                      <h4 className="text-base font-bold leading-tight text-foreground">
+                      <h4 className="text-base leading-tight font-bold text-foreground">
                         {detailBanner.title}
                       </h4>
                       <p className="text-sm leading-relaxed text-muted-foreground">
@@ -219,7 +222,9 @@ export function BannersList() {
               <div className="space-y-2 rounded-lg bg-muted/30 p-3 text-xs dark:bg-muted/20">
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Destinatários</span>
-                  <span className="font-medium">{labelAudienceType(detailBanner.audienceType)}</span>
+                  <span className="font-medium">
+                    {labelAudienceType(detailBanner.audienceType)}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Vigência</span>
@@ -240,6 +245,14 @@ export function BannersList() {
         onOpenChange={(open) => !open && setEditBanner(null)}
         onSuccess={() => {
           setEditBanner(null)
+          fetchData()
+        }}
+      />
+      <BannerFormDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        onSuccess={() => {
+          setCreateOpen(false)
           fetchData()
         }}
       />

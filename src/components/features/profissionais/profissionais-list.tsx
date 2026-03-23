@@ -2,19 +2,11 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { Briefcase, Eye, Pencil, Search, Trash2 } from 'lucide-react'
+import { Briefcase, Eye, Pencil, Trash2 } from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
 import {
   DataTable,
   DataTableBody,
@@ -23,12 +15,21 @@ import {
   DataTableHeader,
   DataTableRow,
 } from '@/components/ui/data-table'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { useAuth } from '@/contexts/auth-context'
-import { formatDateDMY } from '@/lib/utils'
+import { SearchInput } from '@/components/ui/search-input'
 import { AdminApiError } from '@/lib/api'
+import { formatDateDMY } from '@/lib/utils'
 import type { ProfessionalListItem } from '@/services/admin-profissionais-fetch'
 import { listProfessionals } from '@/services/admin-profissionais-fetch'
 import { deleteUser } from '@/services/admin-users-fetch'
@@ -38,7 +39,7 @@ import { SubscriptionEditDialog } from './subscription-edit-dialog'
 
 const PARAMS = {
   page: parseAsInteger.withDefault(1),
-  search: parseAsString.withDefault(''),
+  q: parseAsString.withDefault(''),
   sortBy: parseAsString.withDefault('createdAt'),
   sortOrder: parseAsStringLiteral(['asc', 'desc'] as const).withDefault('desc'),
 }
@@ -60,7 +61,7 @@ export function ProfissionaisList() {
       const res = await listProfessionals(token, {
         page: params.page,
         limit: 10,
-        search: params.search || undefined,
+        search: params.q || undefined,
         sortBy: params.sortBy || undefined,
         sortOrder: params.sortOrder || undefined,
       })
@@ -79,11 +80,17 @@ export function ProfissionaisList() {
     } finally {
       setIsLoading(false)
     }
-  }, [token, params.page, params.search, params.sortBy, params.sortOrder])
+  }, [token, params.page, params.q, params.sortBy, params.sortOrder])
 
   useEffect(() => {
     fetchData()
   }, [fetchData])
+
+  useEffect(() => {
+    if (params.q && params.page !== 1) {
+      setParams({ page: 1 })
+    }
+  }, [params.q, params.page, setParams])
 
   async function handleDelete() {
     if (!token || !confirmDelete?.userId) return
@@ -109,26 +116,12 @@ export function ProfissionaisList() {
     )
   }
 
-  if (isLoading) {
-    return <LoadingSkeleton variant="table-rows" rowCount={5} />
-  }
-
-  if (data.length === 0 && !params.search) {
-    return <EmptyState icon={Briefcase} message="Nenhum profissional encontrado." />
-  }
+  const showEmpty = !isLoading && data.length === 0
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1">
-          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Pesquisar por nome, profissão..."
-            value={params.search}
-            onChange={(e) => setParams({ search: e.target.value || null })}
-            className="pl-9"
-          />
-        </div>
+        <SearchInput placeholder="Pesquisar por nome, profissão..." />
       </div>
 
       <DataTable>
@@ -143,7 +136,20 @@ export function ProfissionaisList() {
           </DataTableRow>
         </DataTableHeader>
         <DataTableBody>
-          {data.map((item) => (
+          {isLoading ? (
+            <DataTableRow>
+              <DataTableCell colSpan={6} className="h-32 text-center">
+                <LoadingSkeleton variant="table-rows" rowCount={3} />
+              </DataTableCell>
+            </DataTableRow>
+          ) : showEmpty ? (
+            <DataTableRow>
+              <DataTableCell colSpan={6} className="h-32 text-center">
+                <EmptyState icon={Briefcase} message="Nenhum profissional encontrado." />
+              </DataTableCell>
+            </DataTableRow>
+          ) : (
+            data.map((item) => (
             <DataTableRow key={item.id}>
               <DataTableCell className="font-medium">{displayName(item)}</DataTableCell>
               <DataTableCell className="capitalize">
@@ -193,7 +199,8 @@ export function ProfissionaisList() {
                 </div>
               </DataTableCell>
             </DataTableRow>
-          ))}
+            ))
+          )}
         </DataTableBody>
       </DataTable>
 

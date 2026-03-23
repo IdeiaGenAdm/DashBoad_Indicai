@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { Eye, Pause, RotateCcw, Search, Star, Trash2 } from 'lucide-react'
+import { Eye, Pause, RotateCcw, Star, Trash2 } from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
@@ -27,6 +27,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { useAuth } from '@/contexts/auth-context'
+import { SearchInput } from '@/components/ui/search-input'
 import { AdminApiError } from '@/lib/api'
 import { formatDateDMY } from '@/lib/utils'
 import type { AvaliacaoListItem } from '@/services/admin-avaliacoes-fetch'
@@ -39,7 +40,7 @@ import {
 
 const PARAMS = {
   page: parseAsInteger.withDefault(1),
-  search: parseAsString.withDefault(''),
+  q: parseAsString.withDefault(''),
   sortBy: parseAsString.withDefault('createdAt'),
   sortOrder: parseAsStringLiteral(['asc', 'desc'] as const).withDefault('desc'),
   status: parseAsString.withDefault(''),
@@ -64,7 +65,7 @@ export function AvaliacoesList() {
       const res = await listAvaliacoes(token, {
         page: params.page,
         limit: 10,
-        search: params.search || undefined,
+        search: params.q || undefined,
         sortBy: params.sortBy || undefined,
         sortOrder: params.sortOrder || undefined,
         status: params.status || undefined,
@@ -84,11 +85,17 @@ export function AvaliacoesList() {
     } finally {
       setIsLoading(false)
     }
-  }, [token, params.page, params.search, params.sortBy, params.sortOrder, params.status])
+  }, [token, params.page, params.q, params.sortBy, params.sortOrder, params.status])
 
   useEffect(() => {
     fetchAvaliacoes()
   }, [fetchAvaliacoes])
+
+  useEffect(() => {
+    if (params.q && params.page !== 1) {
+      setParams({ page: 1 })
+    }
+  }, [params.q, params.page, setParams])
 
   async function handleConfirm() {
     if (!confirmAction || !token) return
@@ -123,26 +130,12 @@ export function AvaliacoesList() {
     )
   }
 
-  if (isLoading) {
-    return <LoadingSkeleton variant="table-rows" rowCount={5} />
-  }
-
-  if (data.length === 0 && !params.search) {
-    return <EmptyState icon={Star} message="Nenhuma avaliação encontrada." />
-  }
+  const showEmpty = !isLoading && data.length === 0
 
   return (
     <div className="space-y-4">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="relative flex-1">
-          <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Pesquisar por autor, profissional, comentário..."
-            value={params.search}
-            onChange={(e) => setParams({ search: e.target.value || null })}
-            className="pl-9"
-          />
-        </div>
+        <SearchInput placeholder="Pesquisar por autor, profissional, comentário..." />
         {params.status && (
           <Button variant="ghost" size="sm" onClick={() => setParams({ status: null })}>
             Limpar filtro status
@@ -161,7 +154,20 @@ export function AvaliacoesList() {
           </DataTableRow>
         </DataTableHeader>
         <DataTableBody>
-          {data.map((item) => (
+          {isLoading ? (
+            <DataTableRow>
+              <DataTableCell colSpan={5} className="h-32 text-center">
+                <LoadingSkeleton variant="table-rows" rowCount={3} />
+              </DataTableCell>
+            </DataTableRow>
+          ) : showEmpty ? (
+            <DataTableRow>
+              <DataTableCell colSpan={5} className="h-32 text-center">
+                <EmptyState icon={Star} message="Nenhuma avaliação encontrada." />
+              </DataTableCell>
+            </DataTableRow>
+          ) : (
+            data.map((item) => (
             <DataTableRow key={item.id}>
               <DataTableCell className="font-medium">{displayName(item)}</DataTableCell>
               <DataTableCell>
@@ -232,7 +238,8 @@ export function AvaliacoesList() {
                 </div>
               </DataTableCell>
             </DataTableRow>
-          ))}
+            ))
+          )}
         </DataTableBody>
       </DataTable>
 
@@ -244,12 +251,27 @@ export function AvaliacoesList() {
           </DialogHeader>
           {detailItem && (
             <div className="space-y-2 text-sm">
-              <p><span className="font-medium">Autor:</span> {displayName(detailItem)}</p>
-              <p><span className="font-medium">Profissional:</span> {detailItem.profissionalNome ?? '-'}</p>
-              <p><span className="font-medium">Rating:</span> {typeof detailItem.rating === 'number' ? detailItem.rating.toFixed(1) : '-'}</p>
-              <p><span className="font-medium">Comentário:</span> {detailItem.comentario ?? '-'}</p>
-              <p><span className="font-medium">Status:</span> {detailItem.status ?? '-'}</p>
-              <p><span className="font-medium">Data:</span> {detailItem.createdAt ? formatDateDMY(detailItem.createdAt) : '-'}</p>
+              <p>
+                <span className="font-medium">Autor:</span> {displayName(detailItem)}
+              </p>
+              <p>
+                <span className="font-medium">Profissional:</span>{' '}
+                {detailItem.profissionalNome ?? '-'}
+              </p>
+              <p>
+                <span className="font-medium">Rating:</span>{' '}
+                {typeof detailItem.rating === 'number' ? detailItem.rating.toFixed(1) : '-'}
+              </p>
+              <p>
+                <span className="font-medium">Comentário:</span> {detailItem.comentario ?? '-'}
+              </p>
+              <p>
+                <span className="font-medium">Status:</span> {detailItem.status ?? '-'}
+              </p>
+              <p>
+                <span className="font-medium">Data:</span>{' '}
+                {detailItem.createdAt ? formatDateDMY(detailItem.createdAt) : '-'}
+              </p>
             </div>
           )}
         </DialogContent>

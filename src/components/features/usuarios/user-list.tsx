@@ -7,7 +7,6 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
-  Search,
   Trash2,
   Users as UsersIcon,
 } from 'lucide-react'
@@ -35,6 +34,7 @@ import { EmptyState } from '@/components/ui/empty-state'
 import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { useAuth } from '@/contexts/auth-context'
+import { SearchInput } from '@/components/ui/search-input'
 import { AdminApiError } from '@/lib/api'
 import type { UserListItem } from '@/services/admin-users-fetch'
 import { banUser, deleteUser, listUsers, unbanUser } from '@/services/admin-users-fetch'
@@ -90,7 +90,7 @@ function UserAvatar({ name }: { name: string }) {
 
 const PARAMS = {
   page: parseAsInteger.withDefault(1),
-  search: parseAsString.withDefault(''),
+  q: parseAsString.withDefault(''),
   sortBy: parseAsString.withDefault('createdAt'),
   sortOrder: parseAsStringLiteral(['asc', 'desc'] as const).withDefault('desc'),
   status: parseAsString.withDefault(''),
@@ -121,7 +121,7 @@ export function UserList({
       const res = await listUsers(token, {
         page: params.page,
         limit: 12,
-        search: params.search || undefined,
+        search: params.q || undefined,
         sortBy: params.sortBy || undefined,
         sortOrder: params.sortOrder || undefined,
         status: params.status || undefined,
@@ -141,11 +141,17 @@ export function UserList({
     } finally {
       setIsLoading(false)
     }
-  }, [token, params.page, params.search, params.sortBy, params.sortOrder, params.status])
+  }, [token, params.page, params.q, params.sortBy, params.sortOrder, params.status])
 
   useEffect(() => {
     fetchUsers()
   }, [fetchUsers, refreshKey])
+
+  useEffect(() => {
+    if (params.q && params.page !== 1) {
+      setParams({ page: 1 })
+    }
+  }, [params.q, params.page, setParams])
 
   async function handleConfirm() {
     if (!confirmAction || !token) return
@@ -174,29 +180,8 @@ export function UserList({
 
   const limit = 12
   const totalPages = Math.max(1, Math.ceil(total / limit))
-
-  if (isLoading) {
-    return <LoadingSkeleton variant="table-rows" rowCount={5} />
-  }
-
-  if (data.length === 0) {
-    const hasFilters = params.search || params.status
-    return (
-      <EmptyState
-        icon={UsersIcon}
-        message={
-          hasFilters
-            ? 'Nenhum utilizador encontrado com os filtros aplicados.'
-            : 'Nenhum utilizador encontrado.'
-        }
-        action={
-          !hasFilters && onEmptyAction
-            ? { label: 'Criar conta', onClick: onEmptyAction }
-            : undefined
-        }
-      />
-    )
-  }
+  const hasFilters = params.q || params.status
+  const showEmpty = !isLoading && data.length === 0
 
   const statusFilters = [
     { value: '', label: 'Todos' },
@@ -209,15 +194,7 @@ export function UserList({
     <div className="space-y-6">
       <div className="flex flex-col gap-4">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="relative flex-1">
-            <Search className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Pesquisar por nome, email..."
-              value={params.search}
-              onChange={(e) => setParams({ search: e.target.value || null, page: 1 })}
-              className="pl-9"
-            />
-          </div>
+          <SearchInput placeholder="Pesquisar por nome, email..." />
           <div className="flex flex-wrap gap-2">
             {statusFilters.map((f) => (
               <Button
@@ -245,7 +222,32 @@ export function UserList({
             </DataTableRow>
           </DataTableHeader>
           <DataTableBody>
-            {data.map((user) => {
+            {isLoading ? (
+              <DataTableRow>
+                <DataTableCell colSpan={5} className="h-32 text-center">
+                  <LoadingSkeleton variant="table-rows" rowCount={3} />
+                </DataTableCell>
+              </DataTableRow>
+            ) : showEmpty ? (
+              <DataTableRow>
+                <DataTableCell colSpan={5} className="h-32 text-center">
+                  <EmptyState
+                    icon={UsersIcon}
+                    message={
+                      hasFilters
+                        ? 'Nenhum utilizador encontrado com os filtros aplicados.'
+                        : 'Nenhum utilizador encontrado.'
+                    }
+                    action={
+                      !hasFilters && onEmptyAction
+                        ? { label: 'Criar conta', onClick: onEmptyAction }
+                        : undefined
+                    }
+                  />
+                </DataTableCell>
+              </DataTableRow>
+            ) : (
+              data.map((user) => {
               const name =
                 typeof user.nomeCompleto === 'string'
                   ? user.nomeCompleto
@@ -314,7 +316,8 @@ export function UserList({
                   </DataTableCell>
                 </DataTableRow>
               )
-            })}
+              })
+            )}
           </DataTableBody>
         </DataTable>
 
