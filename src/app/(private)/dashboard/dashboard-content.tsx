@@ -4,7 +4,6 @@ import { LayoutDashboard } from 'lucide-react'
 
 import { DashboardCharts } from '@/components/features/dashboard/dashboard-charts'
 import { MetricsCards } from '@/components/features/dashboard/metrics-cards'
-import { QuickActions } from '@/components/features/dashboard/quick-actions'
 import { RecentUsersTable } from '@/components/features/dashboard/recent-users-table'
 import { TopRatedTable } from '@/components/features/dashboard/top-rated-table'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
@@ -54,8 +53,6 @@ export function DashboardContent() {
           </div>
         </CardContent>
       </Card>
-
-      <QuickActions />
 
       <MetricsCards />
 

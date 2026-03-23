@@ -4,100 +4,118 @@ import { useState } from 'react'
 
 import Link from 'next/link'
 
-import { BarChart3, Briefcase, Flag, Image, PlusCircle, Sparkles, Users } from 'lucide-react'
+import { BarChart3, Briefcase, Flag, Image, PlusCircle, Sparkles, Users, X } from 'lucide-react'
 
 import { CreateUserDialog } from '@/components/features/usuarios/create-user-dialog'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const ACTIONS = [
   {
     label: 'Utilizadores',
-    description: 'Gerir contas',
     href: '/dashboard/usuarios',
     icon: Users,
   },
   {
     label: 'Profissionais',
-    description: 'Gerir perfis',
     href: '/dashboard/profissionais',
     icon: Briefcase,
   },
   {
     label: 'Denúncias',
-    description: 'Moderação',
     href: '/dashboard/denuncias',
     icon: Flag,
   },
   {
     label: 'Relatórios',
-    description: 'Analytics',
     href: '/dashboard/relatorios',
     icon: BarChart3,
   },
   {
     label: 'Banners',
-    description: 'Promocionais',
     href: '/dashboard/banners',
     icon: Image,
   },
 ] as const
 
 export function QuickActions() {
+  const [open, setOpen] = useState(false)
   const [createUserOpen, setCreateUserOpen] = useState(false)
 
   return (
-    <Card className="overflow-hidden border-0 shadow-md">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Sparkles className="size-5 text-primary" />
-          Ações rápidas
-        </CardTitle>
-        <CardDescription>Aceda diretamente às principais funcionalidades</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-6">
-          <button
-            type="button"
-            onClick={() => setCreateUserOpen(true)}
-            className="group flex flex-col items-center gap-2.5 rounded-xl border border-primary/30 bg-primary/5 p-4 shadow-sm transition-all duration-150 hover:border-primary hover:bg-primary/10 hover:shadow-md"
-          >
-            <div className="flex size-10 items-center justify-center rounded-xl bg-primary/20 transition-colors group-hover:bg-primary/30">
-              <PlusCircle className="size-5 text-primary" />
-            </div>
-            <div className="text-center">
-              <p className="text-xs leading-tight font-semibold">Criar</p>
-              <p className="text-xs leading-tight text-muted-foreground">utilizador</p>
-            </div>
-          </button>
+    <>
+      {open && <div className="fixed inset-0 z-40" onClick={() => setOpen(false)} aria-hidden />}
 
-          {ACTIONS.map((action) => {
-            const Icon = action.icon
-            return (
-              <Link
-                key={action.href}
-                href={action.href}
-                className="group flex flex-col items-center gap-2.5 rounded-xl border bg-card p-4 shadow-sm transition-all duration-150 hover:border-primary hover:bg-primary/5 hover:shadow-md"
+      {open && (
+        <div className="fixed right-4 bottom-36 z-50 w-60 md:right-6 md:bottom-20">
+          <Card className="overflow-hidden border shadow-2xl">
+            <CardHeader className="flex flex-row items-center justify-between px-4 pt-3 pb-2">
+              <CardTitle className="flex items-center gap-1.5 text-sm">
+                <Sparkles className="size-4 text-primary" />
+                Ações rápidas
+              </CardTitle>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="rounded-md p-0.5 text-muted-foreground transition-colors hover:text-foreground"
               >
-                <div className="flex size-10 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
-                  <Icon className="size-5 text-primary" />
-                </div>
-                <div className="text-center">
-                  <p className="text-xs leading-tight font-semibold">{action.label}</p>
-                  <p className="text-xs leading-tight text-muted-foreground">
-                    {action.description}
-                  </p>
-                </div>
-              </Link>
-            )
-          })}
+                <X className="size-4" />
+              </button>
+            </CardHeader>
+            <CardContent className="px-3 pb-3">
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCreateUserOpen(true)
+                    setOpen(false)
+                  }}
+                  className="group flex flex-col items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 p-2.5 transition-all hover:border-primary hover:bg-primary/10"
+                >
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-primary/20 transition-colors group-hover:bg-primary/30">
+                    <PlusCircle className="size-4 text-primary" />
+                  </div>
+                  <span className="text-center text-[10px] leading-tight font-semibold">Criar</span>
+                </button>
+
+                {ACTIONS.map((action) => {
+                  const Icon = action.icon
+                  return (
+                    <Link
+                      key={action.href}
+                      href={action.href}
+                      onClick={() => setOpen(false)}
+                      className="group flex flex-col items-center gap-1.5 rounded-lg border bg-card p-2.5 transition-all hover:border-primary hover:bg-primary/5"
+                    >
+                      <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 transition-colors group-hover:bg-primary/20">
+                        <Icon className="size-4 text-primary" />
+                      </div>
+                      <span className="text-center text-[10px] leading-tight font-semibold">
+                        {action.label}
+                      </span>
+                    </Link>
+                  )
+                })}
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </CardContent>
+      )}
+
+      <Button
+        size="icon"
+        onClick={() => setOpen(!open)}
+        className="fixed right-4 bottom-20 z-50 size-12 rounded-full shadow-lg transition-all hover:scale-105 active:scale-95 md:right-6 md:bottom-6"
+        aria-label="Ações rápidas"
+      >
+        {open ? <X className="size-5" /> : <Sparkles className="size-5" />}
+      </Button>
 
       <CreateUserDialog
         open={createUserOpen}
         onOpenChange={setCreateUserOpen}
         onSuccess={() => setCreateUserOpen(false)}
       />
-    </Card>
+    </>
   )
 }

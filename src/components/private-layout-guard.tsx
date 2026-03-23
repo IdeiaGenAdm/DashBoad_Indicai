@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 
 import { useRouter } from 'next/navigation'
 
+import { QuickActions } from '@/components/features/dashboard/quick-actions'
 import { SidebarToggle } from '@/components/layout/aceternity-sidebar'
 import { BottomNav } from '@/components/layout/bottom-nav'
 import { DashboardSidebar } from '@/components/layout/sidebar'
@@ -56,6 +57,7 @@ export function PrivateLayoutGuard({ children }: { children: React.ReactNode }) 
         <ThemeToggle />
       </header>
       <main className="flex-1 overflow-auto p-4 pb-20 md:p-6 md:pb-6 lg:p-8">{children}</main>
+      <QuickActions />
       <BottomNav />
     </DashboardSidebar>
   )
