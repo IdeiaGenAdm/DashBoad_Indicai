@@ -110,10 +110,10 @@
 
 **Teste independente**: Ver rankings com dados coerentes.
 
-- [ ] T036 [P] [US3] Adicionar getTopProfessions e getTopRatedProfessionals em `src/services/admin-metrics-fetch.ts`
-- [ ] T037 [US3] Criar `src/components/features/relatorios/top-professions-card.tsx` com dados de getTopProfessions, Skeleton, EmptyState
-- [ ] T038 [US3] Criar `src/components/features/relatorios/top-rated-professionals-card.tsx` com dados de getTopRatedProfessionals, Skeleton, EmptyState
-- [ ] T039 [US3] Integrar ambos os cards em `app/(private)/dashboard/relatorios/page.tsx` (ou secção dedicada em dashboard/page.tsx)
+- [x] T036 [P] [US3] Adicionar getTopProfessions e getTopRatedProfessionals em `src/services/admin-metrics-fetch.ts`
+- [x] T037 [US3] Criar `src/components/features/relatorios/top-professions-card.tsx` com dados de getTopProfessions, Skeleton, EmptyState
+- [x] T038 [US3] Criar `src/components/features/relatorios/top-rated-professionals-card.tsx` com dados de getTopRatedProfessionals, Skeleton, EmptyState
+- [x] T039 [US3] Integrar ambos os cards em `app/(private)/dashboard/relatorios/page.tsx` (ou secção dedicada em dashboard/page.tsx)
 
 ### ✅ Checkpoint Phase 5
 
