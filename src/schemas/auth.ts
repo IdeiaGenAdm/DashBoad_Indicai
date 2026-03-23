@@ -38,3 +38,17 @@ export const resetPasswordSchema = z
   })
 
 export type ResetPasswordFormValues = z.infer<typeof resetPasswordSchema>
+
+/** Schema para alteração de senha do admin (senha atual + nova senha) */
+export const changePasswordSchema = z
+  .object({
+    senhaAtual: z.string().min(1, 'Senha atual é obrigatória'),
+    senhaNova: z.string().min(6, 'Nova senha deve ter no mínimo 6 caracteres'),
+    confirmSenha: z.string().min(1, 'Confirmação de senha é obrigatória'),
+  })
+  .refine((data) => data.senhaNova === data.confirmSenha, {
+    message: 'As senhas não coincidem',
+    path: ['confirmSenha'],
+  })
+
+export type ChangePasswordFormValues = z.infer<typeof changePasswordSchema>

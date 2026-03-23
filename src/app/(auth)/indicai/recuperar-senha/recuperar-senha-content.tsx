@@ -2,8 +2,8 @@
 
 import { useSearchParams } from 'next/navigation'
 
-import { ForgotPasswordForm } from '@/components/auth/forgot-password-form'
-import { ResetPasswordForm } from '@/components/auth/reset-password-form'
+import { ForgotPasswordForm } from '@/components/auth/recuperar-senha/forgot-password-form'
+import { ResetPasswordForm } from '@/components/auth/reset-senha/reset-password-form'
 
 export function RecuperarSenhaContent() {
   const searchParams = useSearchParams()

@@ -221,6 +221,7 @@ Um administrador precisa remover fotos de perfil ou de vitrine quando o conteúd
 - **FR-017**: Estados de UI MUST seguir padrão rich: Skeleton customizado por tipo em listagens; empty state com ícone e mensagem; toast (Sonner) para erros e ações; spinner em botões de submit; erro inline por campo em formulários; opção de retry em falhas de rede.
 - **FR-018**: A pasta `app/` MUST conter apenas pastas de rota e ficheiros `page.tsx`; componentes MUST ficar em `components/`, organizados por área (ex.: `components/auth/login/`, `components/auth/recuperar-senha/`).
 - **FR-019**: Schemas Zod MUST ficar em `schemas/`, organizados por domínio (ex.: `schemas/auth.ts`, `schemas/usuarios.ts`).
+- **FR-020**: Páginas (`page.tsx`) MUST ser Server Components (SSR) por defeito; usar `"use client"` apenas em componentes que requeiram interactividade (hooks, formulários, nuqs, context). A composição Server → Client deve ser usada: a página renderiza no servidor e importa componentes client onde necessário.
 
 ### Key Entities *(include if feature involves data)*
 
@@ -241,6 +242,7 @@ Um administrador precisa remover fotos de perfil ou de vitrine quando o conteúd
 - Componentes e ferramentas: utilizam-se shadcn, Aceternity (sidebar desktop com expansão no hover), Lucide React, Zod, React Hook Form, Sonner (toast), nuqs (query/URL), Skeleton (loading), Table, Tooltip, Card, Chart, Dialog, Form, Tabs. Em mobile: navegação principal na parte de baixo (bottom nav).
 - Paleta visual: preto e amarelo; tabelas com header amarelo (fundo amarelo, texto preto), linhas alternadas neutro/amarelo; todos os componentes e tipografia adaptam-se aos temas dark e light.
 - **Estrutura modular por domínio**: `app/(private)/dashboard/` contém a página central (`page.tsx`) e subpastas por feature (`usuarios/`, `avaliacoes/`, `banners/`, etc.); URLs: `/dashboard`, `/dashboard/usuarios`, `/dashboard/profissionais`, etc. Componentes em `components/features/[feature]/`; services em `services/admin-[feature]-fetch.ts`.
+- **SSR**: Páginas são Server Components; dados iniciais (quando possível) obtidos no servidor; componentes com interactividade (formulários, listagens com nuqs) ficam em ficheiros com `"use client"` e são importados nas páginas.
 - **Convenção app vs components**: Dentro de `app/` ficam apenas as pastas de rota e os ficheiros `page.tsx`; qualquer outro componente vai para `components/`. Áreas como login, recuperar-senha têm o componente em `components/auth/[nome-da-area]/` (ex.: `components/auth/login/`, `components/auth/recuperar-senha/`).
 - **Schemas**: Pasta `schemas/` para todos os schemas Zod (validação de formulários); organizar por domínio (ex.: `schemas/auth.ts`, `schemas/usuarios.ts`).
 - Filtros e pesquisa sincronizados com URL via nuqs: page, search, sortBy, sortOrder, filtros por coluna (status, tipo, etc.) para partilha e bookmark.

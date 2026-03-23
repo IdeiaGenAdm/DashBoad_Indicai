@@ -85,3 +85,20 @@ Todas as decisões técnicas foram resolvidas durante a sessão de clarificaçã
 **Rationale**: Backend já implementado; contrato estável; sem necessidade de GraphQL ou alternativas.
 
 **Alternatives considered**: Better Auth no frontend — mantido fluxo atual (login API) por simplicidade; migração possível no futuro.
+
+---
+
+## 8. Estratégia de rendering (SSR)
+
+**Decision**: SSR por defeito; Server Components nas páginas; `"use client"` apenas onde necessário
+
+**Rationale**: Next.js App Router favorece Server Components para melhor desempenho (menos JavaScript no cliente), SEO e carregamento inicial. Formulários, listagens com filtros nuqs e componentes com hooks precisam de client; a composição Server → Client mantém a página leve.
+
+**Guidelines**:
+- `page.tsx` = Server Component (sem `"use client"`)
+- Componente que usa `useState`, `useEffect`, `useForm`, nuqs ou context → `"use client"`
+- Dados iniciais (quando acedíveis sem token no servidor) podem ser fetches async nas páginas
+
+**Alternatives considered**:
+- Client-only SPA: Mais JavaScript; carregamento mais lento; rejeitado.
+- Full RSC (sem client): Formulários e nuqs exigem client; híbrido é o equilíbrio.

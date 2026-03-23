@@ -5,6 +5,8 @@
 
 **Organização**: Tasks por user story para implementação e teste independente. Código limpo e escalável; sem soluções provisórias.
 
+**Rendering (SSR)**: Páginas (`page.tsx`) devem ser Server Components por defeito. Componentes com interactividade (formulários, hooks, nuqs, context) ficam em `"use client"`; a página server importa e compõe com esses componentes.
+
 **Checkpoint obrigatório**: Após cada phase, documentar o que foi feito e obter autorização explícita antes de avançar para a próxima.
 
 ---
@@ -21,14 +23,14 @@
 
 **Objetivo**: Dependências e base estrutural alinhada ao plan.
 
-- [X] T001 Instalar nuqs em `package.json` para filtros via URL (`pnpm add nuqs`)
-- [X] T002 Instalar Sonner em `package.json` para toasts (`pnpm add sonner`)
-- [X] T003 [P] Adicionar Aceternity Sidebar via shadcn (`npx shadcn@latest add @aceternity/sidebar`) — preservado em `src/components/layout/aceternity-sidebar.tsx` para Phase 2; sidebar shadcn restaurado em `ui/sidebar.tsx`
-- [X] T004 [P] Adicionar componente Table do shadcn (`npx shadcn@latest add table`)
-- [X] T005 [P] Adicionar componente Chart do shadcn (`npx shadcn@latest add chart`)
-- [X] T006 Criar pastas de estrutura em `src/`: `components/features/`, `components/layout/`, `services/`, `types/` conforme plan.md
-- [X] T007 Verificar e configurar NuqsProvider em `src/components/providers.tsx` (ou layout raiz) para suporte a query params — configurado NuqsAdapter
-- [X] T008 Verificar e configurar Toaster (Sonner) em `src/app/layout.tsx` ou `src/components/providers.tsx` — configurado em providers.tsx
+- [x] T001 Instalar nuqs em `package.json` para filtros via URL (`pnpm add nuqs`)
+- [x] T002 Instalar Sonner em `package.json` para toasts (`pnpm add sonner`)
+- [x] T003 [P] Adicionar Aceternity Sidebar via shadcn (`npx shadcn@latest add @aceternity/sidebar`) — preservado em `src/components/layout/aceternity-sidebar.tsx` para Phase 2; sidebar shadcn restaurado em `ui/sidebar.tsx`
+- [x] T004 [P] Adicionar componente Table do shadcn (`npx shadcn@latest add table`)
+- [x] T005 [P] Adicionar componente Chart do shadcn (`npx shadcn@latest add chart`)
+- [x] T006 Criar pastas de estrutura em `src/`: `components/features/`, `components/layout/`, `services/`, `types/` conforme plan.md
+- [x] T007 Verificar e configurar NuqsProvider em `src/components/providers.tsx` (ou layout raiz) para suporte a query params — configurado NuqsAdapter
+- [x] T008 Verificar e configurar Toaster (Sonner) em `src/app/layout.tsx` ou `src/components/providers.tsx` — configurado em providers.tsx
 
 ### ✅ Checkpoint Phase 1
 
@@ -42,19 +44,19 @@
 
 **⚠️ Crítico**: Nenhuma user story deve começar antes desta phase estar concluída.
 
-- [ ] T009 Implementar `src/components/layout/sidebar.tsx` com Aceternity Sidebar (desktop, expansão no hover), links para dashboard e áreas admin, usando paleta preto+amarelo
-- [ ] T010 Implementar `src/components/layout/bottom-nav.tsx` para navegação mobile (visível apenas em viewport móvel), com mesmos destinos do sidebar
-- [ ] T011 Atualizar `src/components/private-layout-guard.tsx` para usar Aceternity Sidebar no desktop e BottomNav no mobile, removendo sidebar shadcn antigo
-- [ ] T012 [P] Reorganizar auth: criar `src/components/auth/login/login-form.tsx` (mover de auth/login-form.tsx) e ajustar imports em `src/app/(auth)/login/page.tsx`
-- [ ] T013 [P] Reorganizar auth: criar `src/components/auth/recuperar-senha/forgot-password-form.tsx` e ajustar imports em `src/app/(auth)/indicai/recuperar-senha/page.tsx`
-- [ ] T014 [P] Reorganizar auth: criar `src/components/auth/reset-senha/reset-password-form.tsx` e ajustar página de reset; remover ficheiros antigos da raiz de auth
-- [ ] T015 Criar `src/components/ui/data-table.tsx` (wrapper de Table shadcn) com padrão visual: header amarelo (fundo amarelo, texto preto), linhas alternadas neutro/amarelo, suporte dark/light
-- [ ] T016 Criar `src/components/ui/empty-state.tsx` reutilizável: ícone, mensagem e opcional botão de ação
-- [ ] T017 Criar `src/components/ui/loading-skeleton.tsx` para listagens (variantes: table rows, cards) com Skeleton do shadcn
-- [ ] T018 Criar `src/services/admin-auth-fetch.ts` com `changeAdminPassword` usando `adminFetch` de `src/lib/api.ts`
-- [ ] T019 Adicionar schema `changePasswordSchema` em `src/schemas/auth.ts` para alteração de senha (senhaAtual, senhaNova, confirmSenha)
-- [ ] T020 Criar rotas em `app/(private)/dashboard/`: `page.tsx` (central), `usuarios/page.tsx`, `profissionais/page.tsx`, `avaliacoes/page.tsx`, `denuncias/page.tsx`, `relatorios/page.tsx`, `banners/page.tsx`, `sistema/page.tsx` com placeholder legível (URLs: /dashboard, /dashboard/usuarios, etc.)
-- [ ] T021 Adicionar links do sidebar e bottom-nav para /dashboard e /dashboard/usuarios, /dashboard/profissionais, etc.
+- [x] T009 Implementar `src/components/layout/sidebar.tsx` com Aceternity Sidebar (desktop, expansão no hover), links para dashboard e áreas admin, usando paleta preto+amarelo
+- [x] T010 Implementar `src/components/layout/bottom-nav.tsx` para navegação mobile (visível apenas em viewport móvel), com mesmos destinos do sidebar
+- [x] T011 Atualizar `src/components/private-layout-guard.tsx` para usar Aceternity Sidebar no desktop e BottomNav no mobile, removendo sidebar shadcn antigo
+- [x] T012 [P] Reorganizar auth: criar `src/components/auth/login/login-form.tsx` (mover de auth/login-form.tsx) e ajustar imports em `src/app/(auth)/login/page.tsx`
+- [x] T013 [P] Reorganizar auth: criar `src/components/auth/recuperar-senha/forgot-password-form.tsx` e ajustar imports em `src/app/(auth)/indicai/recuperar-senha/page.tsx`
+- [x] T014 [P] Reorganizar auth: criar `src/components/auth/reset-senha/reset-password-form.tsx` e ajustar página de reset; remover ficheiros antigos da raiz de auth
+- [x] T015 Criar `src/components/ui/data-table.tsx` (wrapper de Table shadcn) com padrão visual: header amarelo (fundo amarelo, texto preto), linhas alternadas neutro/amarelo, suporte dark/light
+- [x] T016 Criar `src/components/ui/empty-state.tsx` reutilizável: ícone, mensagem e opcional botão de ação
+- [x] T017 Criar `src/components/ui/loading-skeleton.tsx` para listagens (variantes: table rows, cards) com Skeleton do shadcn
+- [x] T018 Criar `src/services/admin-auth-fetch.ts` com `changeAdminPassword` usando `adminFetch` de `src/lib/api.ts`
+- [x] T019 Adicionar schema `changePasswordSchema` em `src/schemas/auth.ts` para alteração de senha (senhaAtual, senhaNova, confirmSenha)
+- [x] T020 Criar rotas em `app/(private)/dashboard/`: `page.tsx` (central), `usuarios/page.tsx`, `profissionais/page.tsx`, `avaliacoes/page.tsx`, `denuncias/page.tsx`, `relatorios/page.tsx`, `banners/page.tsx`, `sistema/page.tsx` com placeholder legível (URLs: /dashboard, /dashboard/usuarios, etc.)
+- [x] T021 Adicionar links do sidebar e bottom-nav para /dashboard e /dashboard/usuarios, /dashboard/profissionais, etc.
 
 ### ✅ Checkpoint Phase 2
 
@@ -298,18 +300,18 @@
 
 ### MVP primeiro (apenas US1)
 
-1. Phase 1: Setup  
-2. Phase 2: Foundational  
-3. Phase 3: US1 (Login + alteração de senha)  
-4. Parar e validar; reportar; obter autorização  
-5. Demo/deploy se aplicável  
+1. Phase 1: Setup
+2. Phase 2: Foundational
+3. Phase 3: US1 (Login + alteração de senha)
+4. Parar e validar; reportar; obter autorização
+5. Demo/deploy se aplicável
 
 ### Entrega incremental
 
-1. Setup + Foundational → base pronta  
-2. US1 → validar → reportar → autorização → demo (MVP)  
-3. US2 → validar → reportar → autorização → demo  
-4. Repetir para US3–US11 conforme prioridade  
+1. Setup + Foundational → base pronta
+2. US1 → validar → reportar → autorização → demo (MVP)
+3. US2 → validar → reportar → autorização → demo
+4. Repetir para US3–US11 conforme prioridade
 
 ---
 

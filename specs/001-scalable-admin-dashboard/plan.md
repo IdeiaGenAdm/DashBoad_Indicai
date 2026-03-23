@@ -11,10 +11,11 @@ Adaptar o dashboard administrativo IndicAI com arquitetura modular por domínio,
 
 **Language/Version**: TypeScript 5, Next.js 16 (App Router), React 19  
 **Primary Dependencies**: shadcn/ui, Aceternity Sidebar, nuqs, Sonner, Zod, React Hook Form, Lucide React, next-themes  
+**Rendering**: **SSR por defeito** — Páginas (`page.tsx`) devem ser Server Components; usar `"use client"` apenas em componentes que requeiram interactividade (formulários, hooks, context, nuqs). Favorecer composição: página server → importa componente client quando necessário.  
 **Storage**: N/A (dashboard consome APIs REST do backend)  
 **Testing**: ESLint; testes manuais/E2E conforme evolução  
 **Target Platform**: Web (desktop + mobile responsivo)  
-**Project Type**: Web application (Next.js SPA)  
+**Project Type**: Web application (Next.js App Router com SSR)  
 **Performance Goals**: Carregamento de listagens em <2s; transições suaves  
 **Constraints**: CORS configurado no backend; token JWT em localStorage  
 **Scale/Scope**: ~15 páginas admin; ~12 domains de services; paleta preto+amarelo; dark/light mode  
@@ -96,6 +97,8 @@ src/
 ```
 
 **Structure Decision**: Estrutura modular por domínio (Clarification A). Em `app/` apenas rotas e `page.tsx`; componentes em `components/` por área. Services um ficheiro por domínio (`admin-*-fetch.ts`).
+
+**Rendering Decision**: SSR por defeito. Cada `page.tsx` é Server Component; dados iniciais podem ser obtidos no servidor quando aplicável. Componentes que usam hooks, formulários ou nuqs ficam em `"use client"` e são importados nas páginas.
 
 ## Complexity Tracking
 
