@@ -2,8 +2,10 @@
 import React, { createContext, useContext, useState } from 'react'
 
 import { IconMenu2, IconX } from '@tabler/icons-react'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 
+import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 
 export interface AceternitySidebarLink {
@@ -16,6 +18,9 @@ interface SidebarContextProps {
   open: boolean
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   animate: boolean
+  pinned: boolean
+  setPinned: React.Dispatch<React.SetStateAction<boolean>>
+  isExpanded: boolean
 }
 
 const SidebarContext = createContext<SidebarContextProps | undefined>(undefined)
@@ -40,12 +45,15 @@ export const AceternitySidebarProvider = ({
   animate?: boolean
 }) => {
   const [openState, setOpenState] = useState(false)
+  const [pinned, setPinned] = useState(true)
 
   const open = openProp !== undefined ? openProp : openState
   const setOpen = setOpenProp !== undefined ? setOpenProp : setOpenState
 
+  const isExpanded = pinned || open
+
   return (
-    <SidebarContext.Provider value={{ open, setOpen, animate: animate }}>
+    <SidebarContext.Provider value={{ open, setOpen, animate, pinned, setPinned, isExpanded }}>
       {children}
     </SidebarContext.Provider>
   )
@@ -83,19 +91,19 @@ export const DesktopSidebar = ({
   children,
   ...props
 }: React.ComponentProps<typeof motion.div>) => {
-  const { open, setOpen, animate } = useAceternitySidebar()
+  const { setOpen, animate, isExpanded, pinned, setPinned } = useAceternitySidebar()
   return (
     <>
       <motion.div
         className={cn(
-          'hidden h-full w-[300px] shrink-0 bg-neutral-100 px-4 py-4 md:flex md:flex-col dark:bg-neutral-800',
+          'hidden h-full shrink-0 bg-neutral-100 px-4 py-4 md:flex md:flex-col dark:bg-neutral-800',
           className
         )}
         animate={{
-          width: animate ? (open ? '300px' : '60px') : '300px',
+          width: animate ? (isExpanded ? '260px' : '72px') : '260px',
         }}
         onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
+        onMouseLeave={() => !pinned && setOpen(false)}
         {...props}
       >
         {children}
@@ -150,6 +158,21 @@ export const MobileSidebar = ({ className, children, ...props }: React.Component
   )
 }
 
+export function SidebarToggle() {
+  const { pinned, setPinned, isExpanded } = useAceternitySidebar()
+  return (
+    <Button
+      variant="ghost"
+      size="icon"
+      className="text-muted-foreground hover:text-foreground"
+      onClick={() => setPinned(!pinned)}
+      aria-label={isExpanded ? 'Recolher menu' : 'Expandir menu'}
+    >
+      {isExpanded ? <PanelLeftClose className="size-5" /> : <PanelLeftOpen className="size-5" />}
+    </Button>
+  )
+}
+
 export const SidebarLink = ({
   link,
   className,
@@ -158,7 +181,7 @@ export const SidebarLink = ({
   link: AceternitySidebarLink
   className?: string
 }) => {
-  const { open, animate } = useAceternitySidebar()
+  const { isExpanded, animate } = useAceternitySidebar()
   return (
     <a
       href={link.href}
@@ -169,8 +192,8 @@ export const SidebarLink = ({
 
       <motion.span
         animate={{
-          display: animate ? (open ? 'inline-block' : 'none') : 'inline-block',
-          opacity: animate ? (open ? 1 : 0) : 1,
+          display: animate ? (isExpanded ? 'inline-block' : 'none') : 'inline-block',
+          opacity: animate ? (isExpanded ? 1 : 0) : 1,
         }}
         className="!m-0 inline-block !p-0 text-sm whitespace-pre text-neutral-700 transition duration-150 group-hover/sidebar:translate-x-1 dark:text-neutral-200"
       >

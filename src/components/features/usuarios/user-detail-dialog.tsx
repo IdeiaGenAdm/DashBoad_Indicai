@@ -117,15 +117,45 @@ export function UserDetailDialog({
           </div>
         ) : user ? (
           <div className="space-y-4">
-            <div>
-              <div className="font-medium">
+            <div className="rounded-lg bg-muted/50 p-4">
+              <div className="font-semibold">
                 {typeof user.nomeCompleto === 'string'
                   ? user.nomeCompleto
                   : typeof user.nome === 'string'
                     ? user.nome
                     : '-'}
               </div>
-              <div className="text-sm text-muted-foreground">{user.email}</div>
+              <div className="mt-1 text-sm text-muted-foreground">{user.email}</div>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {user.tipoUsuario && (
+                  <span className="rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                    {user.tipoUsuario}
+                  </span>
+                )}
+                {user.status && (
+                  <span
+                    className={
+                      user.status === 'bloqueado'
+                        ? 'rounded-md bg-destructive/10 px-2 py-0.5 text-xs font-medium text-destructive'
+                        : user.status === 'desativado'
+                          ? 'rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground'
+                          : 'rounded-md bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary'
+                    }
+                  >
+                    {user.status}
+                  </span>
+                )}
+              </div>
+              {user.createdAt && (
+                <div className="mt-2 text-xs text-muted-foreground">
+                  Registado em{' '}
+                  {new Date(user.createdAt).toLocaleDateString('pt-PT', {
+                    day: '2-digit',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </div>
+              )}
             </div>
 
             <div className="space-y-2">
