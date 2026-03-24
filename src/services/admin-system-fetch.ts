@@ -2,12 +2,23 @@ import { adminFetch } from '@/lib/api'
 
 export interface MaintenanceStatus {
   active?: boolean
+  enabled?: boolean
+  message?: string
   [key: string]: unknown
 }
 
 /** GET /admin/system/maintenance — Estado manutenção */
 export async function getMaintenanceMode(authToken: string): Promise<MaintenanceStatus> {
-  return adminFetch<MaintenanceStatus>('/system/maintenance', authToken)
+  const res = await adminFetch<MaintenanceStatus>('/system/maintenance', authToken)
+  return {
+    ...res,
+    active:
+      typeof res.active === 'boolean'
+        ? res.active
+        : typeof res.enabled === 'boolean'
+          ? res.enabled
+          : false,
+  }
 }
 
 /** POST /admin/system/maintenance — Ativar manutenção */

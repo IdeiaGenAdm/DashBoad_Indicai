@@ -1,4 +1,4 @@
-import { adminFetch } from '@/lib/api'
+import { AdminApiError, adminFetch } from '@/lib/api'
 
 export interface OverviewMetrics {
   users?: number
@@ -77,12 +77,61 @@ export interface TopRatedProfessionalsResponse {
 
 /** GET /admin/stats/top-rated-professionals — Profissionais melhor avaliados */
 export async function getTopRatedProfessionals(
-  authToken: string
+  authToken: string,
+  params?: { days?: number; minAvaliacoes?: number; limit?: number }
 ): Promise<TopRatedProfessionalsResponse> {
-  const res = await adminFetch<TopRatedProfessionalsResponse>(
-    '/stats/top-rated-professionals',
-    authToken
-  )
+  const search = new URLSearchParams()
+  if (params?.days != null) search.set('days', String(params.days))
+  if (params?.minAvaliacoes != null) search.set('minAvaliacoes', String(params.minAvaliacoes))
+  if (params?.limit != null) search.set('limit', String(params.limit))
+  const qs = search.toString()
+  let res: TopRatedProfessionalsResponse
+  try {
+    res = await adminFetch<TopRatedProfessionalsResponse>(
+      `/stats/top-rated-professionals${qs ? `?${qs}` : ''}`,
+      authToken
+    )
+  } catch (error) {
+    // Fallback defensivo: monta ranking a partir da listagem de profissionais.
+    if (error instanceof AdminApiError && error.status >= 500) {
+      const usersRes = await adminFetch<{ users?: Array<Record<string, unknown>> }>(
+        '/users?tipoUsuario=profissional&limit=100',
+        authToken
+      )
+      const professionals = (usersRes.users ?? [])
+        .map((user) => {
+          const ratingRaw =
+            typeof user.avaliacaoMedia === 'string'
+              ? Number(user.avaliacaoMedia)
+              : user.avaliacaoMedia
+          const avaliacoesRaw =
+            typeof user.totalAvaliacoes === 'string'
+              ? Number(user.totalAvaliacoes)
+              : user.totalAvaliacoes
+          return {
+            id: typeof user.id === 'string' ? user.id : undefined,
+            nomeCompleto: typeof user.nomeCompleto === 'string' ? user.nomeCompleto : undefined,
+            nome: typeof user.nome === 'string' ? user.nome : undefined,
+            profissao:
+              Array.isArray(user.profissoes) && typeof user.profissoes[0] === 'string'
+                ? (user.profissoes[0] as string)
+                : undefined,
+            rating:
+              typeof ratingRaw === 'number' && Number.isFinite(ratingRaw) ? ratingRaw : undefined,
+            avaliacoes:
+              typeof avaliacoesRaw === 'number' && Number.isFinite(avaliacoesRaw)
+                ? avaliacoesRaw
+                : undefined,
+          } satisfies TopRatedProfessionalItem
+        })
+        .filter((item) => typeof item.rating === 'number' && (item.avaliacoes ?? 0) > 0)
+        .sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0))
+        .slice(0, params?.limit ?? 10)
+
+      return { professionals }
+    }
+    throw error
+  }
   if (!Array.isArray(res.professionals) && Array.isArray(res.profissionais)) {
     return {
       ...res,
@@ -92,6 +141,20 @@ export async function getTopRatedProfessionals(
         rating: typeof item.mediaNoPeriodo === 'string' ? Number(item.mediaNoPeriodo) : undefined,
         avaliacoes:
           typeof item.avaliacoesNoPeriodo === 'number' ? item.avaliacoesNoPeriodo : undefined,
+      })),
+    }
+  }
+  if (Array.isArray(res.professionals)) {
+    return {
+      ...res,
+      professionals: res.professionals.map((item) => ({
+        ...item,
+        rating:
+          typeof item.rating === 'number'
+            ? item.rating
+            : typeof (item as { mediaNoPeriodo?: unknown }).mediaNoPeriodo === 'string'
+              ? Number((item as { mediaNoPeriodo?: string }).mediaNoPeriodo)
+              : undefined,
       })),
     }
   }

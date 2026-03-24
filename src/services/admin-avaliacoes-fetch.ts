@@ -30,6 +30,8 @@ export interface ListAvaliacoesResponse {
   limit?: number
 }
 
+type RawAvaliacaoItem = Record<string, unknown>
+
 /** GET /admin/avaliacoes — Listar avaliações */
 export async function listAvaliacoes(
   authToken: string,
@@ -43,7 +45,59 @@ export async function listAvaliacoes(
   if (params?.sortOrder) search.set('sortOrder', params.sortOrder)
   if (params?.status) search.set('status', params.status)
   const qs = search.toString()
-  return adminFetch<ListAvaliacoesResponse>(`/avaliacoes${qs ? `?${qs}` : ''}`, authToken)
+  const res = await adminFetch<ListAvaliacoesResponse>(`/avaliacoes${qs ? `?${qs}` : ''}`, authToken)
+
+  const rawItems = Array.isArray(res.avaliacoes)
+    ? (res.avaliacoes as RawAvaliacaoItem[])
+    : Array.isArray(res.data)
+      ? (res.data as RawAvaliacaoItem[])
+      : []
+
+  const normalized: AvaliacaoListItem[] = rawItems.map((item) => {
+    const ratingRaw = item.rating ?? item.estrelas
+    const statusRaw = item.status ?? item.moderacaoStatus
+    return {
+      id: String(item.id ?? ''),
+      profissionalId:
+        typeof item.profissionalId === 'string'
+          ? item.profissionalId
+          : typeof item.avaliadoId === 'string'
+            ? item.avaliadoId
+            : undefined,
+      profissionalNome:
+        typeof item.profissionalNome === 'string'
+          ? item.profissionalNome
+          : typeof item.avaliadoNome === 'string'
+            ? item.avaliadoNome
+            : undefined,
+      autorNome:
+        typeof item.autorNome === 'string'
+          ? item.autorNome
+          : typeof item.avaliadorNome === 'string'
+            ? item.avaliadorNome
+            : undefined,
+      autorEmail: typeof item.autorEmail === 'string' ? item.autorEmail : undefined,
+      rating:
+        typeof ratingRaw === 'number'
+          ? ratingRaw
+          : typeof ratingRaw === 'string'
+            ? Number(ratingRaw)
+            : undefined,
+      comentario: typeof item.comentario === 'string' ? item.comentario : undefined,
+      status: typeof statusRaw === 'string' ? statusRaw : undefined,
+      createdAt:
+        typeof item.createdAt === 'string'
+          ? item.createdAt
+          : typeof item.dataAvaliacao === 'string'
+            ? item.dataAvaliacao
+            : undefined,
+    }
+  })
+
+  return {
+    ...res,
+    avaliacoes: normalized.filter((item) => item.id),
+  }
 }
 
 /** PATCH /admin/avaliacoes/:avaliacaoId/suspend — Suspender avaliação */

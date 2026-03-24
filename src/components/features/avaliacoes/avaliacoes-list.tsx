@@ -122,12 +122,12 @@ export function AvaliacoesList() {
     }
   }
 
-  function displayName(item: AvaliacaoListItem): string {
-    return (
-      (typeof item.autorNome === 'string' ? item.autorNome : null) ??
-      (typeof item.profissionalNome === 'string' ? item.profissionalNome : null) ??
-      '-'
-    )
+  function getProfessionalName(item: AvaliacaoListItem): string {
+    return (typeof item.profissionalNome === 'string' ? item.profissionalNome : null) ?? '-'
+  }
+
+  function getAuthorName(item: AvaliacaoListItem): string {
+    return (typeof item.autorNome === 'string' ? item.autorNome : null) ?? '-'
   }
 
   const showEmpty = !isLoading && data.length === 0
@@ -151,7 +151,7 @@ export function AvaliacoesList() {
         <DataTable>
           <DataTableHeader>
             <DataTableRow>
-              <DataTableHead>Autor / Profissional</DataTableHead>
+              <DataTableHead>Profissional / Autor</DataTableHead>
               <DataTableHead>Rating</DataTableHead>
               <DataTableHead>Comentário</DataTableHead>
               <DataTableHead>Status</DataTableHead>
@@ -168,7 +168,12 @@ export function AvaliacoesList() {
             ) : (
               data.map((item) => (
                 <DataTableRow key={item.id}>
-                  <DataTableCell className="font-medium">{displayName(item)}</DataTableCell>
+                  <DataTableCell>
+                    <div className="space-y-0.5">
+                      <p className="font-medium">{getProfessionalName(item)}</p>
+                      <p className="text-xs text-muted-foreground">Autor: {getAuthorName(item)}</p>
+                    </div>
+                  </DataTableCell>
                   <DataTableCell>
                     <span className="flex items-center gap-1">
                       <Star className="size-4 fill-primary text-primary" />
@@ -252,11 +257,10 @@ export function AvaliacoesList() {
           {detailItem && (
             <div className="space-y-2 text-sm">
               <p>
-                <span className="font-medium">Autor:</span> {displayName(detailItem)}
+                <span className="font-medium">Autor:</span> {getAuthorName(detailItem)}
               </p>
               <p>
-                <span className="font-medium">Profissional:</span>{' '}
-                {detailItem.profissionalNome ?? '-'}
+                <span className="font-medium">Profissional:</span> {getProfessionalName(detailItem)}
               </p>
               <p>
                 <span className="font-medium">Rating:</span>{' '}
@@ -282,9 +286,9 @@ export function AvaliacoesList() {
             <DialogTitle>Confirmar ação</DialogTitle>
             <DialogDescription>
               {confirmAction?.type === 'suspend' &&
-                `Suspender a avaliação de ${displayName(confirmAction.item)}? A avaliação deixará de ser exibida.`}
+                `Suspender a avaliação de ${getProfessionalName(confirmAction.item)}? A avaliação deixará de ser exibida.`}
               {confirmAction?.type === 'restore' &&
-                `Restaurar a avaliação de ${displayName(confirmAction.item)}?`}
+                `Restaurar a avaliação de ${getProfessionalName(confirmAction.item)}?`}
               {confirmAction?.type === 'delete' &&
                 `Eliminar definitivamente esta avaliação? Esta ação não pode ser revertida.`}
             </DialogDescription>

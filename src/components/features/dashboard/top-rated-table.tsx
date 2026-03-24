@@ -56,7 +56,7 @@ export function TopRatedTable() {
 
   useEffect(() => {
     if (!token) return
-    getTopRatedProfessionals(token)
+    getTopRatedProfessionals(token, { minAvaliacoes: 1, limit: 10 })
       .then((res) => {
         const list = res.professionals ?? res.data ?? []
         setItems(Array.isArray(list) ? list : [])
