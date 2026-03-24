@@ -2,7 +2,7 @@
 
 ## Descrição
 
-Este PR **encerra a spec `001-scalable-admin-dashboard`** (Phases 1–14): implementação completa do dashboard administrativo IndicAI consumindo as APIs do backend (spec `001-admin-auth`), com login restrito a administradores, gestão de utilizadores, profissionais, avaliações, denúncias/feedback, relatórios (financeiro, geo, rankings), banners, sistema (manutenção, bloqueio) e remoção de fotos. Inclui **enriquecimento da home** (tabelas recentes, gráficos adicionais, ações rápidas), **melhorias de UX** (skeleton apenas na área de conteúdo, sidebar fixa, branding IndicAI, tabelas sem bordas brancas, toast de erro vermelho escuro) e conformidade com **FR-001–FR-020** da spec. O objetivo é dar à equipa operacional uma interface completa, responsiva e consistente para operar a plataforma.
+Este PR **encerra a spec `001-scalable-admin-dashboard`** (Phases 1–14): implementação completa do dashboard administrativo IndicMe consumindo as APIs do backend (spec `001-admin-auth`), com login restrito a administradores, gestão de utilizadores, profissionais, avaliações, denúncias/feedback, relatórios (financeiro, geo, rankings), banners, sistema (manutenção, bloqueio) e remoção de fotos. Inclui **enriquecimento da home** (tabelas recentes, gráficos adicionais, ações rápidas), **melhorias de UX** (skeleton apenas na área de conteúdo, sidebar fixa, branding IndicMe, tabelas sem bordas brancas, toast de erro vermelho escuro) e conformidade com **FR-001–FR-020** da spec. O objetivo é dar à equipa operacional uma interface completa, responsiva e consistente para operar a plataforma.
 
 O restante deste documento serve para **revisor humano**, **Copilot** e **onboarding**: contexto, intenção por área, superfície alterada e como validar.
 
@@ -81,7 +81,7 @@ Se algo na UI não bater com o contrato verbal deste PR, o **contrato normativo*
 
 ### Home enriquecida e polish UX (extra-spec)
 
-**Problema:** Dashboard home minimalista; bordas brancas; textos "Carregando"/"Redirecionando"; sidebar a scrollar; itens colapsados desalinhados; nome IndicAI fragmentado.  
+**Problema:** Dashboard home minimalista; bordas brancas; textos "Carregando"/"Redirecionando"; sidebar a scrollar; itens colapsados desalinhados; nome IndicMe fragmentado.  
 **Solução:**
 
 - Tabelas recent-users e top-rated na home; gráficos adicionais (PieChart, BarChart) via `dashboard-charts`; ações rápidas em FAB (Floating Action Button).
@@ -90,7 +90,7 @@ Se algo na UI não bater com o contrato verbal deste PR, o **contrato normativo*
 - Remoção de bordas em DataTable, user-list, loading-skeleton, cards de relatórios (uso de `bg-muted/40` em vez de `border`).
 - Skeleton apenas na área de conteúdo (auth loading e `loading.tsx`); sidebar e header sempre visíveis durante loading.
 - Sidebar fixa (`h-dvh`, `overflow-hidden`); utilizador no fundo da sidebar com flex layout; separador entre nome e links.
-- Branding IndicAI: logo mark "IA" em badge amarelo + nome "IndicAI" em amarelo; itens colapsados centralizados com background adequado.
+- Branding IndicMe: logo mark "IA" em badge amarelo + nome "IndicMe" em amarelo; itens colapsados centralizados com background adequado.
 - Toast de erro com fundo vermelho escuro (`hsl(0 65% 22%)`).
 - `CreateUserDialog` com trigger condicional (só renderiza botão quando não controlado).
 
@@ -117,7 +117,7 @@ Se algo na UI não bater com o contrato verbal deste PR, o **contrato normativo*
 | -------------------------- | ----------------------------------------------------- |
 | `/`                        | `home-redirect` → /dashboard ou /login conforme token |
 | `/login`                   | Login admin                                           |
-| `/indicai/recuperar-senha` | Esqueci a senha                                       |
+| `/indicme/recuperar-senha` | Esqueci a senha                                       |
 
 ---
 
@@ -179,7 +179,7 @@ Se algo na UI não bater com o contrato verbal deste PR, o **contrato normativo*
 2. [ ] `pnpm lint` — sem erros.
 3. [ ] Backend a correr; CORS configurado; login com admin.
 4. [ ] Navegação entre páginas: sidebar e header estáveis; skeleton apenas no conteúdo.
-5. [ ] Sidebar colapsada: ícones centralizados; logo "IA" + "IndicAI" legíveis.
+5. [ ] Sidebar colapsada: ícones centralizados; logo "IA" + "IndicMe" legíveis.
 6. [ ] Tabelas: sem bordas brancas; header amarelo; linhas alternadas.
 7. [ ] Toast de erro: fundo vermelho escuro.
 8. [ ] Filtros e pesquisa: nuqs na URL (page, search, etc.) partilháveis.

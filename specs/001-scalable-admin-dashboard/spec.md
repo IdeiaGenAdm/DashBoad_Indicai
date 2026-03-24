@@ -1,4 +1,4 @@
-# Feature Specification: Dashboard Admin Escalável IndicAI
+# Feature Specification: Dashboard Admin Escalável IndicMe
 
 **Feature Branch**: `001-scalable-admin-dashboard`  
 **Created**: 2026-03-22  

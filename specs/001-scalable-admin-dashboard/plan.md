@@ -1,11 +1,11 @@
-# Implementation Plan: Dashboard Admin Escalável IndicAI
+# Implementation Plan: Dashboard Admin Escalável IndicMe
 
 **Branch**: `001-scalable-admin-dashboard` | **Date**: 2026-03-22 | **Spec**: [spec.md](./spec.md)  
 **Input**: Feature specification from `/specs/001-scalable-admin-dashboard/spec.md`
 
 ## Summary
 
-Adaptar o dashboard administrativo IndicAI com arquitetura modular por domínio, consumindo as APIs do backend (spec 001-admin-auth). Inclui: layout Aceternity Sidebar (desktop) + bottom nav (mobile), tabelas com padrão visual (header amarelo, linhas alternadas), filtros via nuqs (page, search, sortBy, sortOrder), serviços por domínio e 11 áreas admin (login, contas, avaliações, denúncias, relatórios, banners, sistema, etc.).
+Adaptar o dashboard administrativo IndicMe com arquitetura modular por domínio, consumindo as APIs do backend (spec 001-admin-auth). Inclui: layout Aceternity Sidebar (desktop) + bottom nav (mobile), tabelas com padrão visual (header amarelo, linhas alternadas), filtros via nuqs (page, search, sortBy, sortOrder), serviços por domínio e 11 áreas admin (login, contas, avaliações, denúncias, relatórios, banners, sistema, etc.).
 
 ## Technical Context
 
@@ -47,7 +47,7 @@ src/
 ├── app/
 │   ├── (auth)/
 │   │   ├── login/page.tsx
-│   │   └── indicai/recuperar-senha/page.tsx
+│   │   └── indicme/recuperar-senha/page.tsx
 │   ├── (private)/
 │   │   ├── layout.tsx
 │   │   └── dashboard/

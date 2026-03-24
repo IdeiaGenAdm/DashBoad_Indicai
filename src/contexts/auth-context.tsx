@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 
 import { login as apiLogin, getMe, isAdminRole } from '@/lib/api'
 
-const TOKEN_KEY = 'indicai_dashboard_token'
+const TOKEN_KEY = 'indicme_dashboard_token'
 
 interface User {
   id: string

@@ -17,12 +17,12 @@ export default function LoginPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-              <p className="text-sm text-muted-foreground">IndicAI Admin</p>
+              <p className="text-sm text-muted-foreground">IndicMe Admin</p>
             </div>
           </div>
           <h2 className="mb-2 text-lg font-semibold">Painel administrativo</h2>
           <p className="mb-6 max-w-sm text-sm leading-relaxed text-muted-foreground">
-            Aceda ao centro de controlo da plataforma IndicAI. Gerir utilizadores, profissionais,
+            Aceda ao centro de controlo da plataforma IndicMe. Gerir utilizadores, profissionais,
             avaliações e relatórios num único lugar.
           </p>
           <div className="flex flex-wrap gap-4">

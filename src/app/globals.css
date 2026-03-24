@@ -2,7 +2,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Paleta: preto + amarelo - IndicAI Dashboard (cores inspiradas em shadcn/Aceternity) */
+/* Paleta: preto + amarelo - IndicMe Dashboard (cores inspiradas em shadcn/Aceternity) */
 
 :root {
   --background: 60 9% 98%;

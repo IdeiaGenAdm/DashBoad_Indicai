@@ -1,4 +1,4 @@
-# Quickstart: Dashboard Admin IndicAI
+# Quickstart: Dashboard Admin IndicMe
 
 **Feature**: 001-scalable-admin-dashboard
 
@@ -6,7 +6,7 @@
 
 - Node.js 20+
 - pnpm (ou npm/yarn)
-- Backend IndicAI a correr em `http://localhost:5000` (ou configurar `NEXT_PUBLIC_API_URL`)
+- Backend IndicMe a correr em `http://localhost:5000` (ou configurar `NEXT_PUBLIC_API_URL`)
 
 ## Setup
 
@@ -58,7 +58,7 @@ Páginas devem ser **Server Components** por defeito. Componentes com interactiv
 O backend deve estar a correr com CORS configurado para `http://localhost:3000` (ou a origem do dashboard).
 
 ```bash
-# No projeto indicai-backend
+# No projeto indicme-backend
 pnpm dev
 ```
 

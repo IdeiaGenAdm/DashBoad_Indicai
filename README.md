@@ -1,6 +1,6 @@
-# DashBoad_Indicai
+# DashBoad_IndicMe
 
-Dashboard da API IndicAI
+Dashboard da API IndicMe
 
 ## Getting Started
 

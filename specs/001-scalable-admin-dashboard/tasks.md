@@ -1,4 +1,4 @@
-# Tasks: Dashboard Admin Escalável IndicAI
+# Tasks: Dashboard Admin Escalável IndicMe
 
 **Input**: Design documents from `/specs/001-scalable-admin-dashboard/`  
 **Prerequisites**: plan.md, spec.md, research.md, data-model.md, contracts/, quickstart.md
@@ -48,7 +48,7 @@
 - [x] T010 Implementar `src/components/layout/bottom-nav.tsx` para navegação mobile (visível apenas em viewport móvel), com mesmos destinos do sidebar
 - [x] T011 Atualizar `src/components/private-layout-guard.tsx` para usar Aceternity Sidebar no desktop e BottomNav no mobile, removendo sidebar shadcn antigo
 - [x] T012 [P] Reorganizar auth: criar `src/components/auth/login/login-form.tsx` (mover de auth/login-form.tsx) e ajustar imports em `src/app/(auth)/login/page.tsx`
-- [x] T013 [P] Reorganizar auth: criar `src/components/auth/recuperar-senha/forgot-password-form.tsx` e ajustar imports em `src/app/(auth)/indicai/recuperar-senha/page.tsx`
+- [x] T013 [P] Reorganizar auth: criar `src/components/auth/recuperar-senha/forgot-password-form.tsx` e ajustar imports em `src/app/(auth)/indicme/recuperar-senha/page.tsx`
 - [x] T014 [P] Reorganizar auth: criar `src/components/auth/reset-senha/reset-password-form.tsx` e ajustar página de reset; remover ficheiros antigos da raiz de auth
 - [x] T015 Criar `src/components/ui/data-table.tsx` (wrapper de Table shadcn) com padrão visual: header amarelo (fundo amarelo, texto preto), linhas alternadas neutro/amarelo, suporte dark/light
 - [x] T016 Criar `src/components/ui/empty-state.tsx` reutilizável: ícone, mensagem e opcional botão de ação

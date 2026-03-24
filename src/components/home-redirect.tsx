@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 
 import { useAuth } from '@/contexts/auth-context'
 
-const TOKEN_KEY = 'indicai_dashboard_token'
+const TOKEN_KEY = 'indicme_dashboard_token'
 
 export function HomeRedirect() {
   const router = useRouter()

@@ -18,8 +18,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: 'Dashboard IndicAI',
-  description: 'Dashboard da API IndicAI',
+  title: 'Dashboard IndicMe',
+  description: 'Dashboard da API IndicMe',
 }
 
 export default function RootLayout({

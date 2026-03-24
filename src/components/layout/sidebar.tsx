@@ -72,7 +72,7 @@ function SidebarNavContent({ onLogout }: { onLogout: () => void }) {
           }}
           className="truncate text-lg font-bold tracking-tight text-primary"
         >
-          IndicAI
+          IndicMe
         </motion.span>
       </div>
       <Separator className="my-3 bg-primary/20" />

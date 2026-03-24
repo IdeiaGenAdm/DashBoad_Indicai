@@ -1,4 +1,4 @@
-# Specification Quality Checklist: Dashboard Admin Escalável IndicAI
+# Specification Quality Checklist: Dashboard Admin Escalável IndicMe
 
 **Purpose**: Validar completude e qualidade da especificação antes de passar ao planeamento  
 **Created**: 2026-03-22  

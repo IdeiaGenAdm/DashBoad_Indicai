@@ -11,7 +11,71 @@ export interface OverviewMetrics {
 
 /** GET /admin/metrics/overview — Overview geral */
 export async function getOverviewMetrics(authToken: string): Promise<OverviewMetrics> {
-  return adminFetch<OverviewMetrics>('/metrics/overview', authToken)
+  type AvaliacoesCountResponse = { total?: number; avaliacoes?: unknown[]; data?: unknown[] }
+  const [res, avaliacoesRes] = await Promise.all([
+    adminFetch<Record<string, unknown>>('/metrics/overview', authToken),
+    adminFetch<AvaliacoesCountResponse>('/avaliacoes?limit=1&page=1', authToken).catch(
+      (): AvaliacoesCountResponse => ({ total: 0, avaliacoes: [], data: [] })
+    ),
+  ])
+  const usersByType = Array.isArray(res.usersByType)
+    ? (res.usersByType as Array<Record<string, unknown>>)
+    : []
+  const countByType = new Map<string, number>()
+  for (const row of usersByType) {
+    const tipo = typeof row.tipo === 'string' ? row.tipo : ''
+    const countRaw = row.count
+    const count =
+      typeof countRaw === 'number' ? countRaw : typeof countRaw === 'string' ? Number(countRaw) : 0
+    if (tipo) countByType.set(tipo, Number.isFinite(count) ? count : 0)
+  }
+
+  const totalUsersFromApi =
+    typeof res.users === 'number'
+      ? res.users
+      : typeof res.totalUsers === 'number'
+        ? (res.totalUsers as number)
+        : 0
+
+  const profissionais =
+    typeof res.profissionais === 'number'
+      ? res.profissionais
+      : typeof res.totalProfessionals === 'number'
+        ? (res.totalProfessionals as number)
+        : (countByType.get('profissional') ?? 0)
+
+  const empresas =
+    typeof res.empresas === 'number'
+      ? res.empresas
+      : typeof res.totalCompanies === 'number'
+        ? (res.totalCompanies as number)
+        : (countByType.get('empresa') ?? 0)
+
+  const clientes =
+    typeof res.clientes === 'number' ? res.clientes : (countByType.get('cliente') ?? 0)
+
+  const totalUsersComputed = profissionais + clientes + empresas
+
+  const avaliacoesTotal =
+    typeof res.avaliacoes === 'number'
+      ? res.avaliacoes
+      : typeof avaliacoesRes.total === 'number'
+        ? avaliacoesRes.total
+        : Array.isArray(avaliacoesRes.avaliacoes)
+          ? avaliacoesRes.avaliacoes.length
+          : Array.isArray(avaliacoesRes.data)
+            ? avaliacoesRes.data.length
+            : 0
+
+  return {
+    ...res,
+    users: totalUsersFromApi > 0 ? totalUsersFromApi : totalUsersComputed,
+    profissionais,
+    empresas,
+    clientes,
+    avaliacoes: avaliacoesTotal,
+    total: totalUsersFromApi > 0 ? totalUsersFromApi : totalUsersComputed,
+  }
 }
 
 export interface AccountComparisonItem {
@@ -31,7 +95,37 @@ export interface AccountsComparisonResponse {
 export async function getAccountMetricsComparison(
   authToken: string
 ): Promise<AccountsComparisonResponse> {
-  return adminFetch<AccountsComparisonResponse>('/stats/accounts-comparison', authToken)
+  const res = await adminFetch<Record<string, unknown>>('/stats/accounts-comparison', authToken)
+  if (Array.isArray(res.comparison)) {
+    return res as AccountsComparisonResponse
+  }
+  const byTipo = Array.isArray((res.users as { byTipo?: unknown })?.byTipo)
+    ? ((res.users as { byTipo: Array<Record<string, unknown>> }).byTipo ?? [])
+    : []
+  return {
+    ...res,
+    comparison: byTipo.map((item) => ({
+      tipo: typeof item.tipo === 'string' ? item.tipo : undefined,
+      total:
+        typeof item.total === 'number'
+          ? item.total
+          : typeof item.total === 'string'
+            ? Number(item.total)
+            : 0,
+      ativos:
+        typeof item.ativos === 'number'
+          ? item.ativos
+          : typeof item.ativos === 'string'
+            ? Number(item.ativos)
+            : 0,
+      bloqueados:
+        typeof item.inativos === 'number'
+          ? item.inativos
+          : typeof item.inativos === 'string'
+            ? Number(item.inativos)
+            : 0,
+    })),
+  }
 }
 
 export interface TopProfessionItem {
@@ -228,7 +322,21 @@ export interface UsersByCityResponse {
 
 /** GET /admin/stats/users-by-city — Utilizadores por cidade */
 export async function getUsersByCity(authToken: string): Promise<UsersByCityResponse> {
-  return adminFetch<UsersByCityResponse>('/stats/users-by-city', authToken)
+  const res = await adminFetch<Record<string, unknown>>('/stats/users-by-city', authToken)
+  const cities = Array.isArray(res.cities) ? (res.cities as Array<Record<string, unknown>>) : []
+  return {
+    ...res,
+    cities: cities.map((item) => ({
+      cidade: typeof item.cidade === 'string' ? item.cidade : undefined,
+      regiao: typeof item.regiao === 'string' ? item.regiao : undefined,
+      total:
+        typeof item.total === 'number'
+          ? item.total
+          : typeof item.count === 'number'
+            ? (item.count as number)
+            : 0,
+    })),
+  }
 }
 
 export interface DemandByRegionItem {
@@ -245,5 +353,26 @@ export interface DemandByRegionResponse {
 
 /** GET /admin/stats/demand-by-region — Demanda por região */
 export async function getDemandByRegion(authToken: string): Promise<DemandByRegionResponse> {
-  return adminFetch<DemandByRegionResponse>('/stats/demand-by-region', authToken)
+  const res = await adminFetch<Record<string, unknown>>('/stats/demand-by-region', authToken)
+  if (Array.isArray(res.regions)) {
+    return res as DemandByRegionResponse
+  }
+  const regioes = Array.isArray(res.regioes) ? (res.regioes as Array<Record<string, unknown>>) : []
+  return {
+    ...res,
+    regions: regioes.map((item) => ({
+      regiao:
+        typeof item.regiao === 'string'
+          ? item.regiao
+          : typeof item.cidade === 'string'
+            ? item.cidade
+            : undefined,
+      total:
+        typeof item.total === 'number'
+          ? item.total
+          : typeof item.count === 'number'
+            ? (item.count as number)
+            : 0,
+    })),
+  }
 }

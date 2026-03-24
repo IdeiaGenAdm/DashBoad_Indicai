@@ -30,7 +30,7 @@ export function DashboardContent() {
         </div>
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Dashboard</h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">Resumo geral da aplicação IndicAI</p>
+          <p className="mt-0.5 text-sm text-muted-foreground">Resumo geral da aplicação IndicMe</p>
         </div>
       </div>
 
@@ -46,7 +46,7 @@ export function DashboardContent() {
                 {primeiroNome ? `, ${primeiroNome}` : ''}!
               </CardTitle>
               <CardDescription className="mt-1">
-                Aqui está o resumo da plataforma IndicAI. Navegue pelas secções para gerir
+                Aqui está o resumo da plataforma IndicMe. Navegue pelas secções para gerir
                 utilizadores, profissionais, avaliações e muito mais.
               </CardDescription>
             </div>
