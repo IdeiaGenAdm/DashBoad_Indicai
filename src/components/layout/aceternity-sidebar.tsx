@@ -1,6 +1,7 @@
 'use client'
 import React, { createContext, useContext, useState } from 'react'
 
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 import { IconMenu2, IconX } from '@tabler/icons-react'
@@ -94,6 +95,7 @@ export const DesktopSidebar = ({
   ...props
 }: React.ComponentProps<typeof motion.div>) => {
   const { animate, isExpanded } = useAceternitySidebar()
+  const targetWidth = animate ? (isExpanded ? 260 : 72) : 260
   return (
     <>
       <motion.div
@@ -101,9 +103,9 @@ export const DesktopSidebar = ({
           'hidden h-dvh shrink-0 overflow-hidden bg-neutral-100 px-3 py-4 md:flex md:flex-col dark:bg-neutral-800',
           className
         )}
-        animate={{
-          width: animate ? (isExpanded ? '260px' : '72px') : '260px',
-        }}
+        initial={false}
+        animate={{ width: `${targetWidth}px` }}
+        style={{ minWidth: targetWidth, maxWidth: targetWidth }}
         {...props}
       >
         {children}
@@ -188,7 +190,7 @@ export const SidebarLink = ({
   const collapsed = animate && !isExpanded
 
   return (
-    <a
+    <Link
       href={link.href}
       className={cn(
         'group/sidebar relative flex items-center gap-3 rounded-lg text-sm font-medium transition-all duration-150',
@@ -226,6 +228,6 @@ export const SidebarLink = ({
       >
         {link.label}
       </motion.span>
-    </a>
+    </Link>
   )
 }

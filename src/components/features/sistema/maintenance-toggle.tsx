@@ -7,6 +7,14 @@ import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
 import {
@@ -20,6 +28,7 @@ export function MaintenanceToggle() {
   const [active, setActive] = useState<boolean | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isToggling, setIsToggling] = useState(false)
+  const [confirmEnableOpen, setConfirmEnableOpen] = useState(false)
 
   const isMaster = user?.role === 'master'
 
@@ -45,8 +54,12 @@ export function MaintenanceToggle() {
     fetchStatus()
   }, [fetchStatus])
 
-  async function handleToggle() {
+  async function handleToggle(confirmEnable = false) {
     if (!token || !isMaster) return
+    if (!active && !confirmEnable) {
+      setConfirmEnableOpen(true)
+      return
+    }
     setIsToggling(true)
     try {
       if (active) {
@@ -121,7 +134,7 @@ export function MaintenanceToggle() {
       <CardContent>
         <Button
           variant={active ? 'default' : 'destructive'}
-          onClick={handleToggle}
+          onClick={() => handleToggle()}
           disabled={isToggling}
         >
           {isToggling ? (
@@ -135,6 +148,42 @@ export function MaintenanceToggle() {
           )}
         </Button>
       </CardContent>
+
+      <Dialog open={confirmEnableOpen} onOpenChange={setConfirmEnableOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Confirmar ativação do modo manutenção</DialogTitle>
+            <DialogDescription>
+              Ao ativar o modo manutenção, utilizadores comuns deixam de aceder ao aplicativo.
+              Apenas administradores com permissão continuam com acesso ao painel para gestão e
+              suporte.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="rounded-lg border border-border/60 bg-muted/30 p-3 text-sm text-muted-foreground">
+            Impacto: login e navegação dos utilizadores serão bloqueados temporariamente até a
+            manutenção ser desativada.
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setConfirmEnableOpen(false)}
+              disabled={isToggling}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={async () => {
+                setConfirmEnableOpen(false)
+                await handleToggle(true)
+              }}
+              disabled={isToggling}
+            >
+              Confirmar ativação
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   )
 }
