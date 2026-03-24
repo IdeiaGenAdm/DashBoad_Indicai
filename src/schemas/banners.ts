@@ -12,9 +12,20 @@ export const bannerSchema = z
       .min(5, 'Conteúdo deve ter pelo menos 5 caracteres')
       .max(500, 'Conteúdo deve ter no máximo 500 caracteres'),
     destinatarios: z.string(),
+    destinatariosEspecificos: z.array(z.string().min(1)),
     vigenciaInicio: z.string().optional(),
     vigenciaFim: z.string().optional(),
   })
+  .refine(
+    (data) => {
+      if (data.destinatarios !== 'usuarios_especificos') return true
+      return data.destinatariosEspecificos.length > 0
+    },
+    {
+      message: 'Selecione pelo menos 1 utilizador específico',
+      path: ['destinatariosEspecificos'],
+    }
+  )
   .refine(
     (data) => {
       const inicio = data.vigenciaInicio?.trim()

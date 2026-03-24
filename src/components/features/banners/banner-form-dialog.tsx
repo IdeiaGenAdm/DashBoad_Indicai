@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -29,26 +29,30 @@ import {
 } from '@/components/ui/select'
 import { Separator } from '@/components/ui/separator'
 import { Textarea } from '@/components/ui/textarea'
+import { Checkbox } from '@/components/ui/checkbox'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
 import { cn, dateInputToIsoEnd, dateInputToIsoStart, formatDateForInput } from '@/lib/utils'
 import { type BannerFormValues, bannerSchema } from '@/schemas/banners'
 import type { BannerApi } from '@/services/admin-banners-fetch'
 import { createBanner, updateBanner } from '@/services/admin-banners-fetch'
+import { listUsers } from '@/services/admin-users-fetch'
 
 function destinatariosToAudienceType(v: string): 'all' | 'users' | 'segment' {
   if (v === 'todos') return 'all'
+  if (v === 'usuarios_especificos') return 'segment'
   return 'users'
 }
 
 function audienceTypeToDestinatarios(t: BannerApi['audienceType']): string {
   if (t === 'all') return 'todos'
-  if (t === 'users') return 'profissionais'
-  return 'todos'
+  if (t === 'segment') return 'usuarios_especificos'
+  return 'profissionais'
 }
 
 const DESTINATARIOS_OPTIONS = [
   { value: 'todos', label: 'Todos os utilizadores' },
+  { value: 'usuarios_especificos', label: 'Utilizadores específicos' },
   { value: 'profissionais', label: 'Profissionais' },
   { value: 'clientes', label: 'Clientes' },
   { value: 'empresas', label: 'Empresas' },
@@ -67,6 +71,9 @@ export function BannerFormDialog({
 }) {
   const { token } = useAuth()
   const isEdit = !!banner?.id
+  const [userOptions, setUserOptions] = useState<Array<{ id: string; nome: string; email?: string }>>([])
+  const [usersLoading, setUsersLoading] = useState(false)
+  const [usersSearch, setUsersSearch] = useState('')
 
   const form = useForm<BannerFormValues>({
     resolver: zodResolver(bannerSchema),
@@ -74,6 +81,7 @@ export function BannerFormDialog({
       titulo: '',
       conteudo: '',
       destinatarios: 'todos',
+      destinatariosEspecificos: [],
       vigenciaInicio: '',
       vigenciaFim: '',
     },
@@ -81,6 +89,15 @@ export function BannerFormDialog({
 
   const titulo = form.watch('titulo')
   const conteudo = form.watch('conteudo')
+  const destinatarios = form.watch('destinatarios')
+  const selectedUserIds = form.watch('destinatariosEspecificos') ?? []
+  const filteredUserOptions = useMemo(() => {
+    const term = usersSearch.trim().toLowerCase()
+    if (!term) return userOptions
+    return userOptions.filter(
+      (u) => u.nome.toLowerCase().includes(term) || (u.email ?? '').toLowerCase().includes(term)
+    )
+  }, [userOptions, usersSearch])
 
   useEffect(() => {
     if (banner && open) {
@@ -88,6 +105,7 @@ export function BannerFormDialog({
         titulo: banner.title ?? '',
         conteudo: banner.body ?? '',
         destinatarios: audienceTypeToDestinatarios(banner.audienceType),
+        destinatariosEspecificos: banner.audienceType === 'segment' ? (banner.audienceUserIds ?? []) : [],
         vigenciaInicio: formatDateForInput(banner.startsAt) || '',
         vigenciaFim: formatDateForInput(banner.endsAt) || '',
       })
@@ -96,11 +114,42 @@ export function BannerFormDialog({
         titulo: '',
         conteudo: '',
         destinatarios: 'todos',
+        destinatariosEspecificos: [],
         vigenciaInicio: '',
         vigenciaFim: '',
       })
     }
   }, [banner, open, form])
+
+  useEffect(() => {
+    if (!open || !token || destinatarios !== 'usuarios_especificos') return
+    let cancelled = false
+    const loadUsers = async () => {
+      try {
+        setUsersLoading(true)
+        const res = await listUsers(token, { page: 1, limit: 200, status: 'ativo' })
+        if (cancelled) return
+        const options = (res.users ?? [])
+          .filter((u) => typeof u.id === 'string' && u.id.length > 0)
+          .map((u) => ({
+            id: String(u.id),
+            nome: u.nomeCompleto?.trim() || u.nome?.trim() || 'Utilizador sem nome',
+            email: u.email?.trim() || undefined,
+          }))
+        setUserOptions(options)
+      } catch (e) {
+        if (!cancelled) {
+          toast.error(e instanceof Error ? e.message : 'Erro ao carregar utilizadores')
+        }
+      } finally {
+        if (!cancelled) setUsersLoading(false)
+      }
+    }
+    loadUsers()
+    return () => {
+      cancelled = true
+    }
+  }, [open, token, destinatarios])
 
   async function onSubmit(values: BannerFormValues) {
     if (!token) return
@@ -109,6 +158,10 @@ export function BannerFormDialog({
         title: values.titulo,
         body: values.conteudo,
         audienceType: destinatariosToAudienceType(values.destinatarios || 'todos'),
+        audienceUserIds:
+          values.destinatarios === 'usuarios_especificos'
+            ? (values.destinatariosEspecificos ?? [])
+            : null,
         startsAt: dateInputToIsoStart(values.vigenciaInicio ?? '') ?? null,
         endsAt: dateInputToIsoEnd(values.vigenciaFim ?? '') ?? null,
         active: true,
@@ -236,6 +289,69 @@ export function BannerFormDialog({
                   </FormItem>
                 )}
               />
+              {destinatarios === 'usuarios_especificos' && (
+                <FormField
+                  control={form.control}
+                  name="destinatariosEspecificos"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Selecionar utilizadores</FormLabel>
+                      <FormControl>
+                        <div className="space-y-3 rounded-lg border border-border/60 bg-muted/20 p-3">
+                          <Input
+                            value={usersSearch}
+                            onChange={(e) => setUsersSearch(e.target.value)}
+                            placeholder="Pesquisar por nome ou e-mail..."
+                          />
+                          <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
+                            {usersLoading ? (
+                              <p className="text-xs text-muted-foreground">A carregar utilizadores...</p>
+                            ) : filteredUserOptions.length === 0 ? (
+                              <p className="text-xs text-muted-foreground">
+                                Nenhum utilizador encontrado para seleção.
+                              </p>
+                            ) : (
+                              filteredUserOptions.map((user) => {
+                                const checked = (field.value ?? []).includes(user.id)
+                                return (
+                                  <label
+                                    key={user.id}
+                                    className="flex cursor-pointer items-start gap-2 rounded-md border border-border/60 bg-background px-2 py-1.5"
+                                  >
+                                    <Checkbox
+                                      checked={checked}
+                                      onCheckedChange={(state) => {
+                                        const current = field.value ?? []
+                                        const next =
+                                          state === true
+                                            ? [...current, user.id]
+                                            : current.filter((id) => id !== user.id)
+                                        field.onChange(next)
+                                      }}
+                                    />
+                                    <span className="min-w-0 text-xs">
+                                      <span className="block truncate font-medium">{user.nome}</span>
+                                      {user.email && (
+                                        <span className="block truncate text-muted-foreground">
+                                          {user.email}
+                                        </span>
+                                      )}
+                                    </span>
+                                  </label>
+                                )
+                              })
+                            )}
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            {selectedUserIds.length} utilizador(es) selecionado(s).
+                          </p>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
             </div>
 
             <div className="space-y-4">
