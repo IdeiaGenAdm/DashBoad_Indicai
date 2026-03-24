@@ -28,26 +28,28 @@ const PIE_COLORS = [
   'hsl(var(--chart-3))',
   'hsl(var(--chart-4))',
   'hsl(var(--chart-5))',
+  '#6366f1',
+  '#14b8a6',
 ]
 
 const usersByCityConfig = {
   total: {
     label: 'Utilizadores',
-    color: 'hsl(var(--chart-1))',
+    color: 'hsl(var(--chart-4))',
   },
 } satisfies ChartConfig
 
 const demandByRegionConfig = {
   total: {
     label: 'Demanda',
-    color: 'hsl(var(--chart-2))',
+    color: 'hsl(var(--chart-5))',
   },
 } satisfies ChartConfig
 
 const topProfessionsConfig = {
   total: {
     label: 'Pesquisas',
-    color: 'hsl(var(--chart-3))',
+    color: '#22c55e',
   },
 } satisfies ChartConfig
 
