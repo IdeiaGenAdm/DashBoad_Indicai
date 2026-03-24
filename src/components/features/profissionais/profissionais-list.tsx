@@ -24,7 +24,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { EmptyState } from '@/components/ui/empty-state'
-import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { SearchInput } from '@/components/ui/search-input'
 import { useAuth } from '@/contexts/auth-context'
@@ -65,11 +64,12 @@ export function ProfissionaisList() {
         sortBy: params.sortBy || undefined,
         sortOrder: params.sortOrder || undefined,
       })
-      const items = Array.isArray(res.professionals)
-        ? res.professionals
-        : ((res as { data?: ProfessionalListItem[] }).data ?? [])
-      setData(items)
-      setTotal(res.total ?? items.length)
+      const items = Array.isArray(res.professionals) ? res.professionals : []
+      const safeItems = items.filter(
+        (item): item is ProfessionalListItem => !!item && typeof item === 'object'
+      )
+      setData(safeItems)
+      setTotal(res.total ?? safeItems.length)
     } catch (e) {
       if (e instanceof AdminApiError && e.status === 403) {
         toast.error('Sessão expirada. Faça login novamente.')
@@ -108,12 +108,20 @@ export function ProfissionaisList() {
     }
   }
 
-  function displayName(item: ProfessionalListItem): string {
+  function displayName(item: ProfessionalListItem | null | undefined): string {
+    if (!item) return '-'
     return (
       (typeof item.nomeCompleto === 'string' ? item.nomeCompleto : null) ??
       (typeof item.nome === 'string' ? item.nome : null) ??
       '-'
     )
+  }
+
+  function detailId(item: ProfessionalListItem): string | null {
+    if (typeof item.userId === 'string' && item.userId) return item.userId
+    const profissionalId = (item as { profissionalId?: unknown }).profissionalId
+    if (typeof profissionalId === 'string' && profissionalId) return profissionalId
+    return null
   }
 
   const showEmpty = !isLoading && data.length === 0
@@ -165,17 +173,19 @@ export function ProfissionaisList() {
                   </DataTableCell>
                   <DataTableCell className="text-right">
                     <div className="flex justify-end gap-1.5">
-                      {item.userId && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setDetailUserId(item.userId!)}
-                          title="Ver detalhes"
-                          className="h-8 px-2.5"
-                        >
-                          <Eye className="size-3.5" />
-                        </Button>
-                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          const id = detailId(item)
+                          if (id) setDetailUserId(id)
+                        }}
+                        title={detailId(item) ? 'Ver detalhes' : 'Detalhes indisponíveis'}
+                        className="h-8 px-2.5"
+                        disabled={!detailId(item)}
+                      >
+                        <Eye className="size-3.5" />
+                      </Button>
                       <Button
                         variant="outline"
                         size="sm"
@@ -221,7 +231,7 @@ export function ProfissionaisList() {
           <DialogHeader>
             <DialogTitle>Eliminar profissional</DialogTitle>
             <DialogDescription>
-              Eliminar a conta do profissional {displayName(confirmDelete!)}? Esta ação não pode ser
+              Eliminar a conta do profissional {displayName(confirmDelete)}? Esta ação não pode ser
               revertida.
             </DialogDescription>
           </DialogHeader>

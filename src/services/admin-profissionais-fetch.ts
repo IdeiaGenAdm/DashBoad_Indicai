@@ -22,13 +22,28 @@ export interface ListProfessionalsParams {
 
 export interface ListProfessionalsResponse {
   professionals?: ProfessionalListItem[]
-  data?: ProfessionalListItem[]
+  count?: number
   total?: number
   page?: number
   limit?: number
 }
 
-/** GET /admin/professionals — Listar profissionais (assumido; contrato não documenta) */
+interface AdminUsersResponse {
+  users?: Array<Record<string, unknown>>
+  count?: number
+}
+
+interface AdminAssinaturasResponse {
+  assinaturas?: Array<{
+    profissionalId?: string
+    nivelPatrocinio?: string
+    tipoPlano?: string
+    nextChargeAt?: string
+    createdAt?: string
+  }>
+}
+
+/** GET /admin/users?tipoUsuario=profissional — Lista de profissionais */
 export async function listProfessionals(
   authToken: string,
   params?: ListProfessionalsParams
@@ -39,8 +54,68 @@ export async function listProfessionals(
   if (params?.search) search.set('search', params.search)
   if (params?.sortBy) search.set('sortBy', params.sortBy)
   if (params?.sortOrder) search.set('sortOrder', params.sortOrder)
+  search.set('tipoUsuario', 'profissional')
   const qs = search.toString()
-  return adminFetch<ListProfessionalsResponse>(`/professionals${qs ? `?${qs}` : ''}`, authToken)
+  const [usersRes, assinaturasRes] = await Promise.all([
+    adminFetch<AdminUsersResponse>(`/users${qs ? `?${qs}` : ''}`, authToken),
+    adminFetch<AdminAssinaturasResponse>('/assinaturas?limit=500', authToken).catch(
+      () => ({ assinaturas: [] }) as AdminAssinaturasResponse
+    ),
+  ])
+
+  const latestPlanByProfessional = new Map<string, { plano?: string; expiresAt?: string }>()
+  for (const assinatura of assinaturasRes.assinaturas ?? []) {
+    if (!assinatura?.profissionalId) continue
+    if (!latestPlanByProfessional.has(assinatura.profissionalId)) {
+      latestPlanByProfessional.set(assinatura.profissionalId, {
+        plano: assinatura.nivelPatrocinio ?? assinatura.tipoPlano,
+        expiresAt: assinatura.nextChargeAt,
+      })
+    }
+  }
+
+  const professionals = (usersRes.users ?? [])
+    .filter((u): u is Record<string, unknown> => !!u && typeof u === 'object')
+    .map((u) => {
+      const id = typeof u.id === 'string' ? u.id : ''
+      const profissoes = Array.isArray(u.profissoes) ? u.profissoes : []
+      const planoData = latestPlanByProfessional.get(id)
+      const ratingRaw =
+        typeof u.avaliacaoMedia === 'string' ? Number(u.avaliacaoMedia) : u.avaliacaoMedia
+      return {
+        id,
+        userId: id,
+        nomeCompleto: typeof u.nomeCompleto === 'string' ? u.nomeCompleto : undefined,
+        nome: typeof u.nome === 'string' ? u.nome : undefined,
+        profissao:
+          typeof u.profissao === 'string'
+            ? u.profissao
+            : typeof profissoes[0] === 'string'
+              ? (profissoes[0] as string)
+              : undefined,
+        plano:
+          typeof planoData?.plano === 'string'
+            ? planoData.plano
+            : typeof u.nivelPatrocinio === 'string'
+              ? u.nivelPatrocinio
+              : undefined,
+        rating: typeof ratingRaw === 'number' && Number.isFinite(ratingRaw) ? ratingRaw : undefined,
+        expiresAt:
+          typeof planoData?.expiresAt === 'string'
+            ? planoData.expiresAt
+            : typeof u.nextChargeAt === 'string'
+              ? u.nextChargeAt
+              : undefined,
+      } satisfies ProfessionalListItem
+    })
+    .filter((p) => p.id)
+
+  return {
+    professionals,
+    total: usersRes.count ?? professionals.length,
+    page: params?.page ?? 1,
+    limit: params?.limit ?? 10,
+  }
 }
 
 export interface UpdateSubscriptionBody {
