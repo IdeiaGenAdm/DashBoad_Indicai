@@ -3,6 +3,7 @@
 import {
   BarChart3,
   Briefcase,
+  CreditCard,
   Flag,
   Image,
   LayoutDashboard,
@@ -31,6 +32,11 @@ const NAV_LINKS: AceternitySidebarLink[] = [
     label: 'Profissionais',
     href: '/dashboard/profissionais',
     icon: <Briefcase className="size-5 shrink-0" />,
+  },
+  {
+    label: 'Assinaturas',
+    href: '/dashboard/assinaturas',
+    icon: <CreditCard className="size-5 shrink-0" />,
   },
   {
     label: 'Avaliações',

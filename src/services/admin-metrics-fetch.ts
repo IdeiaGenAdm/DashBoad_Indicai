@@ -66,6 +66,12 @@ export interface TopRatedProfessionalItem {
 export interface TopRatedProfessionalsResponse {
   professionals?: TopRatedProfessionalItem[]
   data?: TopRatedProfessionalItem[]
+  profissionais?: Array<{
+    profissionalId?: string
+    nomeCompleto?: string
+    mediaNoPeriodo?: string
+    avaliacoesNoPeriodo?: number
+  }>
   [key: string]: unknown
 }
 
@@ -73,7 +79,23 @@ export interface TopRatedProfessionalsResponse {
 export async function getTopRatedProfessionals(
   authToken: string
 ): Promise<TopRatedProfessionalsResponse> {
-  return adminFetch<TopRatedProfessionalsResponse>('/stats/top-rated-professionals', authToken)
+  const res = await adminFetch<TopRatedProfessionalsResponse>(
+    '/stats/top-rated-professionals',
+    authToken
+  )
+  if (!Array.isArray(res.professionals) && Array.isArray(res.profissionais)) {
+    return {
+      ...res,
+      professionals: res.profissionais.map((item) => ({
+        id: item.profissionalId,
+        nomeCompleto: item.nomeCompleto,
+        rating: typeof item.mediaNoPeriodo === 'string' ? Number(item.mediaNoPeriodo) : undefined,
+        avaliacoes:
+          typeof item.avaliacoesNoPeriodo === 'number' ? item.avaliacoesNoPeriodo : undefined,
+      })),
+    }
+  }
+  return res
 }
 
 export interface FinancialReportItem {

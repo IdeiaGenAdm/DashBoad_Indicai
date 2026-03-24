@@ -124,6 +124,43 @@ export interface UpdateSubscriptionBody {
   nuncaExpirar?: boolean
 }
 
+export interface ActiveSubscriptionItem {
+  id: string
+  profissionalId?: string
+  nomeCompleto?: string | null
+  nivelPatrocinio?: string | null
+  status?: string | null
+  valor?: string | number | null
+  nextChargeAt?: string | null
+  createdAt?: string | null
+}
+
+export interface ListActiveSubscriptionsResponse {
+  assinaturas: ActiveSubscriptionItem[]
+  count: number
+}
+
+/** GET /admin/assinaturas?status=ativo — Assinaturas ativas */
+export async function listActiveSubscriptions(
+  authToken: string,
+  params?: { limit?: number; offset?: number }
+): Promise<ListActiveSubscriptionsResponse> {
+  const search = new URLSearchParams()
+  search.set('status', 'ativo')
+  search.set('limit', String(params?.limit ?? 20))
+  search.set('offset', String(params?.offset ?? 0))
+
+  const res = await adminFetch<{ assinaturas?: ActiveSubscriptionItem[]; count?: number }>(
+    `/assinaturas?${search.toString()}`,
+    authToken
+  )
+
+  return {
+    assinaturas: Array.isArray(res.assinaturas) ? res.assinaturas : [],
+    count: typeof res.count === 'number' ? res.count : 0,
+  }
+}
+
 /** PATCH /admin/professionals/:professionalId/subscription — Alterar plano/expiração */
 export async function updateProfessionalSubscription(
   authToken: string,
