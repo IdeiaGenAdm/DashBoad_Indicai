@@ -31,6 +31,8 @@ import {
   getPlanStats,
 } from '@/services/admin-metrics-fetch'
 
+import { DateRangeFilter } from './date-range-filter'
+
 const chartConfig = {
   receita: {
     label: 'Receita',
@@ -50,6 +52,8 @@ export function FinancialReport() {
   const { token } = useAuth()
   const [periodo, setPeriodo] = useState('')
   const [plano, setPlano] = useState('')
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
   const [report, setReport] = useState<FinancialReportItem[] | null>(null)
   const [planStats, setPlanStats] = useState<{ plano?: string; total?: number }[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -62,11 +66,16 @@ export function FinancialReport() {
         getFinancialReport(token, {
           periodo: periodo || undefined,
           plano: plano || undefined,
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
         }).catch((e) => {
           if (e instanceof AdminApiError && e.status === 403) return { report: [] }
           throw e
         }),
-        getPlanStats(token).catch((e) => {
+        getPlanStats(token, {
+          startDate: startDate || undefined,
+          endDate: endDate || undefined,
+        }).catch((e) => {
           if (e instanceof AdminApiError && e.status === 403) return { plans: [] }
           throw e
         }),
@@ -86,7 +95,7 @@ export function FinancialReport() {
     } finally {
       setIsLoading(false)
     }
-  }, [token, periodo, plano])
+  }, [token, periodo, plano, startDate, endDate])
 
   useEffect(() => {
     fetchData()
@@ -116,7 +125,9 @@ export function FinancialReport() {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 flex gap-2">
+          <div className="mb-4 flex flex-wrap gap-2">
+            <div className="h-9 w-32 animate-pulse rounded-md bg-muted" />
+            <div className="h-9 w-32 animate-pulse rounded-md bg-muted" />
             <div className="h-9 w-32 animate-pulse rounded-md bg-muted" />
             <div className="h-9 w-32 animate-pulse rounded-md bg-muted" />
           </div>
@@ -136,6 +147,12 @@ export function FinancialReport() {
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex flex-wrap gap-4">
+          <DateRangeFilter
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+          />
           <Select value={periodo || 'all'} onValueChange={(v) => setPeriodo(v === 'all' ? '' : v)}>
             <SelectTrigger className="w-[160px]">
               <SelectValue placeholder="Período" />

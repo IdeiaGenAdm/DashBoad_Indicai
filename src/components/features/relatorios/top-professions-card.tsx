@@ -12,14 +12,18 @@ import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
 import { type TopProfessionItem, getTopProfessions } from '@/services/admin-metrics-fetch'
 
+import { DateRangeFilter } from './date-range-filter'
+
 export function TopProfessionsCard() {
   const { token } = useAuth()
   const [items, setItems] = useState<TopProfessionItem[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
 
   useEffect(() => {
     if (!token) return
-    getTopProfessions(token)
+    getTopProfessions(token, { startDate: startDate || undefined, endDate: endDate || undefined })
       .then((res) => {
         const list = res.professions ?? res.data ?? []
         setItems(Array.isArray(list) ? list : [])
@@ -33,7 +37,7 @@ export function TopProfessionsCard() {
         setItems(null)
       })
       .finally(() => setIsLoading(false))
-  }, [token])
+  }, [token, startDate, endDate])
 
   if (isLoading) {
     return (
@@ -45,6 +49,14 @@ export function TopProfessionsCard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-4">
+            <DateRangeFilter
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          </div>
           <LoadingSkeleton variant="cards" rowCount={5} />
         </CardContent>
       </Card>
@@ -61,6 +73,14 @@ export function TopProfessionsCard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-4">
+            <DateRangeFilter
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          </div>
           <EmptyState icon={Briefcase} message="Nenhuma profissão encontrada ou sem dados." />
         </CardContent>
       </Card>
@@ -76,6 +96,14 @@ export function TopProfessionsCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <div className="mb-4">
+          <DateRangeFilter
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+          />
+        </div>
         <div className="space-y-2">
           {items.map((item, i) => (
             <div

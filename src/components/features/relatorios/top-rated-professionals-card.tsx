@@ -15,14 +15,21 @@ import {
   getTopRatedProfessionals,
 } from '@/services/admin-metrics-fetch'
 
+import { DateRangeFilter } from './date-range-filter'
+
 export function TopRatedProfessionalsCard() {
   const { token } = useAuth()
   const [items, setItems] = useState<TopRatedProfessionalItem[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
 
   useEffect(() => {
     if (!token) return
-    getTopRatedProfessionals(token)
+    getTopRatedProfessionals(token, {
+      startDate: startDate || undefined,
+      endDate: endDate || undefined,
+    })
       .then((res) => {
         const list = res.professionals ?? res.data ?? []
         setItems(Array.isArray(list) ? list : [])
@@ -36,7 +43,7 @@ export function TopRatedProfessionalsCard() {
         setItems(null)
       })
       .finally(() => setIsLoading(false))
-  }, [token])
+  }, [token, startDate, endDate])
 
   if (isLoading) {
     return (
@@ -48,6 +55,14 @@ export function TopRatedProfessionalsCard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-4">
+            <DateRangeFilter
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          </div>
           <LoadingSkeleton variant="cards" rowCount={5} />
         </CardContent>
       </Card>
@@ -64,6 +79,14 @@ export function TopRatedProfessionalsCard() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-4">
+            <DateRangeFilter
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          </div>
           <EmptyState icon={User} message="Nenhum profissional encontrado ou sem avaliações." />
         </CardContent>
       </Card>
@@ -79,6 +102,14 @@ export function TopRatedProfessionalsCard() {
         </CardTitle>
       </CardHeader>
       <CardContent>
+        <div className="mb-4">
+          <DateRangeFilter
+            startDate={startDate}
+            endDate={endDate}
+            onStartDateChange={setStartDate}
+            onEndDateChange={setEndDate}
+          />
+        </div>
         <div className="space-y-2">
           {items.map((item, i) => (
             <div

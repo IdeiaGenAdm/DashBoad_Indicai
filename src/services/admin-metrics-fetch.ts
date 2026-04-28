@@ -1,5 +1,15 @@
 import { AdminApiError, adminFetch } from '@/lib/api'
 
+export interface DateRangeParams {
+  startDate?: string
+  endDate?: string
+}
+
+function applyDateRange(search: URLSearchParams, params?: DateRangeParams) {
+  if (params?.startDate) search.set('startDate', params.startDate)
+  if (params?.endDate) search.set('endDate', params.endDate)
+}
+
 export interface OverviewMetrics {
   users?: number
   profissionais?: number
@@ -143,8 +153,17 @@ export interface TopProfessionsResponse {
 }
 
 /** GET /admin/stats/top-professions — Profissões mais buscadas */
-export async function getTopProfessions(authToken: string): Promise<TopProfessionsResponse> {
-  return adminFetch<TopProfessionsResponse>('/stats/top-professions', authToken)
+export async function getTopProfessions(
+  authToken: string,
+  params?: DateRangeParams
+): Promise<TopProfessionsResponse> {
+  const search = new URLSearchParams()
+  applyDateRange(search, params)
+  const qs = search.toString()
+  return adminFetch<TopProfessionsResponse>(
+    `/stats/top-professions${qs ? `?${qs}` : ''}`,
+    authToken
+  )
 }
 
 export interface TopRatedProfessionalItem {
@@ -172,12 +191,13 @@ export interface TopRatedProfessionalsResponse {
 /** GET /admin/stats/top-rated-professionals — Profissionais melhor avaliados */
 export async function getTopRatedProfessionals(
   authToken: string,
-  params?: { days?: number; minAvaliacoes?: number; limit?: number }
+  params?: { days?: number; minAvaliacoes?: number; limit?: number } & DateRangeParams
 ): Promise<TopRatedProfessionalsResponse> {
   const search = new URLSearchParams()
   if (params?.days != null) search.set('days', String(params.days))
   if (params?.minAvaliacoes != null) search.set('minAvaliacoes', String(params.minAvaliacoes))
   if (params?.limit != null) search.set('limit', String(params.limit))
+  applyDateRange(search, params)
   const qs = search.toString()
   let res: TopRatedProfessionalsResponse
   try {
@@ -274,6 +294,8 @@ export interface FinancialReportResponse {
 export interface FinancialReportParams {
   periodo?: string
   plano?: string
+  startDate?: string
+  endDate?: string
 }
 
 /** GET /admin/stats/financial — Relatório financeiro */
@@ -284,6 +306,7 @@ export async function getFinancialReport(
   const search = new URLSearchParams()
   if (params?.periodo) search.set('periodo', params.periodo)
   if (params?.plano) search.set('plano', params.plano)
+  applyDateRange(search, params)
   const qs = search.toString()
   return adminFetch<FinancialReportResponse>(`/stats/financial${qs ? `?${qs}` : ''}`, authToken)
 }
@@ -303,8 +326,14 @@ export interface PlanStatsResponse {
 }
 
 /** GET /admin/stats/plans — Stats planos */
-export async function getPlanStats(authToken: string): Promise<PlanStatsResponse> {
-  return adminFetch<PlanStatsResponse>('/stats/plans', authToken)
+export async function getPlanStats(
+  authToken: string,
+  params?: DateRangeParams
+): Promise<PlanStatsResponse> {
+  const search = new URLSearchParams()
+  applyDateRange(search, params)
+  const qs = search.toString()
+  return adminFetch<PlanStatsResponse>(`/stats/plans${qs ? `?${qs}` : ''}`, authToken)
 }
 
 export interface UsersByCityItem {
@@ -321,8 +350,17 @@ export interface UsersByCityResponse {
 }
 
 /** GET /admin/stats/users-by-city — Utilizadores por cidade */
-export async function getUsersByCity(authToken: string): Promise<UsersByCityResponse> {
-  const res = await adminFetch<Record<string, unknown>>('/stats/users-by-city', authToken)
+export async function getUsersByCity(
+  authToken: string,
+  params?: DateRangeParams
+): Promise<UsersByCityResponse> {
+  const search = new URLSearchParams()
+  applyDateRange(search, params)
+  const qs = search.toString()
+  const res = await adminFetch<Record<string, unknown>>(
+    `/stats/users-by-city${qs ? `?${qs}` : ''}`,
+    authToken
+  )
   const cities = Array.isArray(res.cities) ? (res.cities as Array<Record<string, unknown>>) : []
   return {
     ...res,
@@ -352,8 +390,17 @@ export interface DemandByRegionResponse {
 }
 
 /** GET /admin/stats/demand-by-region — Demanda por região */
-export async function getDemandByRegion(authToken: string): Promise<DemandByRegionResponse> {
-  const res = await adminFetch<Record<string, unknown>>('/stats/demand-by-region', authToken)
+export async function getDemandByRegion(
+  authToken: string,
+  params?: DateRangeParams
+): Promise<DemandByRegionResponse> {
+  const search = new URLSearchParams()
+  applyDateRange(search, params)
+  const qs = search.toString()
+  const res = await adminFetch<Record<string, unknown>>(
+    `/stats/demand-by-region${qs ? `?${qs}` : ''}`,
+    authToken
+  )
   if (Array.isArray(res.regions)) {
     return res as DemandByRegionResponse
   }
@@ -374,5 +421,380 @@ export async function getDemandByRegion(authToken: string): Promise<DemandByRegi
             ? (item.count as number)
             : 0,
     })),
+  }
+}
+
+export interface GrowthReportPoint {
+  date: string
+  label: string
+  profissionais: number
+  clientes: number
+  empresas: number
+  total: number
+  entradaProfissionais: number
+  entradaClientes: number
+  entradaEmpresas: number
+  entradaTotal: number
+  taxaCrescimento: number
+  indiceProfissionais: 'Positivo' | 'Neutro' | 'Negativo'
+  indiceClientes: 'Positivo' | 'Neutro' | 'Negativo'
+  indiceTotal: 'Positivo' | 'Neutro' | 'Negativo'
+}
+
+export interface ReportDistributionItem {
+  name: string
+  value: number
+}
+
+export interface RelationshipUserItem {
+  id: string
+  name: string
+  relationship: string
+}
+
+export interface UserGrowthReport {
+  daily: GrowthReportPoint[]
+  platforms: ReportDistributionItem[]
+  relationships: ReportDistributionItem[]
+  relationshipUsers: RelationshipUserItem[]
+  averages: {
+    profissionais: number
+    clientes: number
+    total: number
+  }
+  totals: {
+    profissionais: number
+    clientes: number
+    empresas: number
+    total: number
+    android: number
+    ios: number
+    unknownPlatform: number
+  }
+}
+
+export interface UserGrowthReportParams extends DateRangeParams {
+  excludeUserIds?: string[]
+}
+
+type RawUser = Record<string, unknown>
+
+function asNumber(value: unknown): number | null {
+  if (typeof value === 'number' && Number.isFinite(value)) return value
+  if (typeof value === 'string') {
+    const parsed = Number(value)
+    return Number.isFinite(parsed) ? parsed : null
+  }
+  return null
+}
+
+function readString(record: RawUser, keys: string[]): string | null {
+  for (const key of keys) {
+    const value = record[key]
+    if (typeof value === 'string' && value.trim()) return value.trim()
+    if (typeof value === 'number' && Number.isFinite(value)) return String(value)
+  }
+  return null
+}
+
+function normalizeUserType(record: RawUser): 'profissional' | 'cliente' | 'empresa' | 'outro' {
+  const raw = readString(record, ['tipoUsuario', 'tipo', 'type', 'role', 'perfil'])?.toLowerCase()
+  if (!raw) return 'outro'
+  if (raw.includes('prof')) return 'profissional'
+  if (raw.includes('emp')) return 'empresa'
+  if (raw.includes('client') || raw.includes('cliente') || raw.includes('user')) return 'cliente'
+  return 'outro'
+}
+
+function normalizePlatform(record: RawUser): string | null {
+  const raw = readString(record, [
+    'sistema',
+    'sistemaOperacional',
+    'operatingSystem',
+    'os',
+    'platform',
+    'plataforma',
+    'device',
+    'deviceType',
+    'dispositivo',
+    'appPlatform',
+  ])
+  if (!raw) return null
+  const lower = raw.toLowerCase()
+  if (lower.includes('android')) return 'Android'
+  if (lower.includes('ios') || lower.includes('iphone') || lower.includes('ipad')) return 'iOS'
+  return raw
+}
+
+function normalizeRelationship(record: RawUser): string | null {
+  const raw = readString(record, [
+    'relacionamento',
+    'relacao',
+    'relationship',
+    'origem',
+    'source',
+    'comoConheceu',
+    'indicacao',
+    'tipoIndicacao',
+    'parentesco',
+    'grauParentesco',
+  ])
+  if (!raw) return null
+  const lower = raw.toLowerCase()
+  if (lower.includes('parent') || lower.includes('famil')) return 'Parentes'
+  if (lower.includes('conhecid') || lower.includes('amig') || lower.includes('indic')) {
+    return 'Conhecidos'
+  }
+  if (lower.includes('desconhecid') || lower.includes('outro') || lower.includes('nenhum')) {
+    return 'Desconhecido'
+  }
+  return raw
+}
+
+function userId(record: RawUser): string | null {
+  return readString(record, ['id', '_id', 'userId'])
+}
+
+function userDisplayName(record: RawUser): string {
+  return (
+    readString(record, ['nomeCompleto', 'nome', 'name', 'displayName', 'email', 'cpf']) ??
+    'Sem nome'
+  )
+}
+
+function readDateFromUser(record: RawUser): Date | null {
+  const raw = readString(record, [
+    'createdAt',
+    'created_at',
+    'created',
+    'dataCriacao',
+    'dataCadastro',
+    'registeredAt',
+  ])
+  if (!raw) return null
+  const date = new Date(raw)
+  if (Number.isNaN(date.getTime())) return null
+  return date
+}
+
+function dateKeyFromUser(record: RawUser): string | null {
+  const date = readDateFromUser(record)
+  if (!date) return null
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate()
+  ).padStart(2, '0')}`
+}
+
+function dateFromKey(key: string): Date {
+  const [year, month, day] = key.split('-').map(Number)
+  return new Date(year, (month ?? 1) - 1, day ?? 1)
+}
+
+function addDays(date: Date, days: number): Date {
+  const next = new Date(date)
+  next.setDate(next.getDate() + days)
+  return next
+}
+
+function dateKey(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(
+    date.getDate()
+  ).padStart(2, '0')}`
+}
+
+function dateLabel(key: string): string {
+  const date = dateFromKey(key)
+  return `${String(date.getDate()).padStart(2, '0')}/${String(date.getMonth() + 1).padStart(2, '0')}`
+}
+
+function growthIndex(value: number): 'Positivo' | 'Neutro' | 'Negativo' {
+  if (value > 0) return 'Positivo'
+  if (value < 0) return 'Negativo'
+  return 'Neutro'
+}
+
+function distributionFromMap(map: Map<string, number>): ReportDistributionItem[] {
+  return Array.from(map.entries())
+    .map(([name, value]) => ({ name, value }))
+    .filter((item) => item.value > 0)
+    .sort((a, b) => b.value - a.value)
+}
+
+function isWithinRange(record: RawUser, params?: DateRangeParams): boolean {
+  if (!params?.startDate && !params?.endDate) return true
+  const date = readDateFromUser(record)
+  if (!date) return false
+  if (params.startDate) {
+    const start = new Date(`${params.startDate}T00:00:00`)
+    if (date < start) return false
+  }
+  if (params.endDate) {
+    const end = new Date(`${params.endDate}T23:59:59.999`)
+    if (date > end) return false
+  }
+  return true
+}
+
+async function fetchAllUsersForReport(
+  authToken: string,
+  params?: UserGrowthReportParams
+): Promise<RawUser[]> {
+  const pageSize = 500
+  const all: RawUser[] = []
+  const seen = new Set<string>()
+
+  for (let page = 1; page <= 100; page++) {
+    const search = new URLSearchParams()
+    search.set('page', String(page))
+    search.set('limit', String(pageSize))
+    search.set('sortBy', 'createdAt')
+    search.set('sortOrder', 'asc')
+    applyDateRange(search, params)
+
+    const res = await adminFetch<{
+      users?: RawUser[]
+      data?: RawUser[]
+      total?: number | string
+      pagination?: { total?: number | string }
+    }>(`/users?${search.toString()}`, authToken)
+
+    const users = Array.isArray(res.users) ? res.users : Array.isArray(res.data) ? res.data : []
+    for (const user of users) {
+      if (!isWithinRange(user, params)) continue
+      const id = userId(user) ?? `${page}-${all.length}`
+      if (!seen.has(id)) {
+        seen.add(id)
+        all.push(user)
+      }
+    }
+
+    const total = asNumber(res.total ?? res.pagination?.total)
+    if ((total != null && all.length >= total) || users.length < pageSize) break
+  }
+
+  return all
+}
+
+/** Relatorio no modelo da planilha graficos.xlsx. */
+export async function getUserGrowthReport(
+  authToken: string,
+  params?: UserGrowthReportParams
+): Promise<UserGrowthReport> {
+  const users = await fetchAllUsersForReport(authToken, params)
+  const excludedIds = new Set(params?.excludeUserIds ?? [])
+  const byDay = new Map<
+    string,
+    { profissionais: number; clientes: number; empresas: number; total: number }
+  >()
+  const platforms = new Map<string, number>()
+  const relationships = new Map<string, number>()
+  const relationshipUsersMap = new Map<string, RelationshipUserItem>()
+  const totals = {
+    profissionais: 0,
+    clientes: 0,
+    empresas: 0,
+    total: 0,
+    android: 0,
+    ios: 0,
+    unknownPlatform: 0,
+  }
+
+  for (const user of users) {
+    const id = userId(user)
+    const relationship = normalizeRelationship(user)
+    if (id && relationship) {
+      relationshipUsersMap.set(id, {
+        id,
+        name: userDisplayName(user),
+        relationship,
+      })
+    }
+    if (id && excludedIds.has(id)) continue
+
+    const type = normalizeUserType(user)
+    if (type === 'profissional') totals.profissionais += 1
+    else if (type === 'empresa') totals.empresas += 1
+    else if (type === 'cliente') totals.clientes += 1
+    totals.total += 1
+
+    const platform = normalizePlatform(user)
+    if (platform) {
+      platforms.set(platform, (platforms.get(platform) ?? 0) + 1)
+      if (platform === 'Android') totals.android += 1
+      else if (platform === 'iOS') totals.ios += 1
+    } else {
+      totals.unknownPlatform += 1
+    }
+
+    if (relationship) {
+      relationships.set(relationship, (relationships.get(relationship) ?? 0) + 1)
+    }
+
+    const key = dateKeyFromUser(user)
+    if (!key) continue
+    const entry = byDay.get(key) ?? { profissionais: 0, clientes: 0, empresas: 0, total: 0 }
+    if (type === 'profissional') entry.profissionais += 1
+    else if (type === 'empresa') entry.empresas += 1
+    else if (type === 'cliente') entry.clientes += 1
+    entry.total += 1
+    byDay.set(key, entry)
+  }
+
+  const keys = Array.from(byDay.keys()).sort()
+  const daily: GrowthReportPoint[] = []
+  let cumulative = { profissionais: 0, clientes: 0, empresas: 0, total: 0 }
+
+  if (keys.length > 0) {
+    let cursor = dateFromKey(keys[0]!)
+    const last = dateFromKey(keys[keys.length - 1]!)
+    while (cursor <= last) {
+      const key = dateKey(cursor)
+      const entry = byDay.get(key) ?? { profissionais: 0, clientes: 0, empresas: 0, total: 0 }
+      const previousTotal = cumulative.total
+      cumulative = {
+        profissionais: cumulative.profissionais + entry.profissionais,
+        clientes: cumulative.clientes + entry.clientes,
+        empresas: cumulative.empresas + entry.empresas,
+        total: cumulative.total + entry.total,
+      }
+      daily.push({
+        date: key,
+        label: dateLabel(key),
+        profissionais: cumulative.profissionais,
+        clientes: cumulative.clientes,
+        empresas: cumulative.empresas,
+        total: cumulative.total,
+        entradaProfissionais: entry.profissionais,
+        entradaClientes: entry.clientes,
+        entradaEmpresas: entry.empresas,
+        entradaTotal: entry.total,
+        taxaCrescimento:
+          previousTotal > 0 ? Number(((entry.total / previousTotal) * 100).toFixed(2)) : 0,
+        indiceProfissionais: growthIndex(entry.profissionais),
+        indiceClientes: growthIndex(entry.clientes),
+        indiceTotal: growthIndex(entry.total),
+      })
+      cursor = addDays(cursor, 1)
+    }
+  }
+
+  const days = Math.max(daily.length, 1)
+  const totalEntries = daily.reduce((acc, item) => acc + item.entradaTotal, 0)
+  const professionalEntries = daily.reduce((acc, item) => acc + item.entradaProfissionais, 0)
+  const clientEntries = daily.reduce((acc, item) => acc + item.entradaClientes, 0)
+
+  return {
+    daily,
+    platforms: distributionFromMap(platforms),
+    relationships: distributionFromMap(relationships),
+    relationshipUsers: Array.from(relationshipUsersMap.values()).sort((a, b) =>
+      a.name.localeCompare(b.name)
+    ),
+    averages: {
+      profissionais: Number((professionalEntries / days).toFixed(2)),
+      clientes: Number((clientEntries / days).toFixed(2)),
+      total: Number((totalEntries / days).toFixed(2)),
+    },
+    totals,
   }
 }

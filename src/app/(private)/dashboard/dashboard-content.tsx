@@ -6,6 +6,7 @@ import { DashboardCharts } from '@/components/features/dashboard/dashboard-chart
 import { MetricsCards } from '@/components/features/dashboard/metrics-cards'
 import { RecentUsersTable } from '@/components/features/dashboard/recent-users-table'
 import { TopRatedTable } from '@/components/features/dashboard/top-rated-table'
+import { GrowthReport } from '@/components/features/relatorios/growth-report'
 import { Card, CardContent, CardDescription, CardTitle } from '@/components/ui/card'
 import { useAuth } from '@/contexts/auth-context'
 
@@ -60,6 +61,8 @@ export function DashboardContent() {
         <RecentUsersTable />
         <TopRatedTable />
       </div>
+
+      <GrowthReport />
 
       <DashboardCharts />
     </div>

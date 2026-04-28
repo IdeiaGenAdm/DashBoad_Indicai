@@ -31,6 +31,11 @@ export interface ListProfessionalsResponse {
 interface AdminUsersResponse {
   users?: Array<Record<string, unknown>>
   count?: number
+  total?: number
+  pagination?: {
+    count?: number
+    total?: number
+  }
 }
 
 interface AdminAssinaturasResponse {
@@ -112,7 +117,7 @@ export async function listProfessionals(
 
   return {
     professionals,
-    total: usersRes.count ?? professionals.length,
+    total: usersRes.total ?? usersRes.pagination?.total,
     page: params?.page ?? 1,
     limit: params?.limit ?? 10,
   }

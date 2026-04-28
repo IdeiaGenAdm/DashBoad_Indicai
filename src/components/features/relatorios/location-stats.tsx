@@ -17,20 +17,25 @@ import {
   getUsersByCity,
 } from '@/services/admin-metrics-fetch'
 
+import { DateRangeFilter } from './date-range-filter'
+
 export function LocationStats() {
   const { token } = useAuth()
   const [cities, setCities] = useState<UsersByCityItem[] | null>(null)
   const [regions, setRegions] = useState<DemandByRegionItem[] | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [startDate, setStartDate] = useState('')
+  const [endDate, setEndDate] = useState('')
 
   useEffect(() => {
     if (!token) return
+    const dateRange = { startDate: startDate || undefined, endDate: endDate || undefined }
     Promise.all([
-      getUsersByCity(token).catch((e) => {
+      getUsersByCity(token, dateRange).catch((e) => {
         if (e instanceof AdminApiError && e.status === 403) return { cities: [] }
         throw e
       }),
-      getDemandByRegion(token).catch((e) => {
+      getDemandByRegion(token, dateRange).catch((e) => {
         if (e instanceof AdminApiError && e.status === 403) return { regions: [] }
         throw e
       }),
@@ -53,7 +58,7 @@ export function LocationStats() {
         setRegions(null)
       })
       .finally(() => setIsLoading(false))
-  }, [token])
+  }, [token, startDate, endDate])
 
   function displayLocation(name: string | undefined): string {
     if (!name || name.trim() === '') return 'Desconhecido'
@@ -70,6 +75,14 @@ export function LocationStats() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-4">
+            <DateRangeFilter
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          </div>
           <LoadingSkeleton variant="cards" rowCount={4} />
         </CardContent>
       </Card>
@@ -89,6 +102,14 @@ export function LocationStats() {
           </CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="mb-4">
+            <DateRangeFilter
+              startDate={startDate}
+              endDate={endDate}
+              onStartDateChange={setStartDate}
+              onEndDateChange={setEndDate}
+            />
+          </div>
           <EmptyState icon={MapPin} message="Sem dados de localização ou demanda." />
         </CardContent>
       </Card>
@@ -104,6 +125,12 @@ export function LocationStats() {
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
+        <DateRangeFilter
+          startDate={startDate}
+          endDate={endDate}
+          onStartDateChange={setStartDate}
+          onEndDateChange={setEndDate}
+        />
         {hasCities && (
           <div className="space-y-2">
             <h4 className="text-sm font-medium">Utilizadores por cidade</h4>

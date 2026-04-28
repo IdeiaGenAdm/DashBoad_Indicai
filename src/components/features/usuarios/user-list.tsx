@@ -2,11 +2,21 @@
 
 import { useCallback, useEffect, useState } from 'react'
 
-import { Ban, ChevronLeft, ChevronRight, Eye, Trash2, Users as UsersIcon } from 'lucide-react'
+import {
+  Ban,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Eye,
+  FileText,
+  Trash2,
+  Users as UsersIcon,
+} from 'lucide-react'
 import { parseAsInteger, parseAsString, parseAsStringLiteral, useQueryStates } from 'nuqs'
 import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
 import {
   DataTable,
   DataTableBody,
@@ -24,11 +34,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { EmptyState } from '@/components/ui/empty-state'
-import { Input } from '@/components/ui/input'
 import { LoadingSkeleton } from '@/components/ui/loading-skeleton'
 import { SearchInput } from '@/components/ui/search-input'
 import { useAuth } from '@/contexts/auth-context'
 import { AdminApiError } from '@/lib/api'
+import { type ExportColumn, exportRowsToCsv, exportRowsToPdf } from '@/lib/export-data'
 import type { UserListItem } from '@/services/admin-users-fetch'
 import { banUser, deleteUser, listUsers, unbanUser } from '@/services/admin-users-fetch'
 
@@ -81,12 +91,40 @@ function UserAvatar({ name }: { name: string }) {
   )
 }
 
+function userName(user: UserListItem): string {
+  return (
+    (typeof user.nomeCompleto === 'string' ? user.nomeCompleto : null) ??
+    (typeof user.nome === 'string' ? user.nome : null) ??
+    '-'
+  )
+}
+
+const USER_EXPORT_COLUMNS: ExportColumn<UserListItem>[] = [
+  { label: 'Nome', value: userName },
+  { label: 'Email', value: (user) => user.email ?? '-' },
+  { label: 'CPF', value: (user) => user.cpf ?? '-' },
+  { label: 'Tipo', value: (user) => user.tipoUsuario ?? '-' },
+  { label: 'Status', value: (user) => user.status ?? 'ativo' },
+  { label: 'Criado em', value: (user) => user.createdAt ?? '-' },
+]
+
 const PARAMS = {
   page: parseAsInteger.withDefault(1),
   q: parseAsString.withDefault(''),
   sortBy: parseAsString.withDefault('createdAt'),
   sortOrder: parseAsStringLiteral(['asc', 'desc'] as const).withDefault('desc'),
   status: parseAsString.withDefault(''),
+}
+
+function getTotalFromResponse(res: unknown): number | null {
+  if (!res || typeof res !== 'object') return null
+  const record = res as Record<string, unknown>
+  const pagination =
+    record.pagination && typeof record.pagination === 'object'
+      ? (record.pagination as Record<string, unknown>)
+      : null
+  const value = record.total ?? pagination?.total
+  return typeof value === 'number' && Number.isFinite(value) ? value : null
 }
 
 export function UserList({
@@ -99,8 +137,10 @@ export function UserList({
   const { token } = useAuth()
   const [params, setParams] = useQueryStates(PARAMS)
   const [data, setData] = useState<UserListItem[]>([])
-  const [total, setTotal] = useState(0)
+  const [total, setTotal] = useState<number | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isExporting, setIsExporting] = useState(false)
+  const [selectedUsers, setSelectedUsers] = useState<Record<string, UserListItem>>({})
   const [confirmAction, setConfirmAction] = useState<{
     type: 'ban' | 'unban' | 'delete'
     user: UserListItem
@@ -123,7 +163,7 @@ export function UserList({
         ? res.users
         : ((res as { data?: UserListItem[] }).data ?? [])
       setData(users)
-      setTotal(res.total ?? users.length ?? 0)
+      setTotal(getTotalFromResponse(res))
     } catch (e) {
       if (e instanceof AdminApiError && e.status === 403) {
         toast.error('Sessão expirada. Faça login novamente.')
@@ -171,10 +211,109 @@ export function UserList({
     }
   }
 
+  function selectedRows(): UserListItem[] {
+    return Object.values(selectedUsers)
+  }
+
+  function toggleUserSelection(user: UserListItem, checked: boolean) {
+    setSelectedUsers((prev) => {
+      const next = { ...prev }
+      if (checked) next[user.id] = user
+      else delete next[user.id]
+      return next
+    })
+  }
+
+  function togglePageSelection(checked: boolean) {
+    setSelectedUsers((prev) => {
+      const next = { ...prev }
+      for (const user of data) {
+        if (checked) next[user.id] = user
+        else delete next[user.id]
+      }
+      return next
+    })
+  }
+
+  async function fetchAllUsersForExport(): Promise<UserListItem[]> {
+    if (!token) return []
+    const pageSize = 200
+    const all: UserListItem[] = []
+    const seen = new Set<string>()
+
+    for (let page = 1; page <= 100; page++) {
+      const res = await listUsers(token, {
+        page,
+        limit: pageSize,
+        search: params.q || undefined,
+        sortBy: params.sortBy || undefined,
+        sortOrder: params.sortOrder || undefined,
+        status: params.status || undefined,
+      })
+      const users = Array.isArray(res.users)
+        ? res.users
+        : ((res as { data?: UserListItem[] }).data ?? [])
+      for (const user of users) {
+        if (!seen.has(user.id)) {
+          seen.add(user.id)
+          all.push(user)
+        }
+      }
+      const totalFromApi = getTotalFromResponse(res)
+      if ((totalFromApi != null && all.length >= totalFromApi) || users.length < pageSize) break
+    }
+
+    return all
+  }
+
+  async function rowsForExport(): Promise<UserListItem[]> {
+    const selected = selectedRows()
+    if (selected.length > 0) return selected
+    return fetchAllUsersForExport()
+  }
+
+  async function handleExportCsv() {
+    setIsExporting(true)
+    try {
+      const rows = await rowsForExport()
+      if (rows.length === 0) {
+        toast.error('Nenhum dado para exportar')
+        return
+      }
+      exportRowsToCsv('usuarios', USER_EXPORT_COLUMNS, rows)
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  async function handleExportPdf() {
+    setIsExporting(true)
+    try {
+      const rows = await rowsForExport()
+      if (rows.length === 0) {
+        toast.error('Nenhum dado para exportar')
+        return
+      }
+      const ok = exportRowsToPdf('Usuarios', USER_EXPORT_COLUMNS, rows)
+      if (!ok) toast.error('Nao foi possivel abrir a janela de impressao')
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
   const limit = 12
-  const totalPages = Math.max(1, Math.ceil(total / limit))
+  const totalPages =
+    total == null
+      ? params.page + (data.length >= limit ? 1 : 0)
+      : Math.max(1, Math.ceil(total / limit))
+  const hasPreviousPage = params.page > 1
+  const hasNextPage = total == null ? data.length >= limit : params.page < totalPages
+  const showPagination = hasPreviousPage || hasNextPage || totalPages > 1
   const hasFilters = params.q || params.status
   const showEmpty = !isLoading && data.length === 0
+  const selectedCount = selectedRows().length
+  const allPageSelected = data.length > 0 && data.every((user) => selectedUsers[user.id])
+  const somePageSelected = data.some((user) => selectedUsers[user.id])
 
   const statusFilters = [
     { value: '', label: 'Todos' },
@@ -199,6 +338,31 @@ export function UserList({
                 {f.label}
               </Button>
             ))}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportCsv}
+              disabled={isLoading || isExporting}
+              title={selectedCount > 0 ? 'Exportar selecionados' : 'Exportar todos'}
+            >
+              <Download className="size-4" />
+              Excel
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleExportPdf}
+              disabled={isLoading || isExporting}
+              title={selectedCount > 0 ? 'Exportar selecionados' : 'Exportar todos'}
+            >
+              <FileText className="size-4" />
+              PDF
+            </Button>
+            {selectedCount > 0 && (
+              <Button variant="ghost" size="sm" onClick={() => setSelectedUsers({})}>
+                Limpar selecao ({selectedCount})
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -224,6 +388,13 @@ export function UserList({
           <DataTable>
             <DataTableHeader>
               <DataTableRow>
+                <DataTableHead className="w-10">
+                  <Checkbox
+                    aria-label="Selecionar usuarios desta pagina"
+                    checked={allPageSelected ? true : somePageSelected ? 'indeterminate' : false}
+                    onCheckedChange={(checked) => togglePageSelection(checked === true)}
+                  />
+                </DataTableHead>
                 <DataTableHead>Nome</DataTableHead>
                 <DataTableHead>Email</DataTableHead>
                 <DataTableHead>Tipo</DataTableHead>
@@ -234,20 +405,22 @@ export function UserList({
             <DataTableBody>
               {isLoading ? (
                 <DataTableRow>
-                  <DataTableCell colSpan={5} className="h-32 text-center">
+                  <DataTableCell colSpan={6} className="h-32 text-center">
                     <LoadingSkeleton variant="table-rows" rowCount={3} />
                   </DataTableCell>
                 </DataTableRow>
               ) : (
                 data.map((user) => {
-                  const name =
-                    typeof user.nomeCompleto === 'string'
-                      ? user.nomeCompleto
-                      : typeof user.nome === 'string'
-                        ? user.nome
-                        : '-'
+                  const name = userName(user)
                   return (
                     <DataTableRow key={user.id}>
+                      <DataTableCell>
+                        <Checkbox
+                          aria-label={`Selecionar ${name}`}
+                          checked={!!selectedUsers[user.id]}
+                          onCheckedChange={(checked) => toggleUserSelection(user, checked === true)}
+                        />
+                      </DataTableCell>
                       <DataTableCell>
                         <div className="flex items-center gap-2.5">
                           <UserAvatar name={name} />
@@ -314,17 +487,19 @@ export function UserList({
           </DataTable>
         )}
 
-        {!showEmpty && totalPages > 1 && (
+        {!isLoading && showPagination && (
           <div className="flex flex-col items-center justify-between gap-4 border-t px-4 py-3 sm:flex-row">
             <p className="text-sm text-muted-foreground">
-              Página {params.page} de {totalPages} · {total} utilizador(es)
+              {total == null
+                ? `Pagina ${params.page} - ${data.length} nesta pagina`
+                : `Pagina ${params.page} de ${totalPages} - ${total} utilizador(es)`}
             </p>
             <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setParams({ page: Math.max(1, params.page - 1) })}
-                disabled={params.page <= 1}
+                disabled={!hasPreviousPage}
               >
                 <ChevronLeft className="size-4" />
                 Anterior
@@ -332,8 +507,8 @@ export function UserList({
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setParams({ page: Math.min(totalPages, params.page + 1) })}
-                disabled={params.page >= totalPages}
+                onClick={() => setParams({ page: params.page + 1 })}
+                disabled={!hasNextPage}
               >
                 Próxima
                 <ChevronRight className="size-4" />
