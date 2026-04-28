@@ -40,9 +40,8 @@ export function LoginForm() {
 
   async function onSubmit(values: LoginFormValues) {
     setError(null)
-    const cpfNormalized = values.cpf.replace(/\D/g, '')
     try {
-      await login(cpfNormalized, values.senha)
+      await login(values.cpf.trim(), values.senha)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Erro ao fazer login')
     }
@@ -75,9 +74,8 @@ export function LoginForm() {
                   <FormLabel>CPF / CNPJ</FormLabel>
                   <FormControl>
                     <Input
-                      placeholder="Somente números"
+                      placeholder="CPF, CNPJ ou usuario"
                       {...field}
-                      onChange={(e) => field.onChange(e.target.value.replace(/\D/g, ''))}
                     />
                   </FormControl>
                   <FormMessage />
